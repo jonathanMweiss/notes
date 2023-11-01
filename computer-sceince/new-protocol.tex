@@ -1,0 +1,164 @@
+%% LyX 2.3.3 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[oneside,english]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{amstext}
+\usepackage{amsthm}
+\PassOptionsToPackage{normalem}{ulem}
+\usepackage{ulem}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\theoremstyle{plain}
+\newtheorem{thm}{\protect\theoremname}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{\protect\definitionname}
+\theoremstyle{remark}
+\newtheorem{claim}[thm]{\protect\claimname}
+
+\makeatother
+
+\usepackage{babel}
+\providecommand{\claimname}{Claim}
+\providecommand{\definitionname}{Definition}
+\providecommand{\theoremname}{Theorem}
+
+\begin{document}
+Each user has $pk_{i}$, the full public key would be $\prod_{i}pk_{i}=pk$.
+that is $\prod_{i}g^{x_{i}}=g^{\sum_{i}x_{i}}$ .
+
+to add a new transaction $tx$: sample new keys: $\left(sk',pk'\right)$
+and a random number $r$.
+\begin{itemize}
+\item compute $\gamma=Enc_{pk'}\left(tx\right)$
+\item compute $c=\left(\underbrace{g^{r}}_{c_{L}},\underbrace{e\left(pk,H\left(\gamma\right)^{r}\right)\cdot sk'}_{c_{R}}\right)$ 
+\item send $\left(c,\gamma,pk'\right)$.
+\end{itemize}
+Now, when every server signs: $\sigma_{i}=H\left(\gamma\right)^{sk_{i}}$\\
+we can compute the product signature: $\sigma=\prod H\left(\gamma\right)^{sk_{i}}$
+which can be used to decrypt the temp secret key: 
+\begin{align*}
+ & \frac{c_{R}}{e\left(c_{L},\sigma\right)}=\frac{e\left(g^{x},H\left(\gamma\right)^{r}\right)sk'}{e\left(g^{r},\sigma\right)}=\\
+ & =\frac{e\left(g^{\sum sk_{i}},H\left(\gamma\right)^{r}\right)\cdot sk'}{e\left(g^{r},H\left(\gamma\right)^{\sum sk_{i}}\right)}=\\
+ & =\frac{e\left(g^{\sum sk_{i}},H\left(\gamma\right)^{r}\right)\cdot sk'}{e\left(g,H\left(\gamma\right)\right)^{r\cdot\sum sk_{i}}}=\\
+ & =\frac{e\left(g,H\left(\gamma\right)\right)^{r\sum sk_{i}}\cdot sk'}{e\left(g,H\left(\gamma\right)\right)^{r\cdot\sum sk_{i}}}=\\
+ & =sk'
+\end{align*}
+ we managed to find out the temp secret key. now we can get the value
+under $\gamma=Enc_{pk'}\left(tx\right)$. great :)
+
+
+\subsection{Issues}
+\begin{itemize}
+  \item Can we verify the votes? otherwise we cannot catch a bad vote: $\sigma_i = H(\gamma)^{garbage}$
+\end{itemize}
+
+\section{New recovery protocol}
+Assume in this protocol that \emph{proof} is trusted and conveniences that some node $i$ is faulty and
+ that the proof contains the index/id of the faulty node.
+Each node starts the protocol with an empty set of all proofs it had seen $A$.
+\begin{itemize}
+\item Upon a new proof:
+  \begin{itemize}
+    \item If the proof is valid, insert the new proof into $A$.
+
+    \item If $|A| >f$ halt.
+
+    \item Encrypt the shard $Enc_\text{scehme}(\text{shard}_i)$ with the cryptographic scheme and publish it along
+      with the updated set $A$: $\text{\{A},Enc_\text{scehme}(\text{shard}_i)\}=msg$.
+  \end{itemize}
+
+\item A server that receives a new $msg$ will:
+  \begin{itemize}
+    \item Verify the new proof and run the previous step.
+    \item if it has matching proof set $A$, sign to reveal the decrypted item in the message.
+  \end{itemize}
+
+\item decrypting a secret requires at least $2f+1$ signatures/votes.
+\end{itemize}
+
+This protocol ensures that every honest node will eventually hold a matching proof set.
+In case of too many faults, the secrets remain hidden (needs a proof of correctness ?).
+
+\subsection{analysis of time complexity:}
+I assume we publish all keys at once, hidden with Gil's scheme.
+We'll need $2f+1$ publications to decrypt Gil's scheme.
+and $2f+1$ votes on each publication. Meaning $O(n^2)$ communications.
+
+\subsection{The diff from BA?}
+The protocol above does not conform to the Agreement definition.
+\begin{defn}
+Agreement
+\begin{itemize}
+\item No two honest nodes decide on a different value.
+\item If all honest have the same input $v$, then $v$ must be the decision
+value.
+\item (termination) All honest nodes must eventually decide on a value in
+$V$ (set of all valid values) and terminate.
+\end{itemize}
+\end{defn}
+
+
+\subsection{Protocol and comparison:}
+
+  Denote: $v\in V$ containing all indexes of faulty nodes, where $V=\mathcal{P}\left(\left[n\right]\right)$
+  the power set of $\left[n\right]$. 
+
+\begin{defn}
+    A protocol that solves Mixnet Recovery is a protocol that given a system with multiple failures where each honest node $i$ holds some
+    $v_{i}\in V$ must have the following properties:
+  \begin{itemize}
+    \item (safety) if $\left|\bigcup_{i}v_{i}\right|>f$, at most $f-1$ keys
+    are released. (this property ensures that no matter what the nodes choose to release, we do not
+     publish more than $f$ ).
+
+    \item (availability) if $\left|\bigcup_{i}v_{i}\right|<f$, each honest
+    node release a secret part of its shard for $key_{j}$ where $j\in v$
+    (this ensures that we can release all keys from $\bigcup v_{i}$).
+
+  \end{itemize}
+
+    Notice that we only look at the values of the honest nodes at the
+    end of the protocol. That is, after all messages were passed, $v_{i}$
+    represents the indexes that node $i$ wishes to recover.
+\end{defn}
+    
+
+\begin{claim}
+  The system can remain safe even if the protocol isn't an Agreement protocol.
+\end{claim}
+
+\begin{proof}
+We show that it is possible that two honest nodes \emph{decided} on two different values $v_{A},v_{B}$ and show that the
+safety property still holds.
+\begin{itemize}
+  % \item from not agreement \exist two nodes without the same $v$, it might b2 2 but there might be more.
+\item In this proof, we assume the protocol terminates. Otherwise, this is not interesting.
+\item Without the loss of generality $v\in V$ represents the subset of
+indexes a node will contribute its secret shares to construct a $key_{i}$
+\item We use the minimal nodes such that $n\ge3f+1$.
+\item We assume that $\left|v_{A}\cup v_{B}\right|>f$. Otherwise, the system
+  is safe by default.
+\end{itemize}
+
+The protocol ensures that the set $v_i$ each node votes for monotonically increases in size throughout time. 
+Let us describe the problem in terms of graphs:
+We have $|\{ v| v\in V \land |v| < f \}|$ colors, $n$ vertices, which we divide into two types:
+ $f$ Unique vertices can belong to any cluster at once, and Regular vertices can belong to one color, thus, one cluster.
+Can we have two different clusters in our graph have at least $2f+1$ vertices?
+No: We have $n=3f+1$ vertices and require clusters of $2f+1$ vertices. any two clusters have at least $f+1$ shared vertices.
+So, there exist $f+1$ vertices that should be of at least two colors,
+but we can only have $f$ such unique vertices.
+
+The system is safe, although two or more nodes might exist without the same value at the end of the protocol.
+\end{proof}
+
+
+This proof ensures that even without the protocol being an Agreement
+protocol, it is still safe.
+
+
+\end{document}

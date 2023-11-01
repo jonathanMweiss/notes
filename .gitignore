@@ -1,0 +1,9 @@
+*.out
+*.pdf
+*.aux
+*.xml
+*.toc
+*.fdb_latexmk
+*.bcf
+*.blg
+*.bbl

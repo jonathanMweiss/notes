@@ -1,0 +1,78 @@
+%% LyX 2.3.3 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[oneside,american,english]{amsbook}
+\usepackage[LGR,T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{babel}
+\usepackage{amstext}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{cancel}
+\PassOptionsToPackage{normalem}{ulem}
+\usepackage{ulem}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\DeclareRobustCommand{\greektext}{%
+  \fontencoding{LGR}\selectfont\def\encodingdefault{LGR}}
+\DeclareRobustCommand{\textgreek}[1]{\leavevmode{\greektext #1}}
+\ProvideTextCommand{\~}{LGR}[1]{\char126#1}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\numberwithin{section}{chapter}
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\theoremstyle{plain}
+\newtheorem{thm}{\protect\theoremname}
+\theoremstyle{definition}
+\newtheorem{xca}[thm]{\protect\exercisename}
+\theoremstyle{definition}
+\newtheorem{sol}[thm]{\protect\solutionname}
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{\protect\remarkname}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{\protect\definitionname}
+\theoremstyle{definition}
+\newtheorem{example}[thm]{\protect\examplename}
+
+\makeatother
+
+\addto\captionsamerican{\renewcommand{\definitionname}{Definition}}
+\addto\captionsamerican{\renewcommand{\examplename}{Example}}
+\addto\captionsamerican{\renewcommand{\exercisename}{Exercise}}
+\addto\captionsamerican{\renewcommand{\remarkname}{Remark}}
+\addto\captionsamerican{\renewcommand{\solutionname}{Solution}}
+\addto\captionsamerican{\renewcommand{\theoremname}{Theorem}}
+\addto\captionsenglish{\renewcommand{\definitionname}{Definition}}
+\addto\captionsenglish{\renewcommand{\examplename}{Example}}
+\addto\captionsenglish{\renewcommand{\exercisename}{Exercise}}
+\addto\captionsenglish{\renewcommand{\remarkname}{Remark}}
+\addto\captionsenglish{\renewcommand{\solutionname}{Solution}}
+\addto\captionsenglish{\renewcommand{\theoremname}{Theorem}}
+\providecommand{\definitionname}{Definition}
+\providecommand{\examplename}{Example}
+\providecommand{\exercisename}{Exercise}
+\providecommand{\remarkname}{Remark}
+\providecommand{\solutionname}{Solution}
+\providecommand{\theoremname}{Theorem}
+
+\begin{document}
+$p\cdot q \mod (X^n+1) = p\cdot q + w\cdot(X^n+1)$ for some $w$.
+We question whether 
+$p(r)\cdot q(r) =? (p\cdot q)(r)$
+
+But we actually have: 
+\begin{align*}
+  &(p\cdot q)(r) \mod (X^n+1) = (p\cdot q + w \cdot(X^n+1))(r) = \\
+  & = p(r) \cdot q(r) + w(r)\cdot (r^n+1)
+\end{align*}
+So if we apply modulus on both sides of the equation ($\mod r^n+1$) we should be able to eliminate the difference:
+
+\end{document}

@@ -1,0 +1,264 @@
+
+\chapter{Algorithms}
+\section{FFT, DFT and NTT}
+\subsection{representations of a polynomial}
+we can either use \emph{coefficient representation} or \emph{Point-value representation}.
+
+\subsubsection*{coefficient representation.}
+A coefficient representation of a polynomial $P(x)$ is a vector of coefficients 
+$a=(a_0,a_1,\dots, a_{n-1})$.
+In coefficient representation, we can evaluate or add a polynomial in $O(n)$ time. 
+unfortunately multiplying two polynomials takes $O(n^2)$.
+The operation of multiplying two polynomials $a,b$ is called convolution $c=a\otimes b$.
+
+
+\subsubsection*{Point-value representation.}
+A point-value representation of a polynomial $P(x)$ of degree-bound $n$ is a set of $n$ point-value pairs.
+$$ \{ (x_0,P(x_0)),\dots , (x_{n-1}, P(x_{n-1})) \}$$
+
+\begin{theorem}[Uniqueness of an interpolating polynomial]
+  For any set $ \{ (x_0,P(x_0)),\dots , (x_{n-1}, P(x_{n-1})) \}$ of $n$
+  point-value pairs such that all the $x_k$ values are distinct,
+  there is a unique polynomial $P(x)$ of degree-bound $n$ such that
+  $y_k = P(x_k)$. for $k\in[n]$ 
+\end{theorem}
+
+Due to the above theorem, we can see that this representation defines a polynomial well. 
+And one can move between both representations.
+
+Because $C(X)=A(X)B(X)$ for any $x_j$, then $C(x_j)=A(x_j)B(x_j)$. Meaning 
+multiplication and addition in this representation cost $O(n)$.
+ 
+\subsection{FFT}
+Luckily there is a way to move to and from both representations quickly:
+\subsubsection*{root of unity}
+A complex $n$th root of unity is a complex number $\omega$ such that
+$\omega^n =1$.
+There are exactly $n$ roots of unity: $e^{2\pi i k/n}$ for $k\in[n-1]$ 
+($e^{iu}= \cos{u}+i \sin{u}$).
+
+The value $\omega_n=e^{2\pi i/n}$ is the \emph{principal nth root of unity}.
+all other complex nth roots of unity are powers of $\omega_n$:
+ $\omega_n^0, \omega_n^1, \omega_n^2,\dots, \omega_n^{n-1}$.
+
+FFT takes special advantage that these values have special properties.
+\begin{lemma}[roots of unity]\label{roots-of-unity-property}
+If $z$ is an nth root of unity, then $ a \equiv b \mod n \Rightarrow z^a = z^b$.
+\end{lemma}
+meaning that $\omega_n^a = \omega_n^b$. one can label specific points on the unit circle over $\C$.
+
+\paragraph{Why is that important?}
+
+In the simplest of cases, we are going to evaluate the polynomial over the following
+points $ \{\omega_n^0, \omega_n^1, \omega_n^2,\dots, \omega_n^{n-1}\}$.
+Let us view the polynomial evaluation over $n$ such points as a matrix, this presentation
+might help the reader see some similarities:
+
+
+$$
+\begin{pmatrix}
+  y_0\\
+  y_1\\
+  \vdots \\
+  y_{n-1}\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+  1 & x_0 & x_0^2 ,\dots\\
+  1 & x_1 & x_1^2, \dots,\\
+  \vdots & \vdots & \vdots & \ddots & \\
+  1 & x_{n-1} & x_{n-1}^2, \dots,\\
+ \end{pmatrix}
+ \cdot 
+\begin{pmatrix}
+  a_0\\
+  a_1\\
+  \vdots \\
+  a_{n-1}\\
+\end{pmatrix}
+ $$
+
+ Now, let us assign the values:
+
+ \label{dft-matrix}
+ $$
+\begin{pmatrix}
+  p(\omega_n^0)\\
+  p(\omega_n^1)\\
+  \vdots \\
+  \omega_n^2\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+  1 & (\omega_n^0)^1 & (\omega_n^0)^2 ,\dots ,(\omega_n^0)^{n-1}\\
+  1 & (\omega_n^1)^1 & (\omega_n^1)^2, \dots, (\omega_n^1)^{n-1}\\
+  \vdots & \vdots & \vdots & \ddots & \\
+  1 & (\omega_n^{n-1}) & (\omega_n^{n-1})^2, \dots,(\omega_n^{n-1})^{n-1}\\
+ \end{pmatrix}
+ \cdot 
+\begin{pmatrix}
+  a_0\\
+  a_1\\
+  \vdots \\
+  a_{n-1}\\
+\end{pmatrix}
+ $$
+
+ The keen looker can see that we can reuse values in this matrix.
+ for example, let us look at $(\omega_n^{n-1})^{n-1}$ using \ref{roots-of-unity-property}
+ $(\omega_n^{n-1})^{n-1} = (\omega_n)^{n*n-2n+1}=(\omega_n)^{0+0+1}$.  
+
+ Thus we gain a matrix with heavy symmetry, which the FFT can use.
+
+
+
+\subsubsection*{fft main idea}
+The FFT method employs a divide-and-conquer strategy, 
+using the even-indexed and odd-indexed coefficients of $A(x)$
+separately to define the two new polynomials $A^{[0]}(x)$ and $A^{[1]}(x)$ of degree-bound $n/2$.
+
+\begin{align}
+  &A^{[0]}(x) =  a_0 +a_2x + a_4x^2 + \dots + a_{n-2}x^{n/2-1}\\
+  &A^{[1]}(x) =  a_1 +a_3x + a_5x^2 + \dots + a_{n-1}x^{n/2-1}.
+\end{align}
+
+
+It follows that $A(x)=A^{[0]}(x^2) + x\cdot A^{[1]}(x^2)$.
+
+Thus, the problem of evaluating $A(x)$ at 
+$\omega_n^0, \omega_n^1, \omega_n^2,\dots, \omega_n^{n-1}$ 
+reduces to evaluating the degree-bound $n/2$ polynomials  $A^{[0]}(x)$ and $A^{[1]}(x)$ at the points
+$$(\omega_n^0)^2, (\omega_n^1)^2,\dots, (\omega_n^{n-1})^2$$
+and then combining the results according to $A(x)=A^{[0]}(x^2) + x\cdot A^{[1]}(x^2)$.
+
+
+Using the properties of the root of unity, 
+the above values consist not of $n$ distinct values but only of the $n/2$
+ complex ($n/2$)th roots of unity, with each root occurring exactly twice!
+These subproblems have the same form as the original problem but are half the size.
+We can continue in this manner until we evaluate the full polynomial on $n$ distinct values.
+
+
+\subsection{putting it all together}
+As we've seen we can create a matrix with heavy symmetry, called the DFT matrix. 
+now, we'd want to capitalize on that and create a recursive algorithm.
+To do so, instead of the regular polynomial assignment we've seen above using a matrix,  
+we'll shuffle things a bit according to the divide-and-conquer approach from above
+$$
+F_n \cdot p(x) = 
+\begin{pmatrix}
+  I_{ \frac{n}{2}} & -D_{\frac{n}{2}} \\
+  I_{ \frac{n}{2}} & -D_{\frac{n}{2}}
+ \end{pmatrix}
+ \cdot 
+ \begin{pmatrix}
+  F_{ \frac{n}{2}} & 0 \\
+  0 & F_{ \frac{n}{2}} 
+\end{pmatrix}
+\cdot 
+\begin{pmatrix}
+  p_{\text{even coefficient}} \\
+  p_{\text{odd coefficient}}
+\end{pmatrix}
+ $$
+
+ where $F_n$ is the matrix of assignment we've seen in ~\ref{dft-matrix}, and 
+ $D_n$ is the following diagonal matrix $$
+ \begin{pmatrix}
+  1 & 0 &0  & \dots& 0 \\
+  0 & \omega_n^1 &0  & \dots& 0 \\
+  1 & 0  &\omega_n^2  & \dots& 0 \\
+  \vdots & \vdots & \vdots & \vdots &  \\
+  0 & 0  &0  & \dots& \omega_n^n-1 \\
+ \end{pmatrix} $$
+
+
+ We can continue this process recursively, to get what we want.
+ In each recursive level, the algorithm does at most $O(n)$ work (i.e., multiplying by sparse matrices),
+  and due to the logarithmic depth of the recursion, we get $O(nlogn)$.
+
+\subsection*{Interpolation}
+
+The process is similar, we simply need need to invert $F_n$~\ref{dft-matrix}.
+% We can write the polynomial as a Vandermonde matrix:
+% $$
+% \begin{pmatrix}
+%   y_0\\
+%   y_1\\
+%   \vdots \\
+%   y_{n-1}\\
+% \end{pmatrix}
+% =
+% \begin{pmatrix}
+%   1 & x_0 & x_0^2 ,\dots\\
+%   1 & x_1 & x_1^2, \dots,\\
+%   \vdots & \vdots & \vdots & \ddots & \\
+%   1 & x_{n-1} & x_{n-1}^2, \dots,\\
+%  \end{pmatrix}
+%  \cdot 
+% \begin{pmatrix}
+%   a_0\\
+%   a_1\\
+%   \vdots \\
+%   a_{n-1}\\
+% \end{pmatrix}
+%  $$
+
+%  and then if we assign the roots of unity as $x_0,x_1,\dots$
+%  we should be able to compute the inverse of the above matrix very quickly
+%  (they have some proof for that).
+ 
+%  Then there is a quick method for computing $y\cdot Matrix(A(X))$.
+
+ \begin{corollary}
+  For FFT, DFT, and NTT we must use specific values to gain speedy interpolation and
+  evaluation of the polynomial. 
+ \end{corollary}{Conclusin:}
+ 
+\subsection{NTT}
+The NTT is a specialized version of the discrete Fourier transform,
+in which the coefficient ring is taken to be a finite field (or ring)
+ containing the right roots of unity.
+It can be viewed as an exact version of the complex DFT, avoiding 
+round-off errors for exact convolutions of integer sequences.
+While Gauss used similar techniques already in~\cite{gaussfft}, laying the groundwork 
+for modern FFT algorithms to compute the DFT, and therefore the NTT, 
+is usually attributed to Cooley and Tukey's seminal paper \cite{fft}.
+
+\subsubsection{Special Features}
+Applying the NTT transform provides a cyclic convolution, computing 
+$c = a \cdot b \mod (X^n + 1)$  with two polynomials $a$ and $b$ would require 
+applying the NTT of length $2n$ and thus $n$ zeros to be appended to each input;
+this effectively doubles the length of the inputs and also requires the computation of 
+an explicit reduction modulo $X^n +1$. 
+To avoid these issues, one can exploit the \emph{negative wrapped convolution} \cite{negantt}.
+
+This exploitation allows us to perform $NTT$ without expanding to $2n$ parameters!
+meaning we can send less bandwidth over the network, and perform fewer computations too. 
+This trick can be seen in \cite{SEAL}.
+
+\section{Reed-Solomon}
+It is fairly simple, but effective algorithm to encode words and be able to deal with erasurs.
+\subsection{Naive solution}
+assuming we decide we want our words to be of size $k=4$, and we add additional two redundancies $n=6$. 
+Thus to send it we'll do the following: given a word vector, we'll treat it as coefficients values of a 
+polynomial of degree $k-1$ (because we have k coefficients its a k-1 degree poly), then to encode it, we'll evaluate it on the following $x$ values: $(-1,0,1,2,\dots n)$.
+
+
+Now given the 6 values that we received over the network we can decode it as follows: 
+We go over every group of 4 points, and try to reconstruct the polynomial. 
+
+the polynomial we've reconstructed the most is the correct one.
+
+\subsection{Systematic Reed-Solomon}
+Assuming we want to be able to correct up to $s$ values, we'd need at least $2s$ redundant symbols.
+So if $k=4$, and $n=6$, we can only recover a single byte.
+
+It won't work for larger values, like $k=223$, $n=255$ which is a popular value for reed-solomon.
+(Meaning we add 32 more symbols to our message, so we can repair 16 symbols in total).
+
+The previous algorithm will work, but we'd need to send different values then 
+the original message. It would be best to send $Message||\text{addition code word}$.
+that way,we might be able to avoid reconstruction if we can find quickly that there was no error.
+
+this is called a Systematic code. 

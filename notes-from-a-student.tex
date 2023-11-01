@@ -1,0 +1,138 @@
+%% LyX 2.3.3 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[oneside,american,english]{amsbook}
+\usepackage[LGR,T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{babel}
+\usepackage{amstext}
+\usepackage{amsthm,amsmath}
+\usepackage{amssymb}
+\usepackage{cancel}
+\usepackage{xcolor}
+\PassOptionsToPackage{normalem}{ulem}
+\usepackage{ulem}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\DeclareRobustCommand{\greektext}{%
+  \fontencoding{LGR}\selectfont\def\encodingdefault{LGR}}
+\DeclareRobustCommand{\textgreek}[1]{\leavevmode{\greektext #1}}
+\ProvideTextCommand{\~}{LGR}[1]{\char126#1}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\numberwithin{section}{chapter}
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\theoremstyle{plain}
+% \newtheorem{thm}{\protect\theoremname}
+% \theoremstyle{definition}
+% \newtheorem{xca}[thm]{\protect\exercisename}
+% \theoremstyle{definition}
+% \newtheorem{sol}[thm]{\protect\solutionname}
+% \theoremstyle{remark}
+% \newtheorem{rem}[thm]{\protect\remarkname}
+% \theoremstyle{definition}
+% \newtheorem{defn}[thm]{\protect\definitionname}
+% \theoremstyle{definition}
+% \newtheorem{example}[thm]{\protect\examplename}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{thm}{Theorem}[theorem]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{rem}[theorem]{Remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{defn}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{xca}{Exercise}[section]
+\newtheorem{sol}[xca]{Exercise}
+
+
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+% New commands:
+
+\makeatother
+
+\addto\captionsamerican{\renewcommand{\definitionname}{Definition}}
+\addto\captionsamerican{\renewcommand{\examplename}{Example}}
+\addto\captionsamerican{\renewcommand{\exercisename}{Exercise}}
+\addto\captionsamerican{\renewcommand{\remarkname}{Remark}}
+\addto\captionsamerican{\renewcommand{\solutionname}{Solution}}
+\addto\captionsamerican{\renewcommand{\theoremname}{Theorem}}
+\addto\captionsenglish{\renewcommand{\definitionname}{Definition}}
+\addto\captionsenglish{\renewcommand{\examplename}{Example}}
+\addto\captionsenglish{\renewcommand{\exercisename}{Exercise}}
+\addto\captionsenglish{\renewcommand{\remarkname}{Remark}}
+\addto\captionsenglish{\renewcommand{\solutionname}{Solution}}
+\addto\captionsenglish{\renewcommand{\theoremname}{Theorem}}
+\providecommand{\definitionname}{Definition}
+\providecommand{\examplename}{Example}
+\providecommand{\exercisename}{Exercise}
+\providecommand{\remarkname}{Remark}
+\providecommand{\solutionname}{Solution}
+\providecommand{\theoremname}{Theorem}
+
+\usepackage{biblatex}
+\addbibresource{bib.bib}
+\bibliography{bib}
+
+
+\global\long\def\ball#1{B_{\left|\left|\cdot\right|\right|_{#1}}}%
+\global\long\def\C{\mathbb{C}}%
+\global\long\def\Q{\mathbb{Q}}%
+\global\long\def\F{\mathbb{F}}%
+\global\long\def\G{\mathbb{G}}%
+\global\long\def\mx{\mathcal{X}}%
+\global\long\def\bin#1#2{\binom{#1}{#2}}%
+\global\long\def\p#1{\Pr\left[#1\right]}%
+\global\long\def\limn#1{\lim\limits _{n\to\infty}\left(#1\right)}%
+\global\long\def\one{\mathbbm{1}}%
+\global\long\def\cov#1#2{COV\left[#1,#2\right]}%
+\global\long\def\E#1{\mathbb{E}\left[#1\right]}%
+\global\long\def\enc#1{Enc\left[#1\right]}%
+\global\long\def\V#1{var\left[#1\right]}%
+\global\long\def\R{\mathbb{R}}%
+\global\long\def\N{\mathbb{N}}%
+\global\long\def\then{\Rightarrow}%
+\global\long\def\norm#1{\left\Vert #1\right\Vert }%
+\global\long\def\Z{\mathbb{Z}}%
+\global\long\def\from{\leftarrow}%
+\global\long\def\getrandom{\overset{_R}{\from}}%
+
+\begin{document}
+
+\title{Notes From a Student}
+\author{Jonathan Weiss}
+
+\maketitle
+\selectlanguage{english}%
+
+
+\chapter{\textcolor{red}{Intro-and todos}}
+\begin{itemize}
+  \item \red{break computer-science file into part files}
+  \item These notes are a collection of information I've gathered regarding distributed systems,
+  cryptography, and math. Mainly intended to
+ be a source of knowledge to look back at and get quickly into the
+ notions. Some of the items will have sources, and some will simply be proved here.
+\end{itemize}
+
+\pagebreak\tableofcontents
+
+
+\input{mathematics/Algebraic-structures.tex}
+
+\part{Computer-Science}
+
+\input{computer-sceince/computer-sceince}
+
+\printbibliography
+\end{document}
