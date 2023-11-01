@@ -29,16 +29,19 @@ And one can move between both representations.
 Because $C(X)=A(X)B(X)$ for any $x_j$, then $C(x_j)=A(x_j)B(x_j)$. Meaning 
 multiplication and addition in this representation cost $O(n)$.
  
-\subsection{FFT}
-Luckily there is a way to move to and from both representations quickly:
-\subsubsection*{root of unity}
-A complex $n$th root of unity is a complex number $\omega$ such that
+\section{FFT}
+Luckily there is a way to move to and from both representations quickly using the \emph{roots of unity}.
+
+\begin{defn}
+An $n$th root of unity is a complex number $\omega$ such that
 $\omega^n =1$.
-There are exactly $n$ roots of unity: $e^{2\pi i k/n}$ for $k\in[n-1]$ 
+\end{defn}
+
+There are exactly $n$ roots of unity $e^{2\pi i k/n}$ for $k\in[n-1]$ 
 ($e^{iu}= \cos{u}+i \sin{u}$).
 
 The value $\omega_n=e^{2\pi i/n}$ is the \emph{principal nth root of unity}.
-all other complex nth roots of unity are powers of $\omega_n$:
+all other roots of unity are powers of $\omega_n$:
  $\omega_n^0, \omega_n^1, \omega_n^2,\dots, \omega_n^{n-1}$.
 
 FFT takes special advantage that these values have special properties.
@@ -202,7 +205,8 @@ def fft(p: np.ndarray) -> np.ndarray:
   
 \subsection*{Interpolation}
 
-The process is similar, we simply need need to invert $F_n$~\ref{dft-matrix}.
+The process is similar, we just need to invert $F_n$~\ref{dft-matrix}.
+\red{TODO}
 % We can write the polynomial as a Vandermonde matrix:
 % $$
 % \begin{pmatrix}
