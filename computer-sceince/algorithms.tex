@@ -147,7 +147,7 @@ we'll shuffle things a bit according to the divide-and-conquer approach from abo
 $$
 F_n \cdot p(x) = 
 \begin{pmatrix}
-  I_{ \frac{n}{2}} & -D_{\frac{n}{2}} \\
+  I_{ \frac{n}{2}} & D_{\frac{n}{2}} \\
   I_{ \frac{n}{2}} & -D_{\frac{n}{2}}
  \end{pmatrix}
  \cdot 
@@ -176,7 +176,30 @@ F_n \cdot p(x) =
  We can continue this process recursively, to get what we want.
  In each recursive level, the algorithm does at most $O(n)$ work (i.e., multiplying by sparse matrices),
   and due to the logarithmic depth of the recursion, we get $O(nlogn)$.
+  \begin{lstlisting}[language=Python,
+    caption={fft algorithm in python}
+    ]
+import numpy as np
 
+def fft(p: np.ndarray) -> np.ndarray:
+    n = len(p)
+    if n == 1:
+        return p
+    omega = np.exp(2 * np.pi * 1j / n)
+
+    p_even, p_odd = p[::2], p[1::2] 
+    ye, yo = fft(p_even), fft(p_odd)
+
+    # mult the structured left matrix with the recursive result.
+    # O(n) work comes from here.
+    y = np.zeros(n, dtype=np.complex128)
+    for k in range(n // 2):
+        y[k] = ye[k] + omega ** k * yo[k]
+        y[k + n // 2] = ye[k] - omega ** k * yo[k]
+    return y
+    \end{lstlisting}
+    
+  
 \subsection*{Interpolation}
 
 The process is similar, we simply need need to invert $F_n$~\ref{dft-matrix}.

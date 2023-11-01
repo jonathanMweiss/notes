@@ -7,3 +7,6 @@
 *.bcf
 *.blg
 *.bbl
+*.fls
+*.log
+*.gz
