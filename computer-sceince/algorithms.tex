@@ -143,6 +143,7 @@ We can continue in this manner until we evaluate the full polynomial on $n$ dist
 
 
 \subsection{putting it all together}
+\red{there might be some miscalculations here, but the idea is solid.}
 As we've seen we can create a matrix with heavy symmetry, called the DFT matrix. 
 now, we'd want to capitalize on that and create a recursive algorithm.
 To do so, instead of the regular polynomial assignment we've seen above using a matrix,  
@@ -202,7 +203,11 @@ def fft(p: np.ndarray) -> np.ndarray:
     return y
     \end{lstlisting}
     
-  
+    \begin{remark}[Summary]
+      Notice that to achieve this result, we needed to reduce the polynomial into
+      even and odd parts, and then adjust the assignment matrix using
+      the properties of roots of unity. Each part is important in its own way.
+    \end{remark}
 \subsection*{Interpolation}
 
 The process is similar, we just need to invert $F_n$~\ref{dft-matrix}.
