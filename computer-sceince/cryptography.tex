@@ -49,6 +49,7 @@ The addition law, and adding to the set $E(F_p)$ the member $\mathcal{O}$,
  which servers as the identity member, turns it into a group. I'm not getting into the addition laws.
 
 \section{Elliptic curve cryptography}
+\red{TODO, put here an encryption scheme, and a signature scheme (can use schnorr here honestly)}
 Given two points $P$ and $\alpha \cdot P$, where $\alpha \in \Z_q$, it is hard to compute $\alpha$.
 The best known algorithm to compute $\alpha$ is $\Omega(\sqrt{q})$.
 There are a few exceptions to these rules, and thus one should be careful when defining a new curve.
@@ -107,7 +108,9 @@ We'll avoid $bn256$ curve as it isn't secure.
   by calculating a table of the other possible values. (though it seems very inefficient, and memory intensive.)
 \end{itemize}
 
-\section*{The BLS signature scheme}
+\section{Advanced encryption schemes from pairings}
+
+\subsection{The BLS signature scheme}
 Let $e:F_0 \times G_1 \to G_T$ be a pairing where $G_0,G_1,G_T$ are
 cyclic groups of prime order $q$, and where $g_0\in G_0, g_1\in G_1$ are
 generators. 
@@ -132,8 +135,7 @@ $\mathcal{M}$ and works as follows:
   $$
 \end{itemize}
 
-\section*{Advanced encryption schemes from pairings}
-\subsection*{Identity based encryption}
+\subsection{Identity based encryption}
 Using Identity-Based Encryption (IBE from now), Alice can send an encrypted message to Bob
 without asking for bobs key beforehand. Beyond key exchange, IBE can also 
 be used to construct CPA-secure public key encryption and even search encrypted data.
