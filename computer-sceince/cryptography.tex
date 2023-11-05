@@ -49,7 +49,12 @@ The addition law, and adding to the set $E(F_p)$ the member $\mathcal{O}$,
  which servers as the identity member, turns it into a group. I'm not getting into the addition laws.
 
 \section{Elliptic curve cryptography}
-\red{TODO, put here an encryption scheme, and a signature scheme (can use schnorr here honestly)}
+\red{TODO, put here an encryption scheme, and a signature scheme (can use schnorr here honestly)
+The most important thing to remember is that elliptic curve cryptography 
+assumes hard exponent, and everything is similar to those algorithms
+}
+
+
 Given two points $P$ and $\alpha \cdot P$, where $\alpha \in \Z_q$, it is hard to compute $\alpha$.
 The best known algorithm to compute $\alpha$ is $\Omega(\sqrt{q})$.
 There are a few exceptions to these rules, and thus one should be careful when defining a new curve.
