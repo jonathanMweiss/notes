@@ -140,21 +140,26 @@
 \lstset{style=mystyle}
 \begin{document}
 
-\title{Notes From a Student}
+\title{Notes From Students}
 \author{Jonathan Weiss}
 
-\maketitle
+% \maketitle
 \selectlanguage{english}%
 
 
-\chapter{\textcolor{red}{Intro-and todos}}
+\begingroup
+\let\newpage\relax
+\maketitle
 \begin{itemize}
-  \item \red{break computer-science file into part files}
+  \item \red{\bf CAUTION! This document was not peer-reviewed and might contain many faults, inaccuracies, grammar issues and typos.}
   \item These notes are a collection of information I've gathered regarding distributed systems,
   cryptography, and math. Mainly intended to
  be a source of knowledge to look back at and get quickly into the
  notions. Some of the items will have sources, and some will simply be proved here.
 \end{itemize}
+\endgroup
+
+
 
 \pagebreak\tableofcontents
 
