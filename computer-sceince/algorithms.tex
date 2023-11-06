@@ -29,7 +29,7 @@ And one can move between both representations.
 Because $C(X)=A(X)B(X)$ for any $x_j$, then $C(x_j)=A(x_j)B(x_j)$. Meaning 
 multiplication and addition in this representation cost $O(n)$.
  
-\section{FFT}
+\section*{FFT}
 Luckily there is a way to move to and from both representations quickly using the \emph{roots of unity}.
 
 \begin{defn}
@@ -179,7 +179,7 @@ F_n \cdot p(x) =
 
  We can continue this process recursively, to get what we want.
  In each recursive level, the algorithm does at most $O(n)$ work (i.e., multiplying by sparse matrices),
-  and due to the logarithmic depth of the recursion, we get $O(nlogn)$.
+  and due to the logarithmic depth of the recursion, we get $O(n\log{n})$.
   \begin{lstlisting}[language=Python,
     caption={fft algorithm in python}
     ]
@@ -247,8 +247,8 @@ The process is similar, we just need to invert $F_n$~\ref{dft-matrix}.
   evaluation of the polynomial. 
  \end{corollary}{Conclusin:}
  
-\subsection{NTT}
-The NTT is a specialized version of the discrete Fourier transform,
+\section*{Number Theoretic Transform (NTT)}
+NTT is a specialized version of the discrete Fourier transform,
 in which the coefficient ring is taken to be a finite field (or ring)
  containing the right roots of unity.
 It can be viewed as an exact version of the complex DFT, avoiding 
@@ -257,7 +257,78 @@ While Gauss used similar techniques already in~\cite{gaussfft}, laying the groun
 for modern FFT algorithms to compute the DFT, and therefore the NTT, 
 is usually attributed to Cooley and Tukey's seminal paper \cite{fft}.
 
-\subsubsection{Special Features}
+NTT can use the same FFT algorithms but requires a 
+different DFT matrix~\ref{dft-matrix},
+where $\omega_n$ and we work on elements in 
+some ring $Z_q$ (including the polynomial coefficients). 
+This fact lies in the foundational theorem of NTT:
+\begin{thm}[\cite{ntt}]
+  A length $N$ transform having the DFT structure will
+  implement cyclic convolution if and only if there exists an 
+  inverse of N and an element $\alpha$,
+  a root of unity of order $N$ , i.e., $N$ is the least 
+  positive integer such that $\alpha^N =1$.
+\end{thm}
+This is a very general result applying to both \emph{rings and fields} that are
+finite or infinite.
+
+It is important to note that $N$ also applies to the length of our polynomial.
+
+
+\paragraph[short]{\bf NTT Over Finite Fields} 
+The DFT  over $\C$ uses the primitive $n$-th root of unity $\omega_N=e^{2\pi*i/N}$,
+but the NTT uses a primitive $N$-th root of unity in $GF(p)$
+(i.e., If $N$ is the \emph{least} positive integer such that $\alpha^N = 1 \mod p$
+then $\alpha$ is an $N$th root of unity).
+
+
+There is an algorithm that can find the $N$th root of unity (one exists if $N$ divides $p-1$),
+and then one can apply the FFT algorithm by modifying it to first find the
+ $n$th root of unity at the beginning of each recursive step of the algorithm ($\omega_n=\alpha$). 
+
+%  \begin{remark}
+%   there are ways to reduce the search for a root of unity in each level
+%   see \href{https://galois.readthedocs.io/en/v0.0.24/api/galois.ntt.html#:~:text=The%20Number%2DTheoretic%20Transform%20(NTT)%20is%20a%20specialized%20Discrete,for%200%20%3C%20k%20%3C%20N%20}{notes}
+%  \end{remark}
+
+Furthermore, when working over a field $\F_p$ such that $p$ is prime,
+ the maximal $N$, the array of coefficients representing a
+  polynomial, is $N_{max}=p-1$ (\cite[III. number theoretic transforms]{ntt})
+
+
+\paragraph[short]{\bf NTT over Rings}
+Let $Z_M$ represent a ring of integers ${0,1,2,\dots , M-1}$,
+with arithmetics mod $M$.
+Where $M$ is constructed the following unique prime factorization
+$$M=p_{1}^{r_1}\cdot  p_{2}^{r_2} \cdots p_{\ell}^{r_\ell}$$
+and $p_i$'s are distinct primes.
+
+
+\begin{remark}
+  the paper articulates why things work even if $M$ is such a prime factorization.
+\end{remark}
+
+For NTT to work, the following must hold $$\bf N|L(M)$$
+where $L(M)$ is the greatest common
+divisor (gcd) of the $(p_{i}-1)$. That is, 
+$$L(M):= gcd\{p_1-1,p_2-1,\dots\}$$ 
+\red{TODO, understand what it means to calculate such GCD}
+
+\begin{corollary}
+  $L(M)=N_{max}$. i.e., it defines the maximal $N$ 
+  such that we can apply NTT.  
+\end{corollary}
+
+
+
+
+
+
+\subsection*{Finding Roots of Unity}
+\red{TODO}
+
+
+\subsection{Special Features}
 Applying the NTT transform provides a cyclic convolution, computing 
 $c = a \cdot b \mod (X^n + 1)$  with two polynomials $a$ and $b$ would require 
 applying the NTT of length $2n$ and thus $n$ zeros to be appended to each input;
