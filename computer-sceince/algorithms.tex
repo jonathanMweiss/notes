@@ -300,18 +300,14 @@ Furthermore, when working over a field $\F_p$ such that $p$ is prime,
 Let $Z_M$ represent a ring of integers ${0,1,2,\dots , M-1}$,
 with arithmetics mod $M$.
 Where $M$ is constructed the following unique prime factorization
-$$M=p_{1}^{r_1}\cdot  p_{2}^{r_2} \cdots p_{\ell}^{r_\ell}$$
-and $p_i$'s are distinct primes.
+$M=p_{1}^{r_1}\cdot  p_{2}^{r_2} \cdots p_{\ell}^{r_\ell}$
+and $p_i$'s are distinct primes (see \cite[NTT sec. III][]{ntt}
+ for further explanations).
 
-
-\begin{remark}
-  the paper articulates why things work even if $M$ is such a prime factorization.
-\end{remark}
-
-For NTT to work, the following must hold $$\bf N|L(M)$$
+For NTT to work, the following must hold $\bf N|L(M)$
 where $L(M)$ is the greatest common
 divisor (gcd) of the $(p_{i}-1)$. That is, 
-$$L(M):= gcd\{p_1-1,p_2-1,\dots\}$$ 
+$L(M):= gcd\{p_1-1,p_2-1,\dots\}$
 \red{TODO, understand what it means to calculate such GCD}
 
 \begin{corollary}
