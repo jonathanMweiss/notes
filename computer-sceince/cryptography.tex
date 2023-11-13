@@ -1,4 +1,16 @@
 
+\begin{defn}[$\lambda$-bit strength]
+  Defining the strength of security is complex. NIST decided that $\lambda$-bit security 
+  means that for any kind of known attack, the attacker would need at least $2^{\lambda}$
+  operations to break the scheme.
+
+  Where each operation is defined as a single op over the specified field or ring.
+  For instance, over an elliptic curve, either multiplication or additions are assumed to 
+  take 1 single CPU cycle.
+  
+\end{defn}
+
+
 \chapter{Elliptic curves}
 Taken from \emph{A Graduate Course in Applied Cryptography, Dan Boneh and Victor Shoup}
 
@@ -233,33 +245,22 @@ We'll need a few components before being able to construct an IBE:
 \end{itemize}
 
 
-
 \chapter{Fully Homomorphic Encryption}
-
-TODO; add homomorphic encryption definition. NOTE: they can support
+\red{
+  TODO; add homomorphic encryption definition. NOTE: they can support
 multiple operations.
+}
 
 We can have both a symmetric key HE, or an asymmetric key HE. 
 
-\section{operations}
-
-\paragraph{Some homomorphic encryption schemes, such as BGV, BFV, and CKKS,
-support \textquotedblleft packing\textquotedblright{} -- or \textquotedblleft batching\textquotedblright{}
--- many plain-texts into a single cipher-text}
-\begin{itemize}
-\item we can do logical ops; like AND, OR, XOR
-\item addition and multiplication
-\item ops over fixed point numbers
-\item rotations on packed cipher-texts
-\end{itemize}
-
 \section{Hardness}
 
-Most HE schemes are using different Hardness assumptions than DDH.
+Most HE schemes use different Hardness assumptions than DDH.
 
-\paragraph{In plain language, the basic hardness is called Learning with Errors,
+\subsection*{Learning with errors (LWE)}
+In plain language, the basic hardness is called Learning with Errors,
 and it assumes that no adversary can infer whether $Ax+e=c$ or $Ax=c$
-just from seeing $A,c$. the formal definition:}
+just from seeing $A,c$. the formal definition:
 \begin{defn}
 Learning With Errors (LWE) Problem. The LWE problem is parametrized
 by four parameters: $\left(n,m,q,\text{\ensuremath{\mx}}\right)$
@@ -288,9 +289,25 @@ rounded to the nearest integer, or other distributions supported on
 small integers.}
 \end{defn}
 
+\subsection*{Ring-LWE (RLWE)} Although different definition, it is quite similar.
+This is the main definition I've worked with, used by BGV.
+
+\begin{defn}
+  For security parameter $\lambda$, let $f(x)=x^d+1$ where $d=d(\lambda)$ is a powerof 2.
+  Let $q=q(\lambda)\geq 2$ be an integer. 
+  Let $R = \Z[x]/(f(x))$ and let $R_q = R/qR$. 
+  Let $\mx = \mx(\lambda)$ be a distribution over $R$.
+  The RLWE $d,q,\mx$ problem is to distinguish the following two distributions:
+  In the first distribution, one samples $(a_i,b_i)$ uniformly from $R_q^2$.
+  In the second distribution,
+  one first draws $s\leftarrow R_q$ uniformly and then samples $(a_i,b_i)\in R_q^2$
+  By sampling $a_i\leftarrow R_q$ uniformly, $e_i \leftarrow \mx$,
+  and then compute $b_i=a_i\cdot s +e_i$.
+  The RLWE $d,q,\mx$ assumption is that the RLWE $d,q,\mx$ problem is infeasible.
+\end{defn}
+
 
 \section{The BGV and BFV Encryption schemes}
-
 BFV is instantiated over two rings:
 \begin{enumerate}
 \item The plaintext ring which includes encodings of unencrypted or intelligible
