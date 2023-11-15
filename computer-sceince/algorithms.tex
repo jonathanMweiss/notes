@@ -180,9 +180,11 @@ F_n \cdot p(x) =
  We can continue this process recursively, to get what we want.
  In each recursive level, the algorithm does at most $O(n)$ work (i.e., multiplying by sparse matrices),
   and due to the logarithmic depth of the recursion, we get $O(n\log{n})$.
+x
+\label{algorithm:fft}
   \begin{lstlisting}[language=Python,
     caption={fft algorithm in python}
-    ]
+  ]
 import numpy as np
 
 def fft(p: np.ndarray) -> np.ndarray:
@@ -208,39 +210,17 @@ def fft(p: np.ndarray) -> np.ndarray:
       even and odd parts, and then adjust the assignment matrix using
       the properties of roots of unity. Each part is important in its own way.
     \end{remark}
-\subsection*{Interpolation}
+\subsection*{Inverse FFT}\label{ifft}
 
-The process is similar, we just need to invert $F_n$~\ref{dft-matrix}.
-\red{TODO}
-% We can write the polynomial as a Vandermonde matrix:
-% $$
-% \begin{pmatrix}
-%   y_0\\
-%   y_1\\
-%   \vdots \\
-%   y_{n-1}\\
-% \end{pmatrix}
-% =
-% \begin{pmatrix}
-%   1 & x_0 & x_0^2 ,\dots\\
-%   1 & x_1 & x_1^2, \dots,\\
-%   \vdots & \vdots & \vdots & \ddots & \\
-%   1 & x_{n-1} & x_{n-1}^2, \dots,\\
-%  \end{pmatrix}
-%  \cdot 
-% \begin{pmatrix}
-%   a_0\\
-%   a_1\\
-%   \vdots \\
-%   a_{n-1}\\
-% \end{pmatrix}
-%  $$
+The DFT matrix is invertible.
+Thus one can solve for the vector of coefficients,
+by simply inverting the matrix in~\ref{dft-matrix}.
 
-%  and then if we assign the roots of unity as $x_0,x_1,\dots$
-%  we should be able to compute the inverse of the above matrix very quickly
-%  (they have some proof for that).
- 
-%  Then there is a quick method for computing $y\cdot Matrix(A(X))$.
+Fortunately, with little tricks we can adjust the inverse of the DFT matrix such that
+we can use the same algorithm as above, but instead of
+$\omega^k$ we'll use $\omega^{-k}$, and after we are done with the FFT
+algorithm, we'll need to normalize it by dividing every coefficient element
+by $N$ the size of the polynomial.
 
  \begin{corollary}
   For FFT, DFT, and NTT we must use specific values to gain speedy interpolation and
@@ -248,8 +228,9 @@ The process is similar, we just need to invert $F_n$~\ref{dft-matrix}.
  \end{corollary}{Conclusin:}
  
 \section*{Number Theoretic Transform (NTT)}
+
 NTT is a specialized version of the discrete Fourier transform,
-in which the coefficient ring is taken to be a finite field (or ring)
+in which the coefficients of the polynomial are members of a finite field (or ring)
  containing the right roots of unity.
 It can be viewed as an exact version of the complex DFT, avoiding 
 round-off errors for exact convolutions of integer sequences.
@@ -258,9 +239,8 @@ for modern FFT algorithms to compute the DFT, and therefore the NTT,
 is usually attributed to Cooley and Tukey's seminal paper \cite{fft}.
 
 NTT can use the same FFT algorithms but requires a 
-different DFT matrix~\ref{dft-matrix},
-where $\omega_n$ and we work on elements in 
-some ring $Z_q$ (including the polynomial coefficients). 
+different DFT matrix~\ref{dft-matrix}.
+
 This fact lies in the foundational theorem of NTT:
 \begin{thm}[\cite{ntt}]
   A length $N$ transform having the DFT structure will
@@ -274,26 +254,63 @@ finite or infinite.
 
 It is important to note that $N$ also applies to the length of our polynomial.
 
+\subsection{Preliminaries}
+
+\paragraph{\bf Finding Roots of Unity (In Field)}
+As described above, an $n$-th root of unity, is an element $\alpha\in Z_q$ 
+such that $\alpha^n =1  \mod q $, and for every $0<k<n$ $\alpha^k \neq 1 \mod q$.
+
+\red{TODO:} learn how to find one in $GF(p)$, where $p\in \text{Primes}$.
+
+
+
+\paragraph{\bf Finding Inverse}
+\red{TODO:} explain Bezout's algorithm.
+
+
+\paragraph{\bf Chinese Remainder Theorem (CRT) For Dummies}
+CRT is a way of representing elements $x\in Z_q$ (
+  where $q=p_1,p_2,\dots,p_k$ and $p_i\in\text{Primes}$)
+such that the $x_{CRT}$ is a single and unique representation of $x$ using the 
+remainders of each of the prime factors constructing $q$:
+
+$$ x_{CRT} = (x\mod p_1, x\mod p_2 ,\dots x\mod p_k ) $$
+
+
+
+Because it is a unique representation, given $x_CRT$ and the list of
+ primes $(p_1,p_2,\dots,p_k)$ there is an algorithm to solve for $x \in Z_q$
+ (i.e., find $x \mod q$).
+
+
+Another important thing to notice is that if  $x=1 \mod q$
+ then $x_{CRT}= (1,1,1,\dots,1)$.
+
+
+There is more to it honestly, but for our cause, it's enough.
+
+\subsection{The Algorithm}
 
 \paragraph[short]{\bf NTT Over Finite Fields} 
-The DFT  over $\C$ uses the primitive $n$-th root of unity $\omega_N=e^{2\pi*i/N}$,
-but the NTT uses a primitive $N$-th root of unity in $GF(p)$
-(i.e., If $N$ is the \emph{least} positive integer such that $\alpha^N = 1 \mod p$
-then $\alpha$ is an $N$th root of unity).
+When working over a field $GF(p)$ such that $p$ is prime,
+the maximal $N$, the array of coefficients representing a
+polynomial, is $N_{max}=p-1$, and $N$ is a valid size for NTT
+ in this field iff $N|p-1$ (\cite[III. number theoretic transforms]{ntt}). 
 
 
-There is an algorithm that can find the $N$th root of unity (one exists if $N$ divides $p-1$),
-and then one can apply the FFT algorithm by modifying it to first find the
- $n$th root of unity at the beginning of each recursive step of the algorithm ($\omega_n=\alpha$). 
+To compute the NTT over $GF(p)$, find the $n$th root of unity in $GF(p)$,
+ then run any FFT algorithm mod $p$ using the roots
+of unity for each level of the recursion.
 
-%  \begin{remark}
-%   there are ways to reduce the search for a root of unity in each level
-%   see \href{https://galois.readthedocs.io/en/v0.0.24/api/galois.ntt.html#:~:text=The%20Number%2DTheoretic%20Transform%20(NTT)%20is%20a%20specialized%20Discrete,for%200%20%3C%20k%20%3C%20N%20}{notes}
-%  \end{remark}
+That is, find $\omega_n=\alpha$ such that $\alpha^N=1 \mod p$, 
+then run the (almost) same algorithm in \nameref{algorithm:fft}, 
+but change line 7 such that omega is now the $n$-th root of unity in $GF(p)$, and
+all operations in the algorithm are now $\mod p$.
 
-Furthermore, when working over a field $\F_p$ such that $p$ is prime,
- the maximal $N$, the array of coefficients representing a
-  polynomial, is $N_{max}=p-1$ (\cite[III. number theoretic transforms]{ntt})
+\paragraph{\bf iNTT}
+Just like in \nameref{algorithm:ifft}, but to calculate $\omega^-1$, we'll
+use Bezout's algorithm to find the inverse of every element ($x^-1$).
+
 
 
 \paragraph[short]{\bf NTT over Rings}
