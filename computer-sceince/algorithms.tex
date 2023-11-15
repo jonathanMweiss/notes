@@ -278,7 +278,7 @@ $$ x_{CRT} = (x\mod p_1, x\mod p_2 ,\dots x\mod p_k ) $$
 
 
 
-Because it is a unique representation, given $x_CRT$ and the list of
+Because it is a unique representation, given $x_{CRT}$ and the list of
  primes $(p_1,p_2,\dots,p_k)$ there is an algorithm to solve for $x \in Z_q$
  (i.e., find $x \mod q$).
 
@@ -291,7 +291,7 @@ There is more to it honestly, but for our cause, it's enough.
 
 \subsection{The Algorithm}
 
-\paragraph[short]{\bf NTT Over Finite Fields} 
+\paragraph[NTT Over Finite Fields]{\bf NTT Over Finite Fields} \label{ntt-field}
 When working over a field $GF(p)$ such that $p$ is prime,
 the maximal $N$, the array of coefficients representing a
 polynomial, is $N_{max}=p-1$, and $N$ is a valid size for NTT
@@ -325,21 +325,28 @@ For NTT to work, the following must hold $\bf N|L(M)$
 where $L(M)$ is the greatest common
 divisor (gcd) of the $(p_{i}-1)$. That is, 
 $L(M):= gcd\{p_1-1,p_2-1,\dots\}$
-\red{TODO, understand what it means to calculate such GCD}
+
+essentially it means we want $ N$ to divide $p_i-1$.
 
 \begin{corollary}
   $L(M)=N_{max}$. i.e., it defines the maximal $N$ 
   such that we can apply NTT.  
 \end{corollary}
 
+Now, Once $M$ and $N$ are known, to perform NTT we just need to be able to find 
+$N$-th root of unity. but it's quite hard to find one in $Z_M$.
+Luckily, we know it is feasible to do so in a prime field. 
+So, let's find $\alpha_i$, the $N$-th root of unity for every $p_i$.
+Once we find all of these roots of unity, we know that $\alpha_i^N=1 \mod p_i$ for every $i$.
+In other words, $N$ is the least positive integer such that
+\begin{align*}
+  &\alpha_{CRT}^N = (\alpha_1^N \mod p_1=1, \alpha_2^N \mod p_2=1,\dots)= (1,1,\dots)
+\end{align*}
 
+and according to CRT $\alpha^N=1 \mod M$. Thus, solving for $\alpha$ 
+means we'll be able to find the $N$-th root of unity in $Z_M$.
 
-
-
-
-\subsection*{Finding Roots of Unity}
-\red{TODO}
-
+The algorithm remains the same as in \nameref{ntt-field} from here on.
 
 \subsection{Special Features}
 Applying the NTT transform provides a cyclic convolution, computing 
