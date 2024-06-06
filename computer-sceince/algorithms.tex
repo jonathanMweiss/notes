@@ -1,5 +1,100 @@
 
 \chapter{Algorithms}
+\section{Polynomial evaluation}
+\red{add begining}
+\begin{defn} \label{def:poly-eval}
+  For any polynomial $P$ in $Z_q[X]$ and any element $a$ in $Z_q$,
+  the substitution of $X$ with $a$ in $P$ defines an element of $Z_q$, which is denoted $P(a)$.
+  This element is obtained by carrying on in $Z_q$ after the substitution of the operations indicated by 
+  the expression of the polynomial.
+  We call this action polynomial evaluation of $P$ at $a$.
+\end{defn}
+\red{add horners rule/ horners algorithm.}
+\red{consider adding Multipoint evaluation.}
+
+\section{Polynomial Identity Testing (SZ)}
+In this section, we talk about identity testing, 
+and some issues involving this subject.
+
+Given two polynomials $P(x)$ and $Q(x)$ of the same degree $d$, 
+how do we prove these are the same polynomials?
+We can calculate it and check $d$ points on each polynomial 
+since each polynomial can be solely defined by its point-value representation.
+\red{provide proof.}
+
+
+Schwartz-Zippel \cite{SZ} made this notion much more efficient 
+(and complete since they discuss multivariate polynomials).
+By choosing a random point for evaluating each polynomial, we can 
+be almost entirely certain 
+whether the polynomials are equal or not.
+
+\begin{theorem}
+ Let $P(x)$ be a non-zero polynomial of total degree $d$ over 
+ an integral domain $R$. Let $S$ be a finite subset of $R$, and let $r$
+ be a selected random number from $S$. Then
+  $\Pr [P(x)=0]\le \frac{deg(p(x))}{|S|}$.
+\end{theorem}
+\begin{proof}
+  $P(x)$ is a polynomial, from the fundamental theorem of algebra\cite{Aigner2010} it has 
+ at most $d$ roots. Thus, choosing some random point $r$,
+  $\Pr [P(r)=0]\le \frac{d}{|S|}$. 
+\end{proof}
+
+
+Given this notion, one can easily extrapolate this idea and create a method 
+to check whether $P(x)\cdot Q(x)$ is equal to some given $Z(x)$: 
+choose a random number $r$, and evaluate $P(r)\cdot Q(r) - Z(r)$.
+if this expression equates to $0$, then $P(x)\cdot Q(x)=Z(x)$ with overwhelming 
+probability (depending on the size of $Z_q$).
+
+\subsection{Troubled waters: $Z_q[X]/F(X)$}
+Given the above method, we can investigate new and upcoming ideas on numerous
+problems (see  \cite{sz-usage2} and \red{fpir- to be published}).
+The unlucky ones might encounter a troubling problem.
+While SZ works quite well over fields and rings,
+One would quickly find out that more complex algebraic structures do not 
+bend so easily to this powerful technique.
+
+For instance, consider the following quotient polynomial rings $R_q=Z_q[X]/(X^n+1)$,
+choose two random polynomials from $R_q$ and try the method of testing above.
+It is highly likely that for some random $r$, $P(r)\cdot Q(r) \ne (PQ \mod (X^n+1))(r)$.
+
+Before we explain the source of the issue, let us define two concepts.
+\begin{defn}
+  Given $a\in Z_q$, we denote the function $f_a: R_q \to Z_q$ as the \bf{polynomial evaluation map},
+  which is defined as follows: $f_a(P)\to P(a)$ \autoref{def:poly-eval}.
+\end{defn}
+
+\begin{defn}
+  If $R$ and $S$ are rings, then a ring homomorphism is a function $f:R \to S$
+that preserves addition, multiplication and multiplicative identity; that is
+$f(a+b) = f(a)+f(b)$, $f(a\cdot b) = f(a) \cdot f(b)$, $f(1_R)=1_s$. 
+\end{defn}
+
+Given these two definitions, we can now fully express what occured above. 
+Not every point $r\in Z_q$ can be used to create a polynomial evaluation map $f_r$ such that 
+$f_r$ is a ring homomorphism. That is $f_r(P\cdot Q) \ne f_r(P)\cdot f_r(Q)$.
+
+\paragraph{Finding valuable points}
+Fortunately, there are some points $r\in Z_q$ which can be used to create polynomial evaluation maps that 
+are ring homomorphisms.
+\begin{thm}
+  Let $R_q=Z_q[X]/F(X)$ and let $r\in Z_q$. If $F(r)=0$ then $f_r$ is a ring homomorphism.
+\end{thm}
+\begin{proof}
+  $f_r$ preserve the multiplicativeidentity: $f_r(1_{R_q}) = 1(r)=1$.
+  Every $f_r$ preserver addition.
+  preserving multiplication:
+  Let there be $P(X), Q(X) \in R_q$. 
+  By definition $P(X)\cdot Q(X) \mod F(X) = P(X)\cdot Q(X) \lfloor \frac{P(X)\cdot Q(X)}{F(X)} \rfloor \cdot F(X)$,
+  so $f_r(P(X)\cdot Q(X))= f_r(P(X))cdot f_r(Q(X)) - f_r(\lfloor  \frac{P(X)\cdot Q(X)}{F(X)} \rfloor)\cdot f_r(F(X))$.
+  Because $f_r$ is an evaluation map, $f_r(\lfloor  \frac{P(X)\cdot Q(X)}{F(X)} \rfloor)=z$ where is some unknown integral from $Z_q$.
+  then $f_r(P(X)\cdot Q(X)) =P(r)\cdot Q(r) - z \cdot 0= P(r)\cdot Q(r)$, as wanted.
+\end{proof}
+
+
+
 \section{FFT, DFT and NTT}
 \subsection{representations of a polynomial}
 we can either use \emph{coefficient representation} or \emph{Point-value representation}.
