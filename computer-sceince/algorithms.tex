@@ -1,5 +1,5 @@
 
-\chapter{Algorithms}
+\chapter{Polynomial Algorithms}
 \section{Polynomial evaluation}
 \red{add begining}
 \begin{defn} \label{def:poly-eval}
@@ -96,11 +96,11 @@ are ring homomorphisms.
 So, by finding roots of $F(X)$ one can find possible values where SZ still works. 
 unfortunately, this might be a smaller set than we thought.
 
-\section{FFT, DFT and NTT}
-\subsection{representations of a polynomial}
+\section{Fast Polynomial Multiplications}
+\paragraph{representations of a polynomial}
 we can either use \emph{coefficient representation} or \emph{Point-value representation}.
 
-\subsubsection*{coefficient representation.}
+\paragraph{coefficient representation.}
 A coefficient representation of a polynomial $P(x)$ is a vector of coefficients 
 $a=(a_0,a_1,\dots, a_{n-1})$.
 In coefficient representation, we can evaluate or add a polynomial in $O(n)$ time. 
@@ -108,7 +108,7 @@ unfortunately multiplying two polynomials takes $O(n^2)$.
 The operation of multiplying two polynomials $a,b$ is called convolution $c=a\otimes b$.
 
 
-\subsubsection*{Point-value representation.}
+\paragraph{Point-value representation.}
 A point-value representation of a polynomial $P(x)$ of degree-bound $n$ is a set of $n$ point-value pairs.
 $$ \{ (x_0,P(x_0)),\dots , (x_{n-1}, P(x_{n-1})) \}$$
 
@@ -125,7 +125,7 @@ And one can move between both representations.
 Because $C(X)=A(X)B(X)$ for any $x_j$, then $C(x_j)=A(x_j)B(x_j)$. Meaning 
 multiplication and addition in this representation cost $O(n)$.
  
-\section*{FFT}
+\subsection{FFT}
 Luckily there is a way to move to and from both representations quickly using the \emph{roots of unity}.
 
 \begin{defn}
@@ -209,9 +209,7 @@ $$
 
  Thus we gain a matrix with heavy symmetry, which the FFT can use.
 
-
-
-\subsubsection*{fft main idea}
+\paragraph{fft main idea}
 The FFT method employs a divide-and-conquer strategy, 
 using the even-indexed and odd-indexed coefficients of $A(x)$
 separately to define the two new polynomials $A^{[0]}(x)$ and $A^{[1]}(x)$ of degree-bound $n/2$.
@@ -306,7 +304,7 @@ def fft(p: np.ndarray) -> np.ndarray:
       even and odd parts, and then adjust the assignment matrix using
       the properties of roots of unity. Each part is important in its own way.
     \end{remark}
-\subsection*{Inverse FFT}\label{ifft}
+\subsection{Inverse FFT}\label{ifft}
 
 The DFT matrix is invertible.
 Thus one can solve for the vector of coefficients,
@@ -323,7 +321,7 @@ by $N$ the size of the polynomial.
   evaluation of the polynomial. 
  \end{corollary}{Conclusin:}
  
-\section*{Number Theoretic Transform (NTT)}
+\subsection{Number Theoretic Transform (NTT)}
 
 NTT is a specialized version of the discrete Fourier transform,
 in which the coefficients of the polynomial are members of a finite field (or ring)
@@ -350,7 +348,7 @@ finite or infinite.
 
 It is important to note that $N$ also applies to the length of our polynomial.
 
-\subsection{Preliminaries}
+\subsubsection{Preliminaries}
 I will describe everything in terms of fields, but essentially all of this can be easily generalised to rings 
 using the Chinese Remainder Theorem (CRT), as shown below.
 \paragraph{\bf Finding Roots of Unity (In Field)}
@@ -399,7 +397,7 @@ Another important thing to notice is that if  $x=1 \mod q$
 
 There is more to it honestly, but for our cause, it's enough.
 
-\subsection{The Algorithm}
+\subsubsection{Putting it all together}
 
 \paragraph[NTT Over Finite Fields]{\bf NTT Over Finite Fields} \label{ntt-field}
 When working over a field $GF(p)$ such that $p$ is prime,
@@ -458,7 +456,7 @@ means we'll be able to find the $N$-th root of unity in $Z_M$.
 
 The algorithm remains the same as in \nameref{ntt-field} from here on.
 
-\subsection{Special Features}
+\paragraph{Special Features}
 Applying the NTT transform provides a cyclic convolution, computing 
 $c = a \cdot b \mod (X^n + 1)$  with two polynomials $a$ and $b$ would require 
 applying the NTT of length $2n$ and thus $n$ zeros to be appended to each input;
