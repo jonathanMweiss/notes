@@ -351,15 +351,29 @@ finite or infinite.
 It is important to note that $N$ also applies to the length of our polynomial.
 
 \subsection{Preliminaries}
-
+I will describe everything in terms of fields, but essentially all of this can be easily generalised to rings 
+using the Chinese Remainder Theorem (CRT), as shown below.
 \paragraph{\bf Finding Roots of Unity (In Field)}
 As described above, an $n$-th root of unity, is an element $\alpha\in Z_q$ 
 such that $\alpha^n =1  \mod q $, and for every $0<k<n$ $\alpha^k \neq 1 \mod q$.
 
-\red{TODO:} learn how to find one in $GF(p)$, where $p\in \text{Primes}$.
+\paragraph{Finding roots of unity in a field}
 
+\begin{thm}
+  Let $g\in GF(q)$ be a generator, thus
+  $\omega_0=g^{(q-1)/n}$ is an $n$-th root of unity.
+\end{thm}
+\begin{proof}
+  relying on \autoref{fermats-little-theorem}, we know that $g^{q-1}=1 \mod q$.
+  So $\omega_0^n=g^{(q-1)/n}=1$, now we just need to explain away why $\omega_0^k \ne 1$ for 
+  every $0<k<n$.
+  Let us assume in contradiction that there exists some $k<n$ such that $\omega_0^k=1$, then 
+  $\omega_0^k=g^{(q-1/n\cdot k)}=1$, more specifically, $g^c=1$ for $c<q-1$. thus, we have a 
+  cycle $(1,g,g^1,...g^{c-1})$, which is less than $q-1$ elements, meaning that $g$ is not 
+  a generator, in contradiction.
+\end{proof}
 
-
+Now that we found the first root of unity, we can find the rest by computing the powers of $\omega_0$ up to $n$.
 \paragraph{\bf Finding Inverse}
 \red{TODO:} explain Bezout's algorithm.
 
