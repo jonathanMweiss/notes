@@ -10,6 +10,32 @@
   
 \end{defn}
 
+\chapter{Basics}
+\section{Diffie-Helman}
+Diffie-Helman relies on the following assumption.
+
+\begin{defn} [Decisional Diffie-Helman (DDH)]
+  Consider a (multiplicative) cyclic group $\G$ of order $q$ and with generator $g$. 
+  Given $g^a$ and $g^b$ for $a,b\in_R Z_q$ then $(g^a,g^b,g^{ab})$, $(g^a,g^b,g^{ab})$ are computationally indistinguishable:
+
+  $$ \Pr[A((g^a,g^b,g^{ab}))=1] - \Pr[A(g^a,g^b,g^{c})=1]\le \delta(n)$$
+  for $\delta(n)$ a negligable function in $n$.
+\end{defn}
+
+Given this assumption, which most of the world takes as FACT (until proven otherwise), then
+we can define the key exchange protocol.
+\paragraph{DH key exchange}
+While not safe against man-in-the-middle attacks, DH is an excellent way to create a shared secret.
+The protocol goes as follows.
+Assume we have two players, Alice and Bob, both know the other's public key $g^a$ and $g^b$ respectfully,
+each takes their secret key $a$ or $b$ and raises the other's public key to the power of $a$ (or $b$).
+Both now hold $g^{ab}$, and no one else can compute it since they don't know the secret of either Bob or Alice.
+
+Alice and Bob can use this new number/ or elliptic curve point $g^{ab}$ as a private key for
+a symmetric encryption scheme like AES (e.g., $symKey=Hash(g^{ab})$).
+
+
+
 
 \chapter{Elliptic curves}
 Taken from \emph{A Graduate Course in Applied Cryptography, Dan Boneh and Victor Shoup}
