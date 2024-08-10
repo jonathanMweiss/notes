@@ -34,8 +34,6 @@ this is a (leveled)-FHE scheme, which is easy to work with, and relatively effic
 \red{TODO: describe PIR, private machine learning (for finance and medicals), 
 private set intersection see 
 \href{https://bit-ml.github.io/blog/post/bgv-fully-homomorphic-encryption-scheme-in-python/}{bgv repo}}
-
-\section{BGV}
 \subsection{Hardness}
 Unlike older schemes, modern HE schemes don't rely on DDH~\ref{DDH} 
 but have a different \emph{hardness} assumption.
@@ -51,12 +49,12 @@ For a full, and accurate definition see~\cite[def 3.3]{RLWE}.
 \begin{defn} (toy decisional-RLWE)
     Let 
     \begin{enumerate}
-        \item $a_i(x)$ be a set of random but known polynomials from $Z_q/X^n+1$ with 
+        \item $a_i(x)$ be a set of random but known polynomials from $Z_q/\Phi(X)$ with 
         coefficients from $Z_q$.
         \item  $e_i(x)$ be a set of small random and unknown polynomials 
-        relative to a bound $B$ in the ring $Z_q/X^n+1$.
+        relative to a bound $B$ in the ring $Z_q/\Phi(X)$.
         \item $s(X)$ be a small unknown polynomial 
-        relative to a bound $B$ in the ring $Z_q/X^n+1$.
+        relative to a bound $B$ in the ring $Z_q/\Phi(X)$.
         \item $b_i(x)=a_i(x)\cdot s(x) + e_i(x)$
     \end{enumerate}
     
@@ -64,227 +62,190 @@ For a full, and accurate definition see~\cite[def 3.3]{RLWE}.
     to determine $s(x)$.
 \end{defn}
 
-\begin{enumerate}
-\item The plaintext ring which includes encodings of unencrypted or intelligible
-messages;
-\item The ciphertext ring which includes encrypted messages.
-\end{enumerate}
-Similar to any other FHE scheme, BFV allows an untrusted party to
-induce meaningful computation over en- crypted data without access
-to the decryption key.
+\section{The BGV Encryption Scheme}
 
-\subsection{BFV Primitives}
+While there are more encryption schemes than BGV (for instance BFV which is very similar,
+ CKKS for floating point numbers and TFHE which I haven't encountered at all),
+I have most of my experience with BGV, and it is very nice scheme, 
+where addition and multiplication associativity commutativity and more desired attributes 
+hold.  Thus, we will focus on it.
 
-The scheme consists of numerous algorithms:
+
+BGV relies on the following parameters
 \begin{itemize}
-\item $ParamGen(\lambda)\to Params$ : Parameter generator (ParamGen) takes
-as input the security parameter $\lambda$, which is a number used
-to define the security level of BFV, and returns a set of encryption
-parameters used in BFV. One can view $\lambda$ as the computational
-cost of successful attacks on the scheme. In order for these attacks
-to succeed with probability 1, they would require $2^{\lambda}$ basic
-computational operations.
-\item $KeyGen\left(Params\right)\to\left(sk,pk,ek\right)$: Key generation
-(KeyGen) takes as input the encryption parameters and a secret key,
-a public key and evaluation key. 
-
-\paragraph{The secret key $sk$ is mainly used for decryption, the public key
-$pk$ is used for encryption, and the evaluation key $ek$which is
-used to evaluate homomorphic operations on ciphertexts as we shall
-see later. Both the $pk$ and the $ek$ can be public.}
-\item $Encrypt\left(pk,m\right)\to c$: Encrypt takes as input $pk$ and
-a plaintext message $m$ in the plaintext space $P$, and returns
-a valid ciphertext $c$ from the ciphertext space $\mathcal{C}$.
-\item $Decrypt\left(sk,c\right)\to m$: Decrypt takes as input $sk$ and
-a valid ciphertext $c$ in $\mathcal{C}$, which encrypts message
-$m$ in $P$, and returns $m$.
-\item $EvalAdd\left(params,ek,c_{1},c_{2}\right)\to c$: takes two ciphertexts
-and adds their underlying value $m_{1,}m_{2}$ respectively. outputs
-the encryption of $m_{1}+m_{2}$
-
-\paragraph{we can even switch $c_{1}$ or $c_{2}$ with a plaintext $m$. the
-result would be the encryption of the addition between the plain text
-and the underlying encrypted value.}
-\item $evalMult$ same thing...
-\item more ops$\dots$
+    \item $n$ (a power of 2), the degree of $X^n+1$.
+    \item $q$ the ciphertext modulus.
+    \item $t$ the plaintext modulus
+    \item $\mathcal{X}$ the noise distribution, a discrete Gaussian.
 \end{itemize}
 
-\section{Plaintext and Ciphertext Spaces}
-\begin{defn}
-The notation $\Z_{a}\left[x\right]/\left(x^{n}+1\right)$ can be viewed
-as the set of polynomials with integer coefficients modulo both a
-and $\left(x^{n}+1\right)$, i.e., with coefficients in $\left\{ \lceil-\frac{a}{2}\rceil,\dots\lfloor\frac{a-1}{2}\rfloor\right\} $
-(from $-a/2$ to $a/2$ ) and of degree less than $n$. (i've read
-another definition, where we can just have coefficients modulo $a$.
-\begin{itemize}
-\item K{[}x{]} will meanthat $k$ is the field we choose our coefficients
-from. and $x$ is the number of variables. 
-\end{itemize}
-\end{defn}
+In BGV we work with polynomials over $R_q=Z_q/(X^n+1)$.
+This ring has polynomials with degree at most $n$ and integer coefficients in $(-q/2,q/2]$.
 
-\begin{example}
-The following examples are of valid plaintext messages for the parameters
-$n=4$ (degree must be less than that) and $t=5$ (to choose coefficients):
-\begin{enumerate}
-\item $m_{0}=1+2x+1\cdot x^{2}-1\cdot x^{3}$
-\item $m_{2}=-1-2x-1x^{2}+2x^{3}$ 
-\end{enumerate}
-\end{example}
+\begin{remark}
+    It is important to understand the relationship between parameters, and choosing parameters 
+    is not an easy task, and should not be tampered with lightly.
+    There are some parameter generators online to find the best parameters
+     for your cause see \href{https://github.com/Crypto-TII/fhegen}{fhegen}.
+    
+    Some things to consider are $n$, which affects the number of multiplications we can have,
+    $q$ which, determines the safety of our scheme, and $t$ which determines 
+    the size and efficiency of message packing into our plaintexts. 
+    \emph{When $q$ reduces in size, it means better security}.    
 
-The plaintext and ciphertext spaces in BFV are defined over two distinct
+    Notice that, smaller $q$ and smaller $n$ mean faster computations.
+\end{remark}
+
+
+\begin{remark}
+    \begin{itemize}
+        \item \red{check: I think we can treat coefficients as they were in $(0,q]$.}
+        \item All polynomial operations are considered $\mod q$
+         unless otherwise specified, to ease notation.
+         \item When we talk about "small" polynomials, 
+         we intuitively think about them as having small coefficients.
+    \end{itemize}
+\end{remark}
+
+\subsection{Plaintext and Ciphertext Spaces}
+The plaintext and ciphertext spaces in BGV are defined over two distinct
 polynomial rings. the plaintext space is denoted by the polynomial
-ring $\mathcal{P}=R_{t}=\Z_{t}\left[x\right]/\left(x^{n}+1\right)$,
+ring $\mathcal{P}=R_{t}= Z_{t}\left[x\right]/\left(x^{n}+1\right)$,
 that is, polynomials of degree less than $n$ with coefficients modulo
-$t$. \\
-the ciphertext space is denoted by $\mathcal{C}=\left(\Z_{q}\left[x\right]/\left(x^{n}+1\right)\right)\times\left(\Z_{q}\left[x\right]/\left(x^{n}+1\right)\right)$. 
+$t$. 
+\begin{remark}
+    Since Plaintexts must be polynomials in $R_q$, treat 
+    $m$ as a string and encode each letter of the string as a coefficient of a polynomial
+    $a_{0}a_{1}a_{2}\dots$
+\end{remark}
 
-\section{BFV params}
 
-basically, some random distributions. 
-\begin{itemize}
-\item $R_{2}$ used to sample polynomials with coefficients in $\left\{ -1,0,1\right\} $.
-\item $\mx$ is the error distribution, which is discrete Gaussian distribution.
-\item $R_{q}$ is a uniform random distribution over $R_{q}$.
-\end{itemize}
+the ciphertext space: $\mathcal{C}=R_q \times R_q$. 
 
-\section{Plaintext Encoding and Decoding}
+\subsection{Algorithms}
+In the following algorithms, $params$ is essentially the chosen security parameters. 
+\paragraph{$sk,pk \leftarrow KeyGen(params)$}
+The secret key $sk$ should be sampled from a distribution that outputs "small" elements 
+with overwhelming probability. In practice (e.g., in Microsoft's SEAL library) $sk\in\{-1,0,1\}^n$,
+with the probability of sampling 0 specified as a parameter, and the probability of sampling $-1$ or $1$
+being equal. 
 
-Recall that the plaintext space is the polynomial ring $R_{t}$. This
-means that messages need to be converted to polynomials in $R_{t}$.
-Let $m$ denote an integer message we would like to encrypt in FHE.
-The first encoding scheme (let\textquoteright s call it the naive
-encoding scheme) composes the plaintext element (polynomial) as $M=m+0\cdot x+0\cdot x^{2}+\cdot\cdot\cdot+0\cdot x^{n-1}$,
-the constant polynomial. this scheme is extremely naive and inefficient.
-Let's do better.
+Once the secret key is derived, we can compute the public key $pk=(pk_0,pk_1)$.
+First, draw a random polynomial $a\overset{r}{\leftarrow} R_q$ and 
+noise (vector) $e\overset{r}{\leftarrow} \mathcal{X}$. Then compute 
+$pk=(pk_0,pk_1)=(a\cdot sk+t\cdot e, -a)$.
 
-\paragraph{another simple solution, but effective, would be to take the message
-$m$'s binary representation $a_{0}a_{1}a_{2}\dots$ and convert them
-to the coefficients of the polynomial. If we have less bits than coefficients,
-set all coefficients with matching bits as $0$. Probably can take
-the bytes instead of simple bits too. }
+Notice that here we rely on the hardness assumption? 
+Can you guess why we multiply the noise by $t$?
 
-\paragraph{To ensure that the results of homomorphic evaluation matches the
-expected results of the computation of interest, we need to ensure
-that the degree of the plaintext coefficient does not wrap around
-$n$ and the coefficients do not wrap around $t$.}
+\paragraph{$(c_0,c_1) \leftarrow encrypt(m,pk, params)$}
+To encrypt we draw noise $e_0,e_1 \overset{r}{\leftarrow} \mathcal{X}$, and a "small" polynomial 
+$u\in \{-1,0,1\}^n$ (like the secret key).
+Then we compute the ciphertext as follows $$c=(c_0,c_1)= (pk_0\cdot u +t\cdot e_0+m, pk_1\cdot u +t\cdot e_1)$$
 
-\section{Key generation}
+(Every element in the ciphertext tuple is in $R_q$).
 
-The secret key $sk$ is generated as a random ternary polynomial from
-$R_{2}$, a polynomial of degree $n$ with coefficients in $\left\{ -1,0,1\right\} $.
 
-\paragraph{The public key $pk$ is a pair of polynomials $\left(pk_{1},pk_{2}\right)$
-calculated as follows: }
-
-\begin{align*}
-pk_{1} & =\left[-1\cdot\left(a\cdot sk+e\right)\right]_{q}\\
-pk_{2} & =a
-\end{align*}
- Where $a$ is a random ploynomial in $R_{q}$ ($R_{q}=\Z_{q}\left[x\right]/\left(x^{n}+1\right)$).
-$e$ is a random error polynomial sampled from $\mx$. the notation
-$\left[\cdot\right]_{q}$ means that the polynomial arithemtic should
-be done modulo $q$. Note that as $ok_{2}$ is in $R_{q}$, polynomial
-arithmetic should also be performed modulo the ring polynomial modulus
-$\left(x^{n}+1\right)$.
-
-\section{Encryption and Decryption }
-
-encrypting an encoded message $m$ requires $3$ small random polynomials\"{ }$u\in R_{2}$
-and $e_{1},e_{2}\in\mx$. the ciphertext $c=\left(c_{1},c_{2}\right)$
-is generated as follows:
-\begin{align*}
-c_{1} & =\left[pk_{1}\cdot u+e_{1}+\lfloor\frac{q}{t}\rfloor\cdot m\right]q\\
-c_{2} & =\left[pk_{2}\cdot u+e_{2}\right]
-\end{align*}
+\paragraph{$m \leftarrow decrypt(c,sk,params)$}
 
 Decryption is performed by evaluating the ciphertext on the secret
-key as follows and inverting the scaling factor $\left(\lfloor\frac{q}{t}\rfloor\right)$
-applied in the encryption:
-\[
-m=\left[\lceil\frac{t\cdot\left[c_{1}+c_{2}\cdot sk\right]q}{q}\rceil\right]t
-\]
- let us expand this to gain better understanding.
+key as follows $ m=((c_0+c1\cdot sk) \mod q) \mod t$
+
+The following expansion of the expression above should make it clearer
 \begin{align*}
-c_{1}+c_{2}\cdot sk & =pk_{1}\cdot u+e_{1}+\lfloor\frac{q}{t}\rfloor\cdot m+\left(pk_{2}\cdot u+e_{2}\right)\cdot sk=\\
- & =\underbrace{-\left(a\cdot sk+e\right)}_{pk_{1}}\cdot u+e_{1}+\lfloor\frac{q}{t}\rfloor\cdot m+a\cdot u\cdot sk+e_{2}\cdot sk=\\
- & =\cancel{-a\cdot u\cdot sk}-e\cdot u+e_{q}+\lfloor\frac{q}{t}\rfloor\cdot m+\cancel{a\cdot u\cdot sk}+e_{2}\cdot sk=\\
- & =\lfloor\frac{q}{t}\rfloor\cdot m-e\cdot u+e_{1}+e_{2}\cdot sk\\
- & =\lfloor\frac{q}{t}\rfloor\cdot m+\underbrace{e_{1}+e_{2}\cdot sk-e\cdot u}=\lfloor\frac{q}{t}\rfloor\cdot m+v
+c_{0}+c_{1}\cdot sk & =pk_{0}\cdot u+e_{0}\cdot t+m+(pk_{1}\cdot u+e_{1}\cdot t)\cdot sk=\\
+ & =\underbrace{(a\cdot sk +e\cdot t)}_{pk_0} \cdot u + e_{0}\cdot t + m + (\underbrace{-a}_{pk_1}\cdot u+e_{1}\cdot t)\cdot sk=\\
+ & = \cancel{a\cdot sk\cdot u} +e\cdot t\cdot u +e_{0}\cdot t + m  \cancel{-a\cdot u\cdot sk} +e_{1}\cdot t\cdot sk = \\
+ & = e\cdot t\cdot u +e_{0}\cdot t + m  +e_{1}\cdot t\cdot sk = \\
+ & = \underbrace{t\cdot (e\cdot u + e_0 +e_1\cdot sk)}_{error} + m
 \end{align*}
- the infinity norm of $v$ (largest abs value from the coefficients)
-is pretty small: all of these: $sk,e,e_{1},e_{2}$ are all \textbf{\uline{small}}
-polynomials. \.{I}f these polynomials are bounded by some $\beta$
-then $\left|\left|v\right|\right|\le2n\cdot\beta^{2}+\beta$. (I'm
-skipping the proof of that). \\
-They ensure that the noise is small, and thus they can recovering
-it.
+If the error is small enough (doesn't cause $m$ to wrap around the modulus $q$), we should be able to eliminate the noise 
+by applying $\mod t$ on the result above (e.g., remember that for every number $z$: $z\cdot t \equiv 0 \mod t$).
 
-\section{Doing ops:}
+The decryption won't be correct when we have too much noise since $m$ parts of $m$
+will be zeroed out by the $\mod q$ operation we perform.
 
-addition is very simple, and the additional error is not high. (can
-just add the cipher-texts together). Multiplication adds a lot of
-noise, in addition to that, from $2$ cipher-text\.{s} we get $3$
-output cipher-texts (polynomials) which means a different encryption
-procedure (can be done by using exponents of the secret key). To overcome
-this one should do relinearization. 
+\paragraph{addition and multiplication}
+is simple, we treat the ciphertext tuples and the plaintexts as polynomials in a higher dimension,
+that is $R_q[Y]$. The plaintexts are simply constant polynomials, and the freshly encrypted ciphertexts are polynomials 
+of degree $1$.
+It is a bit hard to see it in this manner, so let us discuss regular polynomials for instance.
 
-\section{Maintenance Operations}
+Given $a(x)=a_0+a_1x$, $b(x)=b_0$, and $c(x)=c_0+c_1x$ adding them together or multiplying them is simple, right?
+\begin{itemize}
+    \item $a(x)+b(x)= (a_0+b_0)+a_1x$
+    \item $a(x)\cdot b(x)= a_0\cdot b_0 + a_1\cdot b_0 x$
+    \item $a(x) \cdot c(x)= (a_0\cdot c_0) +(a_0\cdot c_1 + a_1\cdot c_0)\cdot x + a_1\cdot c_1 \cdot x$
+\end{itemize}
 
-The BFV scheme include operations that do not effect the underlying
-plaintext, but are needed for implementation reasons:
+Okay, that's easy, right? Well, now you know how to perform addition and multiplication with plaintexts and ciphertexts!
+$b(x)$ is a plaintext (since it has only one coefficient $b_0$), $a(x),c(x)$ are ciphertexts
+since they are tuples.
 
-\paragraph{According to the ``Protecting Privacy through Homomorphic Encryption''
-ciphertext-ciphertext multiplication have a side effect of requiring
-a different secret--key to decrypt the result than what was needed
-before the operation. thus, multiplication is followed by a key switching
-opeation to restore the secret key back to the original one. (relinearization).
-Avoiding relianirization is possible, but will reduce noise budget
-quicker. In addition to that, ops on non-relinearized ciphertexts
-are much slower.}
+In our ciphertext notions:
+$p*c=(p\cdot c_0, p\cdot c_1)$,
+$c*c'=(c_0\cdot c_0', c_0\cdot c_1' + c_1\cdot c_0', c_1\cdot c_1')$ and you can complete addition by yourself.
 
-\paragraph{Another such operation is \textbf{bootstrapping}, which ``refreshes''
-a ciphertext and reduces the level of noit in it, to support more
-computations. It is a very expensive operation, and hence it isn't
-often used/ implemented}
+\subsection{Advanced Algorithms}
+\paragraph{relianization}
+The issue with multiplications is that they increase the noise very fast, and it means we'll need to work harder 
+for decryption. That is, we increase the "degree" of our ciphertext every time we multiply it
+Either we decrypt like so: $decrypt(c, sk, params)= c_0 +c_1\cdot sk+c_2\cdot sk^2+\dots$, 
+or we perform relinearization.
 
-\section{security of the scheme}
+I will not describe relinearization here but know that it can be performed between each multiplication
+using something called an evaluation key (which is also public). After using the relianization algorithm 
+a ciphertext of degree $3$ (i.e., $c\cdot c'$ is of degree $3$) for instance, will return to degree $2$.
 
-Choosing optimal BFV parameters that maximize performance and respect
-security and functionality constraints is an art that is practiced
-by expert cryptographers. but there is a standard one can follow.
+\paragraph{key switch}
+\red {TODO}
+\paragraph{modulus switch}
+is used to decrease the noise/error. once can "hop" to decreasing modulus values to reduce the noise, and thus allow 
+more multiplications. \red{TODO}.
 
-But mainly, we first start by choosing the max size of integers $\left(q\right)$
-for the coefficients, and the max polynomial degree $\left(n\right)$.
-but generally, larger $n$ gives more security (but slower ops), larger
-$q$ means we can do more complex computations. 
+\paragraph{rotations}
+\red{TODO}
+\subsection{bootstrapping}
+Read \href{https://www.zama.ai/post/what-is-bootstrapping-homomorphic-encryption}{bootstrapping for dummies} by Nigel Smart.
 
-\paragraph{Ciphertexts in these encryption schemes contain a noise component
-(which is important for security), and that noise grows with each
-operation (The encrypted result can only be decrypted if the noise
-is smaller than $q$, hence using larger values of $q$ imply that
-we can do more operations).}
+% \section{security of the scheme}
 
-\section{Relinearization}
+% Choosing optimal BFV parameters that maximize performance and respect
+% security and functionality constraints is an art that is practiced
+% by expert cryptographers. but there is a standard one can follow.
 
-Remeber we generated another key along with the private and public.
-called $ek=\left(ek_{0},ek_{1}\right)$. using this key as randomness
-source, we can relinearize the result of multiplication: the new ciphertext
-would be :
-\begin{align*}
-c_{1} & =\left[C_{1}^{*}+ek_{0}\cdot C_{3}^{*}\right]_{q}\\
-c_{2} & =\left[C_{2}^{*}+ek_{1}\cdot C_{3}^{*}\right]_{q}
-\end{align*}
-Remember, decryption is : $c_{1}+c_{2}\cdot sk$. After doing that,
-the decryption would result with: 
-\[
-C_{1}^{*}+C_{2}^{*}\cdot sk+C_{3}^{*}\cdot sk^{2}+C_{3}^{*}\cdot e
-\]
- which would decrypt just fine, but with a big error $\left(C_{3}^{*}e\right)$!
-We can fix that by using base decomposition.
+% But mainly, we first start by choosing the max size of integers $\left(q\right)$
+% for the coefficients, and the max polynomial degree $\left(n\right)$.
+% but generally, larger $n$ gives more security (but slower ops), larger
+% $q$ means we can do more complex computations. 
+
+% \paragraph{Ciphertexts in these encryption schemes contain a noise component
+% (which is important for security), and that noise grows with each
+% operation (The encrypted result can only be decrypted if the noise
+% is smaller than $q$, hence using larger values of $q$ imply that
+% we can do more operations).}
+
+% \section{Relinearization}
+
+% Remeber we generated another key along with the private and public.
+% called $ek=\left(ek_{0},ek_{1}\right)$. using this key as randomness
+% source, we can relinearize the result of multiplication: the new ciphertext
+% would be :
+% \begin{align*}
+% c_{1} & =\left[C_{1}^{*}+ek_{0}\cdot C_{3}^{*}\right]_{q}\\
+% c_{2} & =\left[C_{2}^{*}+ek_{1}\cdot C_{3}^{*}\right]_{q}
+% \end{align*}
+% Remember, decryption is : $c_{1}+c_{2}\cdot sk$. After doing that,
+% the decryption would result with: 
+% \[
+% C_{1}^{*}+C_{2}^{*}\cdot sk+C_{3}^{*}\cdot sk^{2}+C_{3}^{*}\cdot e
+% \]
+%  which would decrypt just fine, but with a big error $\left(C_{3}^{*}e\right)$!
+% We can fix that by using base decomposition.
 
 
-\section{Base Decomposition}
-\section{Mod Switching}
+% \section{Base Decomposition}
+% \section{Mod Switching}
 
-\section{Choosing Parameters}
+% \section{Choosing Parameters}
 
