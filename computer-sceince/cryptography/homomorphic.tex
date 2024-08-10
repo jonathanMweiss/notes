@@ -1,0 +1,290 @@
+
+\chapter{Fully Homomorphic Encryption}
+Homomorphic encryption (\emph{HE}) is a form of encryption that allows 
+computations to be performed on encrypted data without first having to decrypt it.
+More formally:
+\begin{defn}[HE]
+ Let there be an encryption scheme $\pi = (KeyGen,Enc, Dec)$
+ We say that $\pi$ is an homomorphic encryption scheme if
+ given $f:\text{PTX-SPACE}\to \text{PTX-SPACE}$ then there
+ exists $F:\text{CTX-SPACE} \to \text{CTX-SPACE}$ such that
+ given two encrypted messages $c_1=Enc(m_1)$ $c_2=Enc(m_2)$ the following
+ applies
+   $Dec(F(c_1,c_2))=f(m_1,m_2)$
+\end{defn}
+
+That is, we can compute some wanted function $f$.
+
+We have multiple encryption schemes. Some are \emph{partially HE},
+like ElGamal, where only multiplication is possible.
+\begin{thm}
+ We call the encryption scheme $\pi$ \emph{fully homomorphic encryption} (FHE) if it 
+ can support addition, negation and multiplication.
+\end{thm}
+
+As of the year 2024, most of the FHEs are heavy and slow,
+or called leveled-FHE, where one must first define their parameters, 
+and then it has a limited amount of operations to perform (many additions and a 
+handful of multiplications.)
+
+In the following sections, I'll talk about a specific scheme called BGV \cite{BGV},
+this is a (leveled)-FHE scheme, which is easy to work with, and relatively efficient.
+
+\section{Usages}
+\red{TODO: describe PIR, private machine learning (for finance and medicals), 
+private set intersection see 
+\href{https://bit-ml.github.io/blog/post/bgv-fully-homomorphic-encryption-scheme-in-python/}{bgv repo}}
+
+\section{BGV}
+\subsection{Hardness}
+Unlike older schemes, modern HE schemes don't rely on DDH~\ref{DDH} 
+but have a different \emph{hardness} assumption.
+So, before we discuss BGV, we must introduce its hardness assumption,
+called Ring Learning With Errors (RLWE). 
+I will define the RLWE "decision" problem, since by using decisional-RLWE,
+it is relatively easier to define encryption schemes under this notion of hardness.
+Do note that there is an additional hardness assumption, called "search", 
+which is equivalent under specific conditions and parameters to 
+the "decisional-RLWE" problem.
+
+For a full, and accurate definition see~\cite[def 3.3]{RLWE}.
+\begin{defn} (toy decisional-RLWE)
+    Let 
+    \begin{enumerate}
+        \item $a_i(x)$ be a set of random but known polynomials from $Z_q/X^n+1$ with 
+        coefficients from $Z_q$.
+        \item  $e_i(x)$ be a set of small random and unknown polynomials 
+        relative to a bound $B$ in the ring $Z_q/X^n+1$.
+        \item $s(X)$ be a small unknown polynomial 
+        relative to a bound $B$ in the ring $Z_q/X^n+1$.
+        \item $b_i(x)=a_i(x)\cdot s(x) + e_i(x)$
+    \end{enumerate}
+    
+    Given a list of polynomial pairs $(a_i(x),b_i(x)$) it is computationally infeasible 
+    to determine $s(x)$.
+\end{defn}
+
+\begin{enumerate}
+\item The plaintext ring which includes encodings of unencrypted or intelligible
+messages;
+\item The ciphertext ring which includes encrypted messages.
+\end{enumerate}
+Similar to any other FHE scheme, BFV allows an untrusted party to
+induce meaningful computation over en- crypted data without access
+to the decryption key.
+
+\subsection{BFV Primitives}
+
+The scheme consists of numerous algorithms:
+\begin{itemize}
+\item $ParamGen(\lambda)\to Params$ : Parameter generator (ParamGen) takes
+as input the security parameter $\lambda$, which is a number used
+to define the security level of BFV, and returns a set of encryption
+parameters used in BFV. One can view $\lambda$ as the computational
+cost of successful attacks on the scheme. In order for these attacks
+to succeed with probability 1, they would require $2^{\lambda}$ basic
+computational operations.
+\item $KeyGen\left(Params\right)\to\left(sk,pk,ek\right)$: Key generation
+(KeyGen) takes as input the encryption parameters and a secret key,
+a public key and evaluation key. 
+
+\paragraph{The secret key $sk$ is mainly used for decryption, the public key
+$pk$ is used for encryption, and the evaluation key $ek$which is
+used to evaluate homomorphic operations on ciphertexts as we shall
+see later. Both the $pk$ and the $ek$ can be public.}
+\item $Encrypt\left(pk,m\right)\to c$: Encrypt takes as input $pk$ and
+a plaintext message $m$ in the plaintext space $P$, and returns
+a valid ciphertext $c$ from the ciphertext space $\mathcal{C}$.
+\item $Decrypt\left(sk,c\right)\to m$: Decrypt takes as input $sk$ and
+a valid ciphertext $c$ in $\mathcal{C}$, which encrypts message
+$m$ in $P$, and returns $m$.
+\item $EvalAdd\left(params,ek,c_{1},c_{2}\right)\to c$: takes two ciphertexts
+and adds their underlying value $m_{1,}m_{2}$ respectively. outputs
+the encryption of $m_{1}+m_{2}$
+
+\paragraph{we can even switch $c_{1}$ or $c_{2}$ with a plaintext $m$. the
+result would be the encryption of the addition between the plain text
+and the underlying encrypted value.}
+\item $evalMult$ same thing...
+\item more ops$\dots$
+\end{itemize}
+
+\section{Plaintext and Ciphertext Spaces}
+\begin{defn}
+The notation $\Z_{a}\left[x\right]/\left(x^{n}+1\right)$ can be viewed
+as the set of polynomials with integer coefficients modulo both a
+and $\left(x^{n}+1\right)$, i.e., with coefficients in $\left\{ \lceil-\frac{a}{2}\rceil,\dots\lfloor\frac{a-1}{2}\rfloor\right\} $
+(from $-a/2$ to $a/2$ ) and of degree less than $n$. (i've read
+another definition, where we can just have coefficients modulo $a$.
+\begin{itemize}
+\item K{[}x{]} will meanthat $k$ is the field we choose our coefficients
+from. and $x$ is the number of variables. 
+\end{itemize}
+\end{defn}
+
+\begin{example}
+The following examples are of valid plaintext messages for the parameters
+$n=4$ (degree must be less than that) and $t=5$ (to choose coefficients):
+\begin{enumerate}
+\item $m_{0}=1+2x+1\cdot x^{2}-1\cdot x^{3}$
+\item $m_{2}=-1-2x-1x^{2}+2x^{3}$ 
+\end{enumerate}
+\end{example}
+
+The plaintext and ciphertext spaces in BFV are defined over two distinct
+polynomial rings. the plaintext space is denoted by the polynomial
+ring $\mathcal{P}=R_{t}=\Z_{t}\left[x\right]/\left(x^{n}+1\right)$,
+that is, polynomials of degree less than $n$ with coefficients modulo
+$t$. \\
+the ciphertext space is denoted by $\mathcal{C}=\left(\Z_{q}\left[x\right]/\left(x^{n}+1\right)\right)\times\left(\Z_{q}\left[x\right]/\left(x^{n}+1\right)\right)$. 
+
+\section{BFV params}
+
+basically, some random distributions. 
+\begin{itemize}
+\item $R_{2}$ used to sample polynomials with coefficients in $\left\{ -1,0,1\right\} $.
+\item $\mx$ is the error distribution, which is discrete Gaussian distribution.
+\item $R_{q}$ is a uniform random distribution over $R_{q}$.
+\end{itemize}
+
+\section{Plaintext Encoding and Decoding}
+
+Recall that the plaintext space is the polynomial ring $R_{t}$. This
+means that messages need to be converted to polynomials in $R_{t}$.
+Let $m$ denote an integer message we would like to encrypt in FHE.
+The first encoding scheme (let\textquoteright s call it the naive
+encoding scheme) composes the plaintext element (polynomial) as $M=m+0\cdot x+0\cdot x^{2}+\cdot\cdot\cdot+0\cdot x^{n-1}$,
+the constant polynomial. this scheme is extremely naive and inefficient.
+Let's do better.
+
+\paragraph{another simple solution, but effective, would be to take the message
+$m$'s binary representation $a_{0}a_{1}a_{2}\dots$ and convert them
+to the coefficients of the polynomial. If we have less bits than coefficients,
+set all coefficients with matching bits as $0$. Probably can take
+the bytes instead of simple bits too. }
+
+\paragraph{To ensure that the results of homomorphic evaluation matches the
+expected results of the computation of interest, we need to ensure
+that the degree of the plaintext coefficient does not wrap around
+$n$ and the coefficients do not wrap around $t$.}
+
+\section{Key generation}
+
+The secret key $sk$ is generated as a random ternary polynomial from
+$R_{2}$, a polynomial of degree $n$ with coefficients in $\left\{ -1,0,1\right\} $.
+
+\paragraph{The public key $pk$ is a pair of polynomials $\left(pk_{1},pk_{2}\right)$
+calculated as follows: }
+
+\begin{align*}
+pk_{1} & =\left[-1\cdot\left(a\cdot sk+e\right)\right]_{q}\\
+pk_{2} & =a
+\end{align*}
+ Where $a$ is a random ploynomial in $R_{q}$ ($R_{q}=\Z_{q}\left[x\right]/\left(x^{n}+1\right)$).
+$e$ is a random error polynomial sampled from $\mx$. the notation
+$\left[\cdot\right]_{q}$ means that the polynomial arithemtic should
+be done modulo $q$. Note that as $ok_{2}$ is in $R_{q}$, polynomial
+arithmetic should also be performed modulo the ring polynomial modulus
+$\left(x^{n}+1\right)$.
+
+\section{Encryption and Decryption }
+
+encrypting an encoded message $m$ requires $3$ small random polynomials\"{ }$u\in R_{2}$
+and $e_{1},e_{2}\in\mx$. the ciphertext $c=\left(c_{1},c_{2}\right)$
+is generated as follows:
+\begin{align*}
+c_{1} & =\left[pk_{1}\cdot u+e_{1}+\lfloor\frac{q}{t}\rfloor\cdot m\right]q\\
+c_{2} & =\left[pk_{2}\cdot u+e_{2}\right]
+\end{align*}
+
+Decryption is performed by evaluating the ciphertext on the secret
+key as follows and inverting the scaling factor $\left(\lfloor\frac{q}{t}\rfloor\right)$
+applied in the encryption:
+\[
+m=\left[\lceil\frac{t\cdot\left[c_{1}+c_{2}\cdot sk\right]q}{q}\rceil\right]t
+\]
+ let us expand this to gain better understanding.
+\begin{align*}
+c_{1}+c_{2}\cdot sk & =pk_{1}\cdot u+e_{1}+\lfloor\frac{q}{t}\rfloor\cdot m+\left(pk_{2}\cdot u+e_{2}\right)\cdot sk=\\
+ & =\underbrace{-\left(a\cdot sk+e\right)}_{pk_{1}}\cdot u+e_{1}+\lfloor\frac{q}{t}\rfloor\cdot m+a\cdot u\cdot sk+e_{2}\cdot sk=\\
+ & =\cancel{-a\cdot u\cdot sk}-e\cdot u+e_{q}+\lfloor\frac{q}{t}\rfloor\cdot m+\cancel{a\cdot u\cdot sk}+e_{2}\cdot sk=\\
+ & =\lfloor\frac{q}{t}\rfloor\cdot m-e\cdot u+e_{1}+e_{2}\cdot sk\\
+ & =\lfloor\frac{q}{t}\rfloor\cdot m+\underbrace{e_{1}+e_{2}\cdot sk-e\cdot u}=\lfloor\frac{q}{t}\rfloor\cdot m+v
+\end{align*}
+ the infinity norm of $v$ (largest abs value from the coefficients)
+is pretty small: all of these: $sk,e,e_{1},e_{2}$ are all \textbf{\uline{small}}
+polynomials. \.{I}f these polynomials are bounded by some $\beta$
+then $\left|\left|v\right|\right|\le2n\cdot\beta^{2}+\beta$. (I'm
+skipping the proof of that). \\
+They ensure that the noise is small, and thus they can recovering
+it.
+
+\section{Doing ops:}
+
+addition is very simple, and the additional error is not high. (can
+just add the cipher-texts together). Multiplication adds a lot of
+noise, in addition to that, from $2$ cipher-text\.{s} we get $3$
+output cipher-texts (polynomials) which means a different encryption
+procedure (can be done by using exponents of the secret key). To overcome
+this one should do relinearization. 
+
+\section{Maintenance Operations}
+
+The BFV scheme include operations that do not effect the underlying
+plaintext, but are needed for implementation reasons:
+
+\paragraph{According to the ``Protecting Privacy through Homomorphic Encryption''
+ciphertext-ciphertext multiplication have a side effect of requiring
+a different secret--key to decrypt the result than what was needed
+before the operation. thus, multiplication is followed by a key switching
+opeation to restore the secret key back to the original one. (relinearization).
+Avoiding relianirization is possible, but will reduce noise budget
+quicker. In addition to that, ops on non-relinearized ciphertexts
+are much slower.}
+
+\paragraph{Another such operation is \textbf{bootstrapping}, which ``refreshes''
+a ciphertext and reduces the level of noit in it, to support more
+computations. It is a very expensive operation, and hence it isn't
+often used/ implemented}
+
+\section{security of the scheme}
+
+Choosing optimal BFV parameters that maximize performance and respect
+security and functionality constraints is an art that is practiced
+by expert cryptographers. but there is a standard one can follow.
+
+But mainly, we first start by choosing the max size of integers $\left(q\right)$
+for the coefficients, and the max polynomial degree $\left(n\right)$.
+but generally, larger $n$ gives more security (but slower ops), larger
+$q$ means we can do more complex computations. 
+
+\paragraph{Ciphertexts in these encryption schemes contain a noise component
+(which is important for security), and that noise grows with each
+operation (The encrypted result can only be decrypted if the noise
+is smaller than $q$, hence using larger values of $q$ imply that
+we can do more operations).}
+
+\section{Relinearization}
+
+Remeber we generated another key along with the private and public.
+called $ek=\left(ek_{0},ek_{1}\right)$. using this key as randomness
+source, we can relinearize the result of multiplication: the new ciphertext
+would be :
+\begin{align*}
+c_{1} & =\left[C_{1}^{*}+ek_{0}\cdot C_{3}^{*}\right]_{q}\\
+c_{2} & =\left[C_{2}^{*}+ek_{1}\cdot C_{3}^{*}\right]_{q}
+\end{align*}
+Remember, decryption is : $c_{1}+c_{2}\cdot sk$. After doing that,
+the decryption would result with: 
+\[
+C_{1}^{*}+C_{2}^{*}\cdot sk+C_{3}^{*}\cdot sk^{2}+C_{3}^{*}\cdot e
+\]
+ which would decrypt just fine, but with a big error $\left(C_{3}^{*}e\right)$!
+We can fix that by using base decomposition.
+
+
+\section{Base Decomposition}
+\section{Mod Switching}
+
+\section{Choosing Parameters}
+
