@@ -1,397 +1,637 @@
 \chapter{Distributed Algorithms}
-
+% \todo{This chapter is a work in progress.}
 Many thanks to the Decentralized thoughts blog.
+\section{Models}
+Distributed systems and their behaviour and algorithms are designed around the model 
+they are expected to work in. The model defines the assumptions and constraints of the system.
+For instance, the model may define the network the system is expected to 
+work in or faults the servers might encounter.
 
-\paragraph{cheat sheet: https://decentralizedthoughts.github.io/2021-10-29-consensus-cheat-sheet/}
+\subsection{Network Model}
 
-\section{Basic Foundations and Classics}
+When we discuss Network models, we mainly refer to three types of networks:
 
-\subsection{Consensus and Agreement}
+\begin{defn}[Synchronous]
+    There exists some known and finite time bound $\Delta$.
+For any message sent, the adversary can delay its delivery by at most $\Delta$.
+\end{defn}
 
-In this section, we define the consensus problem and discuss some
-variants and their differences.
-
-\paragraph{Let us begin with the most straightforward consensus problem: agreement.}
-
-\subsubsection{The agreement problem}
-
-\paragraph{We assume $n$ nodes, where each node $i$ has some input $v_{i}\in V$
-where $V$ is the set of all possible values. A protocol that solves Agreement must have the following properties:}
-\begin{enumerate}
-\item $\left(Agreement\right)$: no two honest nodes \textbf{decide} on
-different values.
-\item $\left(validity\right)$: if all honest nodes have the same input
-value $v$, then $v$ must be the decision value.
-\item $\left(termination\right)$: all honest nodes must decide on a value
-from $V$ and terminate.
-\end{enumerate}
+At first thought, the Synchronous model may seem to be good enough. 
+Why not just assume, for example, that any message sent over the internet will be delivered by say
+ $2$ minutes? First, there is a trade-off:
 \begin{itemize}
-\item This is a strong property. that is, validity guarantees that a decisional
-value must be held by all honest nodes.
-\item We can make the agreement property even stronger - no two nodes (notice
-I've omitted the honest?) decide on different values.
+    \item Setting a large and conservative $\Delta$ of say $10$ minutes may
+    indeed always faithfully model the real world.
+    However, protocol designers who depend on $\Delta$ may incur very long timeouts and 
+    hence degrade performance.
+    \item The synchronous model is not realistic.
+    In the real world, messages can be delayed by an arbitrary amount of time.
 \end{itemize}
-%
 
-\paragraph{We continue to another consensus problem tied strongly
-with the agreement problem.}
 
-\subsubsection{Broadcast problem}
+\begin{defn}[Asynchronous]
+    For any message sent, the adversary can delay its delivery 
+    by any finite amount of time.
+    In other words, messages can be scrambled and delivered in any order. 
+    Furthermore, while a message is delayed 
+    by an infinite amount of time, it must eventually be delivered.        
+\end{defn}
 
-We assume a designated node, the leader, holds some value $v\in V$.
-A protocol that solves Broadcast must comply with the following properties:
-\begin{enumerate}
-\item $\left(Agreement\right)$: no two honest nodes \textbf{decide} on
-different values.
-\item $\left(validity\right)$: if the leader is honest then $v$ must be
-the decision value.
-\item $\left(termination\right)$: all honest nodes must decide on a value
-from $V$ and terminate.
-\end{enumerate}
+
+Unlike the synchrony model, 
+the asynchronous model forces protocol designers to assume nothing about network delays.
+The outcome is often very robust protocols:
+
+\begin{itemize}
+    \item Since they do not depend on any time bound, message delays 
+    cannot cause unexpected safety violations.
+    \item Since they cannot use any fixed values for timeouts, 
+    they must inherently adapt to the actual latency of the system
+\end{itemize}
+
+The main problem with the asynchronous model is that protocols in this model tend to be more
+complex and harder to reason about. 
+Moreover, there are many known complexity gaps between synchrony and asynchrony. Two examples:
+
+\begin{itemize}
+    \item The Fischer, Lynch and Paterson \cite[FLP, 1985]{flp} lower bound says 
+    that in the asynchronous model, any protocol that solves consensus 
+    withstanding an adversary (who can fail-stop just one party) must have an infinite execution.
+    \item Authenticated Byzantine Agreement (important problem we will see later\todo{Add reference later}) is possible for 
+    $n>2\cdot f$ parties in the synchronous model, but impossible for $n \le3\cdot n$ in the asynchronous model.
+\end{itemize}
+
+
+
+
+\emph{Partial synchronous} attempts to capture the best of both worlds.
+Informally, in the Partial synchrony model, the system behaves asynchronously 
+up to some time called $GST$ (global stabilization time), and after that time it'll behave synchronously.
+\emph{Note} that the adversary can delay the $GST$ event by any finite amount
+of time and that no protocol can explicitly detect that $GST$ has occurred.
+Furthermore, there is no external signal that tells you that $GST$ happened
+
+\begin{defn}[Partially Synchronous \cite{partial-async}]
+    There exists some known finite time bound $\Delta$,
+    and a special event called GST (global stabilization time) such that:
+    \begin{itemize}
+        \item The adversary must cause the GST event to happen after 
+        some unknown finite time.
+        \item Any message that is sent at time $x$ must be delivered by 
+        time $\Delta+\max\left(x,GST\right)$.
+    \end{itemize}
+\end{defn}
+
+Partial synchrony captures the intuition that we would like to design protocols for 
+systems that are usually synchronous but have reasonable guarantees, 
+even if the synchrony assumptions become temporarily violated by some extreme event
+(like a denial of service attack). In particular, a recurring theme in the Partial
+synchrony model is to design protocols that are always safe (even when the system
+is asynchronous) but provide liveness and termination guarantees only
+after GST (only when the system is synchronous).
+
+
 \begin{xca}
-Implement Broadcast given a black box Agreement protocol.
+    In the Synchronous model with parameter $\Delta$ which of the following are true:
+    \begin{enumerate}
+        \item Some message is sent at time $t$ and arrives at time $t+\Delta/4$.
+        \item Some message is sent at time $t$ and arrives at time $t+3\Delta$.
+        \item Any message sent at any time $t$ arrives at time at most $2t$.
+        \item The protocol designer does not know the value of $\Delta$.
+    \end{enumerate}
+
+
+\paragraph{Solution}
+        \begin{enumerate}
+            \item correct since $t+ \Delta/4$ is less than $t+ \Delta$ which is
+            the latest a message sent at time $t$ can arrive.
+            \item is false because the adversary can delay the message by at most $\Delta$.
+            \item is false because $2\cdot t$ can be greater than $\Delta$.
+            \item The protocol designer should set the value of $\Delta$.
+        \end{enumerate}
+
 \end{xca}
 
-\begin{sol}
-$ $
-
-My Assumptions: the leader is known. Can communicate privately on a secure
-channel with each server.
-\begin{enumerate}
-\item first round; the leader chose a value and send it to all.
-\begin{enumerate}
-\item an honest machine would only accept a value from the leader, and once.
-\end{enumerate}
-\item second round; every honest node should hold the same value as the
-leader, so they can now start to run the agreement protocol.
-\item end of the agreement should mean all had a decision, and because all held
-the value $v$ that the leader sent, this is the agreement value.
-\end{enumerate}
-proving the properties is immediate from definitions. Termination
-from the agreement protocol. Agreement from agreement protocol. Validity
-is because the leader is honest and did not send different values
-to the servers, and then the agreement kicked off with the same input
-values.
-\end{sol}
-
 \begin{xca}
-Implement Agreement using broadcast.
-
-Note, in this exercise you start with $n$ leaders. how would you
-make an agreement protocol?
+    In the Asynchronous model which of the following are true:
+    \begin{enumerate}
+        \item There is some finite number $\Delta$ such that for every finite execution, all
+         message delays in that execution are at most $\Delta$.
+        \item Some messages that are sent may never arrive to their destinations.
+        \item For every finite execution, there is some finite number $\Delta$ such that 
+        all message delays in that execution are at most $\Delta$.
+        \item The protocol designer can always assume that message sent will arrive after at most one day.
+    \end{enumerate}
+    \paragraph{Solution}
+    \begin{enumerate}
+        \item False by definition.
+        \item False, all messages arrive, although at an unknown time.
+        \item \todo{Verify with Teach} False, the adversary can delay any message by a finite 
+        amount of time. Therefore, it can delay the message beyond the execution time.
+        \item False, the protocol designer cannot assume any time bound.
+    \end{enumerate}
 \end{xca}
 
 
-\section{Synchrony, Asynchrony, and Partial synchrony }
+\begin{xca}
+    In the Partially Synchronous model with parameter $\Delta$ which of the following are true:
+    \begin{enumerate}
+        \item The protocol designer can design protocols that wait till they 
+        see the GST event and then take advantage of synchrony.
+        \item A message sent $2\Delta$ time before GST will have a delay of at most $3\Delta$.
+        \item There is some finite number $\Lambda$ such that for every
+         execution, messages sent before GST have a delay of at most $\Lambda$.
+         \item A message sent $2\Delta$ time after GST will have a delay of at most $2\Delta$.
+    \end{enumerate}
+    
+    \paragraph{Solution}
+    \begin{enumerate}
+        \item No. The GST cannot be signaled or detected.
+        \item From the definition, any message sent at time $x$ ($=2\cdot \Delta$) must be delivered by
+         time $\Delta + \max(x, GST)$. 
+         Consequently, a message sent at time $GST - 2\Delta$ will be delivered at most by time $GST + \Delta$.
+        \item Yes, setting $\Lambda$ equal to $GST + \Delta$ implies 
+        that every message transmitted before $GST$ will reach its intended recipients by the time $\Lambda$ elapses.
+        \item False. it'll have a delay of at most $\Delta$.
+    \end{enumerate}
+\end{xca}
 
-\paragraph{In the standard model, communication uncertainty is captured by an
-adversary that can delay messages. }
 
-The three basic communication models are: 
-\begin{description}
-\item [{synchronous}] There exists some known finite time bound $\Delta$.
-For any message sent, the adversary can delay its delivery by at most
-$\Delta$.
-\item [{Asynchronous}] for any message sent, the adversary can delay its
-delivery by any finite amount of time. So, on the one hand, there
-is no bound on the time to deliver a message, but each message must eventually be delivered.
-\item [{partial--synchrony}] This is a combination of the two. In
-this model, we assume that there exists some known finite time $\Delta$,
-and a special event called GST (global stabilization time) such that:
-\begin{itemize}
-\item the adversary must cause the GST event to happen after some unknown
-finite time.
-\item any message that is sent at time $x$ must be delivered by time $\Delta+\max\left(x,GST\right)$.
-\end{itemize}
-Another definition: Partial synchrony is to assume that there is some
-finite unknown upper bound \textgreek{D} on message delivery. This
-bound is not known in advance and can be chosen by the adversary.
-\end{description}
+\begin{xca}
+    Which are true?
+    \begin{enumerate}
+        \item Any execution in the Partially Synchronous model with parameter
+         $\Delta$ is also a legal execution in the Synchronous model with parameter $\Delta$.
 
-\paragraph{Partial synchrony captures the intuition that we would like to design
-protocols for systems that are usually synchronous but have reasonable
-guarantees, even if the synchrony assumptions become temporarily violated
-by some extreme event (like a denial of service attack). In particular,
-a recurring theme in the Partial synchrony model is to design protocols
-that are always safe (even when the system is asynchronous) but provide
-liveness and termination guarantees only after GST (only when the system is synchronous).}
+        \item Any execution in the Synchronous model with parameter 
+        $2 \Delta$ is also a legal execution in the Partial Synchronous model with parameter $\Delta$.
 
-\section{The Threshold Adversary}
+        \item Any execution in the Partially Synchronous model with parameter 
+        $2\Delta$ is also a legal execution in the Asynchronous model.
 
-If the adversary has no limits, then there is very little we can do.
-The simplest model is that of a threshold adversary. Given $n$ nodes,
-the adversary controls some $f$ nodes.
+        \item There exists a number $\Delta$, such that any execution in the Asynchronous 
+        is also a legal execution in the Synchronous model with parameter $\Delta$.
+    \end{enumerate}
+    
+    \paragraph{Solution}
+    \todo{Ask Teach}
+    \begin{enumerate}
+        \item Yes, by setting $GST=0$, the Partially Synchronous model becomes the Synchronous model.
+
+        \item No, if $GST > 2\Delta$, then the message will be
+        delayed beyond the Synchronous model's $\Delta$, which breaks the assumptions.
+
+        \item Yes. Partial async models assume that GST time is unknown and cannot count on it, just like 
+        message delays in the Asynchronous model.
+
+        \item No, the statementr $\exists \Delta$ such that $\forall$ async executation is also a legal sync execution,
+        is false since we first set the sync model's $\Delta$ and then the async model's $\Delta$.
+        since the async model can delay any message by any finite amount of time, it can delay the message beyond the sync model's $\Delta$.
+
+    \end{enumerate}
+\end{xca}
+
+
+
+\section{Threshold Adversary}
+In addition to restricting the adversary's capabilities through a communication model,
+ we also require a mechanism to limit the adversary's influence over corrupt parties.
+
+If the adversary has no limits to its power, then there is very little we can do.
+Let's begin with the traditional notion of a \emph{threshold adversary} as used in Distributed 
+Computing and Cryptography to limit the power of the adversary.
+
+
+\paragraph{threshold Adversaries}
+    Given some $n$ nodes, the adversary controls some $f$ nodes, where $f<n$.
+    There are three main types of threshold adversaries:
 \begin{enumerate}
-\item $n>f$, the adversary controls all but one.
-\item $n>2f$, the adversary controls a minority of nodes, often called
-the dishonest minority.
-\item $n>3f$, where the adversary controls less than a third of the nodes.
-\end{enumerate}
-%
-
-\section{Generalized bounded resource threshold adversary }
-
-The adversary control some fraction of the resources.
-\begin{enumerate}
-\item the adversary controls any fraction of the resource, but not all.
-\item the adversary controls $\frac{1}{2}-\epsilon$ fraction of the resource. 
-\item the adversary controls less than $\frac{1}{3}$ fraction of the resource.
-\end{enumerate}
-%
-Some common examples:
-\begin{enumerate}
-\item in Nakamoto consensus, the adversary has access to $\frac{1}{2}-\epsilon$
-fraction of CPU power.
-\item in systems that use proof-of-stake, the assumption is that the bounded
-resource is some finite set of coins. It is then natural to assume
-that the adversary controls a threshold of the total coins. can
-often map voting power based on the relative amount of coins at a
-given time. For example, Algorand mentions the total voting power
-of the adversary is bounded by a third.
-\end{enumerate}
-%
-
-\subsection{A note on stake-based bounded resources }
-\begin{enumerate}
-\item On the one hand, using a resource controlled by the platform
-allows controlling the resource allocation in ways that are not possible
-when the resource is external. In particular, the platform can create
-punishment mechanisms to incentivize honest behavior better. For
-example, Buterin suggests conditions to detect malicious behavior
-and punish the adversary by reducing (slashing) the offender\textquoteright s
-stake. 
-\item n the other hand, if the value of the stake depends on the platform,
-this may cause some circular reasoning about security and in particular
-a bootstrapping problem. If the value of the total coins is too high,
-then it may happen that not enough honest entities will sign up and
-the system will lose liveness. If the value of the total coins is
-initially too low, then an attacker can gain early monopoly power.
-One option is to bootstrap proof-of-stake using an existing decentralized
-high-value Proof-of-work coin or high-value traditional fiat (see
-here). This type of solution assumes that the adversary does not already
-have monopoly power on the bootstrapping resource. Another option
-is to bootstrap a Proof-of-stake system from an existing high-value
-Proof-of-work system (for example, see eth2.0).
+    \item \emph{Dishonest majority} $f<n$, the adversary can control all but one. can be called \emph{anytrust} too.
+    \item \emph{dishonest minority} $2\cdot f<n$, the adversary controls a minority of nodes (less than half).
+    \item $3\cdot f < n$, where the adversary controls less than a third of the nodes.
 \end{enumerate}
 
-\section{The power of the adversary }
+\subsection{Quorum intersection}
+Since the adversary can corrupt $f$ parties, and often this corruption may include crash failures,
+ protocols often collect $n-f$ messages to ensure they don't get stuck.
+  These sets of $n-f$ parties possess very useful properties based on quorum intersection
+   (similar to the Pigeonhole principle).
 
-We still need to make important modeling decisions about the adversary
-power. In addition to the size of the threshold ($n>f,n>2f,\text{or }n>3f$
-), there are 4 more important parameters:
-\begin{enumerate}
-\item The type of corruption.
-\item The computational power of the adversary.
-\item The visibility of the adversary. (TBD).
-\item The adaptivity of the adversary.
-\end{enumerate}
+\begin{thm}[Quorum Intersection 1]
+    if $2f<n$, any set of size $n-f$  will have at least one party in their
+    intersection.
+\end{thm} 
+ \begin{proof}
+    $2f<n \iff n-2f>0 \iff n-2f +(n-n) >0 \iff n-2f+n>n \iff 2(n-f)>n$
+    That is, having two groups of size $(n-f)$ means we have more elements than the entire group.
+    From pigeon hole, we must have one interseection.
+ \end{proof}
+ \begin{corollary}[Quorum Intersection 2]
+    given $2f<n$, there is at least a single honest party in the intersection of any two sets of size $n-f$.
+ \end{corollary}
 
-\subsection{Type of corruption}
-
-\paragraph{There are four classic adversaries: Passive, Crash, Omission, and
-Byzantine.}
-\begin{description}
-\item [{Passive}] Also known as Honest-but-curios. Will follow the protocol
-in earnest, but allows the adversary to learn any information in its
-$view$.
-\item [{Crash}] Once corrupted, it'll stop sending or receiving messages.
-\item [{Omission}] Does not deviate from the protocol, but will lose or
-wont send messages according to the adversaries will.
-\item [{Byzantine}] this gives the adversary full power to control the
-party and take any (arbitrary) action on the corrupted party.
-\end{description}
-\begin{rem}
-Each level of corruption, subsumes the previous level.
-\end{rem}
-
-\begin{rem}
-There are more types of corruptions, which we'll investigate later.
-\end{rem}
+ \begin{proof}
+Assuming in contradication, we have no honest in the intersection of the sets. 
+that is $2(n-f)$
+  \todo{think of a proper proof}   
+ \end{proof}
 
 
-\subsection{Computational power}
-\begin{description}
-\item [{Unbounded}] the adversary has unbounded computational power. This
-model often leads to notions of perfect security or statistical security.
-\item [{Computationally-bounded}] the adversary is at most a polynomial
-advantage in computational power over the honest parties. Typically
-this means that the adversary cannot (except with negligible probability)
-break the cryptographic primitives being used. For example, typically
-assume the adversary cannot forge signatures of parties not in its
-control.
-\item [{Fine-grained$\,\,$computationally--bounded}] there is some concrete
-measure of computational power and the adversary is limited in a concrete
-manner. This model is used in proof-of-work based protocols.
-\end{description}
 
-\subsection{Visibility}
 
-\paragraph{The visibility is the power of the adversary to see the messages
-and the states of the non-corrupted parties. Again, there are two
-basic variant:}
-\begin{description}
-\item [{Full$\,\,$information}] here we assume the adversary sees the
-internal state of all parties and the content of all message sent.
-This often limits the protocol designer. See for example: Feige\textquoteright s
-selection protocols, or Ben-Or et al\textquoteright s Byzantine agreement. 
-\item [{Private$\,\,$channels}] in this model, we assume the adversary
-cannot see the internal state of honest parties and cannot see the
-internal content of messages between honest parties. The adversary
-does know when a message is being sent and depending on the communication
-model can decide to delay it by any value that is allowed by the communication
-model.
-\end{description}
-In round based protocols:
-\begin{description}
-\item [{Rush}] the adversary can see all messages in a round before choosing
-what to send.
-\item [{non-Rush}] the adversary must commit to the round $i$ messages
-it sends before it receives any round $i$ messages from non-faulty
-parties.
-\end{description}
 
-\subsection{Adaptivity }
 
-\paragraph{Adaptivity is the ability of the adversary to corrupt dynamically
-based on information the adversary learns during the execution. There
-are three basic variants: static, adaptive, and mobile. The adaptive
-model has several sub-variant. We will cover here only the simplest
-one.}
-\begin{description}
-\item [{Static}] the adversary has to decide which $f$ parties to corrupt
-before executing the protocol.
-\item [{Adaptive}] the adversary can decide dynamically as the protocol
-progresses who to corrupt based on what the adversary learns over
-time. The main parameter still needs to be decided on how long
-it takes between the adversary's decision to corrupt and the event that
-the control is passed to the adversary. One standard assumption is
-that this is instantaneous. Another is that it takes an additional
-round.
-\item [{Mobile}] the adversary can decide dynamically who to corrupt and
-who to un-corrupt. The number of corrupted parties at any given
-time is at most $f$, but the set of corrupted parties
-may change over time. It is often required that there is a gap between the time
-the adversary corrupts one party and the time it is allowed to corrupt
-another.
-\end{description}
-%
 
-\section{The Trusted Setup Phase }
 
-When you want to understand a decentralized system, you first need to ask whether it has a trusted setup phase.
+% \paragraph{cheat sheet: https://decentralizedthoughts.github.io/2021-10-29-consensus-cheat-sheet/}
+% \section{Basic Foundations and Classics}
 
-\paragraph{Many distributed computing and cryptography protocols require
-a trusted setup. A trusted setup is a special case of a multi-phase
-protocol. We call the first \textbf{phase} the setup phase and the
-second phase the main phase. Two properties often distinguish
-a setup phase from the \textbf{main phase}:}
-\begin{itemize}
-\item Typically, the main phase implements some repeated task. The setup
-phase is done once and enables repeating many instances of the main
-phase.
-\item The setup phase is often input-independent. Namely, it does not use
-the private inputs of the parties. Furthermore, sometimes the setup
-phase is even function-independent, meaning that the specific function
-that the parties wish to compute is irrelevant; the parties at this
-phase only know that they want to compute some function. As such,
-the setup and main phases are often called offline (or preprocessing)
-and online respectively (i.e., parties may run the offline phase when
-they realize that at some later point in time, they will want to run
-some function on inputs they do not know yet).
-\end{itemize}
+% \subsection{Consensus and Agreement}
 
-\paragraph{think of a setup phase as an ideal functionality run by a wholly
-trusted entity, denoted T. For instance, assuming Public-Key Infrastructure
-(PKI) means that we assume there is a wholly trusted entity to
-which every party submits its public encryption (and verification) key,
- and that entity broadcasts those keys to all parties. In this
-chapter, we will review some of the common types of trusted setup assumptions
-by looking at their ideal functionalities.}
+% In this section, we define the consensus problem and discuss some
+% variants and their differences.
 
-\paragraph{One way to model that trusted entity follows: There is an initial
-set of parties $p_{1},\dots,p_{n}$ who interact with the trusted
-entity $T$. The parties may send inputs $x_{1},\dots,x_{n}$ to $T$
-(where $x_{i}$ is $p_{i}$'s input), who in turn, runs some function
-$f\left(r,x_{1},\dots,x_{n}\right)$ where $r$ is a uniformly random
-string, obtains outputs $y_{1},\dots,y_{n}$ and hands $y_{i}$ to
-$p_{i}$. This process may be \textquotedblleft reactive\textquotedblright ,
-namely, it may repeat multiple times. As this already describes an
-idealized world, we always assume that the communication channels
-between the parties and the trusted entity are secure.}
+% \paragraph{Let us begin with the most straightforward consensus problem: agreement.}
 
-\paragraph{we argue that most of those functionalities fall into one of out
-of the five categories below:}
-\begin{enumerate}
-\item No Setup: This is the simplest case, in which we don\textquoteright t
-really use any trusted entity or any trusted setup. The minimal communication
-assumption is that parties have access to some type of communication
-medium. Often, though, \textquotedblleft no setup\textquotedblright{}
-also refers to a setting where parties\textquoteright{} identities
-are globally known.
-\item Pairwise setup: Here we assume there is some set of initial parties
-$p_{1},\dots,p_{n}$ and each two parties have a reliable communication
-channel between them. In particular, in the simplest pairwise setup
-assumption when party $p_{i}$ receives a message on the $(i,j)$
-channel it knows that party $p_{j}$ sent this message. 
-\item Broadcast setup: We assume a setup whose implementation requires no
-secrets. The canonical example is a PKI setup that requires broadcast
-only to relay the public keys. 
-\item Partially public setup: often called the Common Reference String (CRS)
-model. Many cryptographic protocols leverage this setup for improved
-efficiency. A special case of this setup is a randomness beacon. 
-\item Fully private setup: often called the offline phase in the context
-of secure multiparty computation (MPC) protocols. Here, the setup
-phase computes a rather complex output that is party-dependant.
-\end{enumerate}
-Let us detail these five setup variants.
+% \subsubsection{The agreement problem}
 
-\subsection{No Setup }
+% \paragraph{We assume $n$ nodes, where each node $i$ has some input $v_{i}\in V$
+% where $V$ is the set of all possible values. A protocol that solves Agreement must have the following properties:}
+% \begin{enumerate}
+% \item $\left(Agreement\right)$: no two honest nodes \textbf{decide} on
+% different values.
+% \item $\left(validity\right)$: if all honest nodes have the same input
+% value $v$, then $v$ must be the decision value.
+% \item $\left(termination\right)$: all honest nodes must decide on a value
+% from $V$ and terminate.
+% \end{enumerate}
+% \begin{itemize}
+% \item This is a strong property. that is, validity guarantees that a decisional
+% value must be held by all honest nodes.
+% \item We can make the agreement property even stronger - no two nodes (notice
+% I've omitted the honest?) decide on different values.
+% \end{itemize}
+% %
 
-If a protocol has no setup, then there is nothing to worry about.
-It\textquoteright s easier to trust such protocols. On the other hand,
-there are inherent limitations.
+% \paragraph{We continue to another consensus problem tied strongly
+% with the agreement problem.}
 
-\paragraph{A setting with no setup has two main flavors. The first assumes really
-nothing on the knowledge of the parties and is sometimes called anonymous
-channel model The second assumes global knowledge of the identities
-of all parties, which is quite acceptable in many real world applications.
-Both flavors suffer from non-authenticated channels, meaning that
-the adversary can launch man-in-the-middle attacks arbitrarily.}
+% \subsubsection{Broadcast problem}
 
-\paragraph{In traditional cryptography (where the adversary is polynomially-bounded),
-this type of model was first studied by Dolev, Dwork and Naor, for
-specific tasks like non-malleable encryption and zero-knowledge and
-later generalized to arbitrary computations by Barak et al. (The latter
-assumes global identities.)}
+% We assume a designated node, the leader, holds some value $v\in V$.
+% A protocol that solves Broadcast must comply with the following properties:
+% \begin{enumerate}
+% \item $\left(Agreement\right)$: no two honest nodes \textbf{decide} on
+% different values.
+% \item $\left(validity\right)$: if the leader is honest then $v$ must be
+% the decision value.
+% \item $\left(termination\right)$: all honest nodes must decide on a value
+% from $V$ and terminate.
+% \end{enumerate}
+% \begin{xca}
+% Implement Broadcast given a black box Agreement protocol.
+% \end{xca}
 
-\paragraph{Another line of research, in the anonymous model, is based on a more
-refined assumption on the adversarial power. Namely, the assumption
-limits the computational power of the adversary (e.g., hash rate)
-compared to the computational power of the honest parties. It was
-shown possible to construct a limited notion of PKI from scratch even
-in this slim model. }
+% \begin{sol}
+% $ $
 
-\subsection{Pairwise Setup}
+% My Assumptions: the leader is known. Can communicate privately on a secure
+% channel with each server.
+% \begin{enumerate}
+% \item first round; the leader chose a value and send it to all.
+% \begin{enumerate}
+% \item an honest machine would only accept a value from the leader, and once.
+% \end{enumerate}
+% \item second round; every honest node should hold the same value as the
+% leader, so they can now start to run the agreement protocol.
+% \item end of the agreement should mean all had a decision, and because all held
+% the value $v$ that the leader sent, this is the agreement value.
+% \end{enumerate}
+% proving the properties is immediate from definitions. Termination
+% from the agreement protocol. Agreement from agreement protocol. Validity
+% is because the leader is honest and did not send different values
+% to the servers, and then the agreement kicked off with the same input
+% values.
+% \end{sol}
 
-Here, we assume that the communication channel between every pair
-of parties is authenticated. This is a classic assumption in distributed
-cryptography and distributed computing. The Fisher, Lynch and Merritt
-1985 lower bounds show that even weak forms of Byzantine Agreement
-are impossible when $n\le3\cdot f$ even given this setup, and even
-against a traditional polynomially-bounded adversary.
+% \begin{xca}
+% Implement Agreement using broadcast.
 
-\paragraph{For $n>3\cdot f$, on the other hand, this setup allows perfect implementation
-of any functionality. This is the celebrated result of Ben-Or, Goldwasser
-and Widgerson 1988 (see Asharov and Lindell for a full proof).}
+% Note, in this exercise you start with $n$ leaders. how would you
+% make an agreement protocol?
+% \end{xca}
 
-\subsection{TODO: complete from this blogm page: }
 
-https://decentralizedthoughts.github.io/2019-07-19-setup-assumptions/
+% \section{Synchrony, Asynchrony, and Partial synchrony }
 
-\section{Broadcast}
+% \paragraph{In the standard model, communication uncertainty is captured by an
+% adversary that can delay messages. }
 
-todo: https://decentralizedthoughts.github.io/2019-10-22-flavours-of-broadcast/
+% The three basic communication models are: 
+% \begin{description}
+% \item [{synchronous}] There exists some known finite time bound $\Delta$.
+% For any message sent, the adversary can delay its delivery by at most
+% $\Delta$.
+% \item [{Asynchronous}] for any message sent, the adversary can delay its
+% delivery by any finite amount of time. So, on the one hand, there
+% is no bound on the time to deliver a message, but each message must eventually be delivered.
+% \item [{partial--synchrony}] This is a combination of the two. In
+% this model, we assume that there exists some known finite time $\Delta$,
+% and a special event called GST (global stabilization time) such that:
+% \begin{itemize}
+% \item the adversary must cause the GST event to happen after some unknown
+% finite time.
+% \item any message that is sent at time $x$ must be delivered by time $\Delta+\max\left(x,GST\right)$.
+% \end{itemize}
+% Another definition: Partial synchrony is to assume that there is some
+% finite unknown upper bound \textgreek{D} on message delivery. This
+% bound is not known in advance and can be chosen by the adversary.
+% \end{description}
 
-\section{Sync HotStuff}
+% \paragraph{Partial synchrony captures the intuition that we would like to design
+% protocols for systems that are usually synchronous but have reasonable
+% guarantees, even if the synchrony assumptions become temporarily violated
+% by some extreme event (like a denial of service attack). In particular,
+% a recurring theme in the Partial synchrony model is to design protocols
+% that are always safe (even when the system is asynchronous) but provide
+% liveness and termination guarantees only after GST (only when the system is synchronous).}
 
-A Simple and Practical State Machine Replication.
+% \section{The Threshold Adversary}
+
+% If the adversary has no limits, then there is very little we can do.
+% The simplest model is that of a threshold adversary. Given $n$ nodes,
+% the adversary controls some $f$ nodes.
+% \begin{enumerate}
+% \item $n>f$, the adversary controls all but one.
+% \item $n>2f$, the adversary controls a minority of nodes, often called
+% the dishonest minority.
+% \item $n>3f$, where the adversary controls less than a third of the nodes.
+% \end{enumerate}
+% %
+
+% \section{Generalized bounded resource threshold adversary }
+
+% The adversary control some fraction of the resources.
+% \begin{enumerate}
+% \item the adversary controls any fraction of the resource, but not all.
+% \item the adversary controls $\frac{1}{2}-\epsilon$ fraction of the resource. 
+% \item the adversary controls less than $\frac{1}{3}$ fraction of the resource.
+% \end{enumerate}
+% %
+% Some common examples:
+% \begin{enumerate}
+% \item in Nakamoto consensus, the adversary has access to $\frac{1}{2}-\epsilon$
+% fraction of CPU power.
+% \item in systems that use proof-of-stake, the assumption is that the bounded
+% resource is some finite set of coins. It is then natural to assume
+% that the adversary controls a threshold of the total coins. can
+% often map voting power based on the relative amount of coins at a
+% given time. For example, Algorand mentions the total voting power
+% of the adversary is bounded by a third.
+% \end{enumerate}
+% %
+
+% \subsection{A note on stake-based bounded resources }
+% \begin{enumerate}
+% \item On the one hand, using a resource controlled by the platform
+% allows controlling the resource allocation in ways that are not possible
+% when the resource is external. In particular, the platform can create
+% punishment mechanisms to incentivize honest behavior better. For
+% example, Buterin suggests conditions to detect malicious behavior
+% and punish the adversary by reducing (slashing) the offender\textquoteright s
+% stake. 
+% \item n the other hand, if the value of the stake depends on the platform,
+% this may cause some circular reasoning about security and in particular
+% a bootstrapping problem. If the value of the total coins is too high,
+% then it may happen that not enough honest entities will sign up and
+% the system will lose liveness. If the value of the total coins is
+% initially too low, then an attacker can gain early monopoly power.
+% One option is to bootstrap proof-of-stake using an existing decentralized
+% high-value Proof-of-work coin or high-value traditional fiat (see
+% here). This type of solution assumes that the adversary does not already
+% have monopoly power on the bootstrapping resource. Another option
+% is to bootstrap a Proof-of-stake system from an existing high-value
+% Proof-of-work system (for example, see eth2.0).
+% \end{enumerate}
+
+% \section{The power of the adversary }
+
+% We still need to make important modeling decisions about the adversary
+% power. In addition to the size of the threshold ($n>f,n>2f,\text{or }n>3f$
+% ), there are 4 more important parameters:
+% \begin{enumerate}
+% \item The type of corruption.
+% \item The computational power of the adversary.
+% \item The visibility of the adversary. (TBD).
+% \item The adaptivity of the adversary.
+% \end{enumerate}
+
+% \subsection{Type of corruption}
+
+% \paragraph{There are four classic adversaries: Passive, Crash, Omission, and
+% Byzantine.}
+% \begin{description}
+% \item [{Passive}] Also known as Honest-but-curios. Will follow the protocol
+% in earnest, but allows the adversary to learn any information in its
+% $view$.
+% \item [{Crash}] Once corrupted, it'll stop sending or receiving messages.
+% \item [{Omission}] Does not deviate from the protocol, but will lose or
+% wont send messages according to the adversaries will.
+% \item [{Byzantine}] this gives the adversary full power to control the
+% party and take any (arbitrary) action on the corrupted party.
+% \end{description}
+% \begin{rem}
+% Each level of corruption, subsumes the previous level.
+% \end{rem}
+
+% \begin{rem}
+% There are more types of corruptions, which we'll investigate later.
+% \end{rem}
+
+
+% \subsection{Computational power}
+% \begin{description}
+% \item [{Unbounded}] the adversary has unbounded computational power. This
+% model often leads to notions of perfect security or statistical security.
+% \item [{Computationally-bounded}] the adversary is at most a polynomial
+% advantage in computational power over the honest parties. Typically
+% this means that the adversary cannot (except with negligible probability)
+% break the cryptographic primitives being used. For example, typically
+% assume the adversary cannot forge signatures of parties not in its
+% control.
+% \item [{Fine-grained$\,\,$computationally--bounded}] there is some concrete
+% measure of computational power and the adversary is limited in a concrete
+% manner. This model is used in proof-of-work based protocols.
+% \end{description}
+
+% \subsection{Visibility}
+
+% \paragraph{The visibility is the power of the adversary to see the messages
+% and the states of the non-corrupted parties. Again, there are two
+% basic variant:}
+% \begin{description}
+% \item [{Full$\,\,$information}] here we assume the adversary sees the
+% internal state of all parties and the content of all message sent.
+% This often limits the protocol designer. See for example: Feige\textquoteright s
+% selection protocols, or Ben-Or et al\textquoteright s Byzantine agreement. 
+% \item [{Private$\,\,$channels}] in this model, we assume the adversary
+% cannot see the internal state of honest parties and cannot see the
+% internal content of messages between honest parties. The adversary
+% does know when a message is being sent and depending on the communication
+% model can decide to delay it by any value that is allowed by the communication
+% model.
+% \end{description}
+% In round based protocols:
+% \begin{description}
+% \item [{Rush}] the adversary can see all messages in a round before choosing
+% what to send.
+% \item [{non-Rush}] the adversary must commit to the round $i$ messages
+% it sends before it receives any round $i$ messages from non-faulty
+% parties.
+% \end{description}
+
+% \subsection{Adaptivity }
+
+% \paragraph{Adaptivity is the ability of the adversary to corrupt dynamically
+% based on information the adversary learns during the execution. There
+% are three basic variants: static, adaptive, and mobile. The adaptive
+% model has several sub-variant. We will cover here only the simplest
+% one.}
+% \begin{description}
+% \item [{Static}] the adversary has to decide which $f$ parties to corrupt
+% before executing the protocol.
+% \item [{Adaptive}] the adversary can decide dynamically as the protocol
+% progresses who to corrupt based on what the adversary learns over
+% time. The main parameter still needs to be decided on how long
+% it takes between the adversary's decision to corrupt and the event that
+% the control is passed to the adversary. One standard assumption is
+% that this is instantaneous. Another is that it takes an additional
+% round.
+% \item [{Mobile}] the adversary can decide dynamically who to corrupt and
+% who to un-corrupt. The number of corrupted parties at any given
+% time is at most $f$, but the set of corrupted parties
+% may change over time. It is often required that there is a gap between the time
+% the adversary corrupts one party and the time it is allowed to corrupt
+% another.
+% \end{description}
+% %
+
+% \section{The Trusted Setup Phase }
+
+% When you want to understand a decentralized system, you first need to ask whether it has a trusted setup phase.
+
+% \paragraph{Many distributed computing and cryptography protocols require
+% a trusted setup. A trusted setup is a special case of a multi-phase
+% protocol. We call the first \textbf{phase} the setup phase and the
+% second phase the main phase. Two properties often distinguish
+% a setup phase from the \textbf{main phase}:}
+% \begin{itemize}
+% \item Typically, the main phase implements some repeated task. The setup
+% phase is done once and enables repeating many instances of the main
+% phase.
+% \item The setup phase is often input-independent. Namely, it does not use
+% the private inputs of the parties. Furthermore, sometimes the setup
+% phase is even function-independent, meaning that the specific function
+% that the parties wish to compute is irrelevant; the parties at this
+% phase only know that they want to compute some function. As such,
+% the setup and main phases are often called offline (or preprocessing)
+% and online respectively (i.e., parties may run the offline phase when
+% they realize that at some later point in time, they will want to run
+% some function on inputs they do not know yet).
+% \end{itemize}
+
+% \paragraph{think of a setup phase as an ideal functionality run by a wholly
+% trusted entity, denoted T. For instance, assuming Public-Key Infrastructure
+% (PKI) means that we assume there is a wholly trusted entity to
+% which every party submits its public encryption (and verification) key,
+%  and that entity broadcasts those keys to all parties. In this
+% chapter, we will review some of the common types of trusted setup assumptions
+% by looking at their ideal functionalities.}
+
+% \paragraph{One way to model that trusted entity follows: There is an initial
+% set of parties $p_{1},\dots,p_{n}$ who interact with the trusted
+% entity $T$. The parties may send inputs $x_{1},\dots,x_{n}$ to $T$
+% (where $x_{i}$ is $p_{i}$'s input), who in turn, runs some function
+% $f\left(r,x_{1},\dots,x_{n}\right)$ where $r$ is a uniformly random
+% string, obtains outputs $y_{1},\dots,y_{n}$ and hands $y_{i}$ to
+% $p_{i}$. This process may be \textquotedblleft reactive\textquotedblright ,
+% namely, it may repeat multiple times. As this already describes an
+% idealized world, we always assume that the communication channels
+% between the parties and the trusted entity are secure.}
+
+% \paragraph{we argue that most of those functionalities fall into one of out
+% of the five categories below:}
+% \begin{enumerate}
+% \item No Setup: This is the simplest case, in which we don\textquoteright t
+% really use any trusted entity or any trusted setup. The minimal communication
+% assumption is that parties have access to some type of communication
+% medium. Often, though, \textquotedblleft no setup\textquotedblright{}
+% also refers to a setting where parties\textquoteright{} identities
+% are globally known.
+% \item Pairwise setup: Here we assume there is some set of initial parties
+% $p_{1},\dots,p_{n}$ and each two parties have a reliable communication
+% channel between them. In particular, in the simplest pairwise setup
+% assumption when party $p_{i}$ receives a message on the $(i,j)$
+% channel it knows that party $p_{j}$ sent this message. 
+% \item Broadcast setup: We assume a setup whose implementation requires no
+% secrets. The canonical example is a PKI setup that requires broadcast
+% only to relay the public keys. 
+% \item Partially public setup: often called the Common Reference String (CRS)
+% model. Many cryptographic protocols leverage this setup for improved
+% efficiency. A special case of this setup is a randomness beacon. 
+% \item Fully private setup: often called the offline phase in the context
+% of secure multiparty computation (MPC) protocols. Here, the setup
+% phase computes a rather complex output that is party-dependant.
+% \end{enumerate}
+% Let us detail these five setup variants.
+
+% \subsection{No Setup }
+
+% If a protocol has no setup, then there is nothing to worry about.
+% It\textquoteright s easier to trust such protocols. On the other hand,
+% there are inherent limitations.
+
+% \paragraph{A setting with no setup has two main flavors. The first assumes really
+% nothing on the knowledge of the parties and is sometimes called anonymous
+% channel model The second assumes global knowledge of the identities
+% of all parties, which is quite acceptable in many real world applications.
+% Both flavors suffer from non-authenticated channels, meaning that
+% the adversary can launch man-in-the-middle attacks arbitrarily.}
+
+% \paragraph{In traditional cryptography (where the adversary is polynomially-bounded),
+% this type of model was first studied by Dolev, Dwork and Naor, for
+% specific tasks like non-malleable encryption and zero-knowledge and
+% later generalized to arbitrary computations by Barak et al. (The latter
+% assumes global identities.)}
+
+% \paragraph{Another line of research, in the anonymous model, is based on a more
+% refined assumption on the adversarial power. Namely, the assumption
+% limits the computational power of the adversary (e.g., hash rate)
+% compared to the computational power of the honest parties. It was
+% shown possible to construct a limited notion of PKI from scratch even
+% in this slim model. }
+
+% \subsection{Pairwise Setup}
+
+% Here, we assume that the communication channel between every pair
+% of parties is authenticated. This is a classic assumption in distributed
+% cryptography and distributed computing. The Fisher, Lynch and Merritt
+% 1985 lower bounds show that even weak forms of Byzantine Agreement
+% are impossible when $n\le3\cdot f$ even given this setup, and even
+% against a traditional polynomially-bounded adversary.
+
+% \paragraph{For $n>3\cdot f$, on the other hand, this setup allows perfect implementation
+% of any functionality. This is the celebrated result of Ben-Or, Goldwasser
+% and Widgerson 1988 (see Asharov and Lindell for a full proof).}
+
+% \subsection{TODO: complete from this blogm page: }
+
+% https://decentralizedthoughts.github.io/2019-07-19-setup-assumptions/
+
+% \section{Broadcast}
+
+% todo: https://decentralizedthoughts.github.io/2019-10-22-flavours-of-broadcast/
+
+% \section{Sync HotStuff}
+
+% A Simple and Practical State Machine Replication.

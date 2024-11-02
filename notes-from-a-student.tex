@@ -18,7 +18,13 @@
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
  breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
  {hyperref}
+ 
+\usepackage{todonotes}
+% \usepackage[disable]{todonotes} % to disable all todos
+\newcommand{\redtodo}[2][]{\todo[color=red, #1]{#2}}
 
+
+%  TODOS are here. we ahve /unsure, /change, /info, /improvement. to disable a todo, see how we can add to a todo the option [disable].
 \makeatletter
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
@@ -54,7 +60,7 @@
 \newtheorem{defn}[theorem]{Definition}
 \newtheorem{example}[theorem]{Example}
 \newtheorem{xca}{Exercise}[section]
-\newtheorem{sol}[xca]{Exercise}
+% \newtheorem{sol}[xca]{Exercise}
 
 
 
