@@ -22,7 +22,7 @@ Given two polynomials $P(x)$ and $Q(x)$ of the same degree $d$,
 how do we prove these are the same polynomials?
 We can calculate it and check $d$ points on each polynomial 
 since each polynomial can be solely defined by its point-value representation.
-\red{provide proof.}
+\todo{provide proof.}
 
 
 Schwartz-Zippel \cite{SZ} made this notion much more efficient 
@@ -374,8 +374,25 @@ such that $\alpha^n =1  \mod q $, and for every $0<k<n$ $\alpha^k \neq 1 \mod q$
 \end{proof}
 
 Now that we found the first root of unity, we can find the rest by computing the powers of $\omega_0$ up to $n$.
+\paragraph{Neat Trick}
+\todo{This section would have saved me days of work, had I known it before.}
+One can make use of these roots of unity to find the roots of $X^n+1$ and $X^n-1$.
+Finding the roots of $X^n-1$ is from the definition! 
+Every n-th root of unity is a root of $X^n-1$: $(\omega^k)^n=(\omega^n)^k=1^k=1$.
+Substitute $X$ with any n-th root of unity, and you'll get $1-1=0$.
+
+Finding the roots of $X^n+1$ is a bit more tricky,
+but it can be done by finding the roots of $X^{2n}-1$ (which should be easy
+as we've shown above):
+First let's recall that $X^{2n}-1=(X^n+1)(X^n-1)$, then we notice that
+we have $n$ roots of $X^n-1$,
+and $n$ roots of $X^n+1$. So every one of the roots of $X^{2n}-1$ that is
+not a root of $X^n-1$ is a root of $X^n+1$.
+How do we find the roots of $X^{2n}-1$? Those are the $2n$-th roots of unity, 
+which are easy to find!
+
 \paragraph{\bf Finding Inverse}
-\red{TODO:} explain Bezout's algorithm.
+\todo{explain Bezout's algorithm}
 
 
 \paragraph{\bf Chinese Remainder Theorem (CRT) For Dummies}
