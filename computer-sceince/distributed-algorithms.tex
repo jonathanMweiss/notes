@@ -612,3 +612,37 @@ single-shot consensus. However, there are some differences
          Since $replica_2$ already saw the command - it sees the same command more than once (as wanted).
     \end{itemize}
 \end{xca}
+
+\section{Linearization in Distributed Systems}
+Multiple nodes accessing replicated data.
+How do we define "concistency" in such a system?
+This definition should be supported both in terms of concurency, and in terms of failures.
+
+The strongest option is Linearization.
+Informally every operation takes effect \emph{atomically}
+sometime after it started and before it finished.
+
+So all operations (reads or writes) behave as if executed on a single copy of
+the data, managed by a single server (even if there are in fact multiple replicas).
+As a result, in a linearized system, every operation always response 
+with and "up to date" value ("Strong consistency" is a synonym for linearization).
+
+This is relevant for concurency on a threaded system too.
+
+\emph{Linearziability $neq$ serializability}
+
+
+Under Linearziability, if operations overlap in real time 
+it is valid if the actual (set/get) operations are ordered one or the other.
+That is, in linearization the operation must take affect somewhere between
+its start and end time.
+ 
+ \begin{figure}[t]
+        \centering
+        \includegraphics[scale=0.25]{computer-sceince/distributed-media/linearization.png}
+        \caption{ If both overlap in time, it is okay that one starts after the other or the other way around
+        }
+\end{figure}
+
+\todo{could not find formal definition.}
+
