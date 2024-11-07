@@ -85,10 +85,6 @@ The addition law, and adding to the set $E(F_p)$ the member $\mathcal{O}$,
  which servers as the identity member, turns it into a group. I'm not getting into the addition laws.
 
 \section{Elliptic curve cryptography}
-\red{TODO, put here an encryption scheme, and a signature scheme (can use schnorr here honestly)
-The most important thing to remember is that elliptic curve cryptography 
-assumes hard exponent, and everything is similar to those algorithms
-}
 
 
 Given two points $P$ and $\alpha \cdot P$, where $\alpha \in \Z_q$, it is hard to compute $\alpha$.
@@ -96,6 +92,43 @@ The best known algorithm to compute $\alpha$ is $\Omega(\sqrt{q})$.
 There are a few exceptions to these rules, and thus one should be careful when defining a new curve.
 So it's better to use some specific already implemented and used curve rather than 
 generating a random prime $p$ and a random curve over $\F_p$.
+\todo{TODO, put here an encryption scheme, and a signature scheme (can use schnorr here honestly)
+The most important thing to remember is that elliptic curve cryptography 
+assumes hard exponent, and everything is similar to those algorithms
+}
+
+\subsection{ECDSA}
+The ECDSA is essential DSA over elliptic curves.
+The most commonly known is the signature algorithm used by bitcoin and other cryptocurrencies:
+ECDSA, which commonly refers to the following algorithm:
+
+\begin{description}
+  \item[Key generation] Grab a random number $x\in \mathbb{F}_q$ where the elliptic curve  
+  is a vector space over $\mathbb{F}_q$, and $q$ is the order of the group.
+  and return $(sk,pk)=(x,xG)$, where G is the generator of the elliptic curve 
+  (Usualy $G$ is a specific base point, because over a a group with $q$ points, 
+  almost every point is a generator - due to Fermat's little theorm \ref{fermats-little-theorem}).
+  \item[Signing] $(r,s)=\sigma = Sig_{sk}(m)$ is generated as follows:
+  \begin{enumerate}
+    \item generate a random scalar $k\in \mathbb{F}_q$.
+    \item compute $R=g^{k^{-1}}$
+    \item compute $r=H(R)$ (notice that this is now a scalar).
+    If $r mod=0$ then go back to step 1.
+    \item compute $s=k^{-1}\cdot(H(m)+x\cdot r)$\todo{This part is incorrect because
+     they want specific bits from $H(m)$, but it's not crucial to understand the algorithm,
+      so I skipped it.}
+    \item set $\sigma=(r,s)$.
+  \end{enumerate}
+  \item[Verification] To verify a signature $\sigma=(r,s)$ on message $m$ with 
+  public key $pk$, one needs to compute the following 
+  $ R'= G^{m\cdot s^{-1}}\cdot pk^{r\cdot s^-1} $ (note that this is a point in the EC).
+  Notice that if you subtitute $s$ and $pk$ to their actual values, you should get $R$ if 
+  the signature is valid.
+  Then, check that $r=H(R')$, if it is accept the signature.
+\end{description}
+
+\subsection{Schnorr Signature}
+\todo{need to fill this...}
 \section{Pairing based cryptography}
 We now show that certain elliptic curves have an additional structure,
 called a pairing, which enables a world of new schemes that could not be built

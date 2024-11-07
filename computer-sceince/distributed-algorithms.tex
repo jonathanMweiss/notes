@@ -644,5 +644,16 @@ its start and end time.
         }
 \end{figure}
 
+Some distributed systems do not provide linearization. 
+for instance, quorum write, but not quorum read (quorum is performed only by the client).
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[scale=0.25]{computer-sceince/distributed-media/linearization-failure.png}
+    \caption{Notice that $client_3$ started after $client_2$, but got value
+    from version $v_0$, while $client_2$ got the value from version $v_1$.
+    }
+\end{figure}
+
 \todo{could not find formal definition.}
 
