@@ -91,7 +91,7 @@ is asynchronous) but provide liveness and termination guarantees only
 after GST (only when the system is synchronous).
 
 
-\begin{xca}
+\begin{xca}[quiz 1.A]
     In the Synchronous model with parameter $\Delta$ which of the following are true:
     \begin{enumerate}
         \item Some message is sent at time $t$ and arrives at time $t+\Delta/4$.
@@ -112,7 +112,7 @@ after GST (only when the system is synchronous).
 
 \end{xca}
 
-\begin{xca}
+\begin{xca}[Quiz 1.B]
     In the Asynchronous model which of the following are true:
     \begin{enumerate}
         \item There is some finite number $\Delta$ such that for every finite execution, all
@@ -128,12 +128,14 @@ after GST (only when the system is synchronous).
         \item False, all messages arrive, although at an unknown time.
         \item \todo{Verify with Teach} False, the adversary can delay any message by a finite 
         amount of time. Therefore, it can delay the message beyond the execution time.
+        % $\forall finite RUNS \exists \Delta $ such that the delay is less than $\Delta$.
+        % since Delta is finite, can't the adversary choose $\Delta +1$?
         \item False, the protocol designer cannot assume any time bound.
     \end{enumerate}
 \end{xca}
 
 
-\begin{xca}
+\begin{xca}[Quiz 1.C]
     In the Partially Synchronous model with parameter $\Delta$ which of the following are true:
     \begin{enumerate}
         \item The protocol designer can design protocols that wait till they 
@@ -147,17 +149,17 @@ after GST (only when the system is synchronous).
     \paragraph{Solution}
     \begin{enumerate}
         \item No. The GST cannot be signaled or detected.
-        \item From the definition, any message sent at time $x$ ($=2\cdot \Delta$) must be delivered by
+        \item Yes,from the definition. any message sent at time $x$ ($=2\cdot \Delta$) must be delivered by
          time $\Delta + \max(x, GST)$. 
          Consequently, a message sent at time $GST - 2\Delta$ will be delivered at most by time $GST + \Delta$.
-        \item Yes, setting $\Lambda$ equal to $GST + \Delta$ implies 
+        \item no. but if GST is the same for all executions yes, setting $\Lambda$ equal to $GST + \Delta$ implies 
         that every message transmitted before $GST$ will reach its intended recipients by the time $\Lambda$ elapses.
         \item False. it'll have a delay of at most $\Delta$.
     \end{enumerate}
 \end{xca}
 
 
-\begin{xca}
+\begin{xca}[Quiz 1.D]
     Which are true?
     \begin{enumerate}
         \item Any execution in the Partially Synchronous model with parameter
@@ -241,7 +243,7 @@ proof is similar to the first theorem.
     the intesection of two such sets will have at least $f+1$ non faulty parties.
 \end{corollary}
 As one can notice, $f+1$ means at least one honest between the two sets.
-\begin{xca}
+\begin{xca}[Quiz 1.E]
     Which of the following are true:
     \begin{enumerate}
         \item In the dishonest minority model the adversary can corrupt at most half the parties but
@@ -257,7 +259,7 @@ As one can notice, $f+1$ means at least one honest between the two sets.
     \paragraph{Solution}
 
     \begin{enumerate}
-        \item I think so? i mean $n\ge2f+1$, so the adversary can have one less then half.
+        \item I think so? i mean $n \ge 2f+1$, so the adversary can have one less then half.
         \item Yes.
         \item No, a set of size n/2-1 can contain just honest members.
         \item No, for instance $n=4f+1$, the intersection of these two sets is at most of size $2f+1$ which means we can have 
@@ -267,7 +269,7 @@ As one can notice, $f+1$ means at least one honest between the two sets.
 
 \end{xca}
 
-\begin{xca}
+\begin{xca}[Quiz 1.F]
     Which of the following are true:
     \begin{enumerate}
         \item If $f<n/3$ then any two sets of size $n-f$ intersect with at least $f+1$ non-faulty parties.
@@ -429,7 +431,7 @@ be able to remove in-memory corrupt data).
 
 
 
-\begin{xca}
+\begin{xca}[Quiz 1.G]
     Against a deterministic protocol:
     \begin{itemize} 
         \item An adaptive adversary has the same power as a static adversary.
@@ -441,7 +443,10 @@ be able to remove in-memory corrupt data).
     
 \paragraph{Solution}
 \begin{itemize}
-    \item Yep, the adversary can chose in advance the $f$ parties to corrupt, since it can't be surprised by randomness.
+    \item Depends. If the the input is known in advance- it doesn't matter.
+    if the input isn't know in advance, then once it is revealed the adversary can take hold of its specific targets.
+    Which the static one cannot.
+
     \item This is not clear enough. does it take time for the adversary to understand whether it wants to corrupt? 
     Can the advesary understand what the participant can send before it does? does it know the input for the system 
     in advance?
@@ -452,7 +457,7 @@ be able to remove in-memory corrupt data).
 
 
 
-\begin{xca}
+\begin{xca}[Quiz 1.H]
     Which of the following are true:
     \begin{itemize} 
 \item Any adversary that can cause $f$ omission corruptions can simulate an adversary that
@@ -468,13 +473,13 @@ adversary that just does crash corruptions (for the same number of corruptions).
 \begin{itemize}
     \item Yes.
     \item No? we didn't define malicious corruptions, but i assume you mean byzantine?
-    \item I don't know, the adversary in adaptive can gain more than f?
-    \item It can both.
+    \item I don't know, the adversary in adaptive can gain more than f?\todo{NOTE: adversary can at most have f.} 
+    \item (no) It can do both.
 \end{itemize}
 \end{xca}
 
 
-\begin{xca}
+\begin{xca}[Quiz 1.I]
     Say the first round a protocol chooses a uniformly random sub-committee of 
     size $<f$. Then only parties in the sub-committee send messages for two rounds.
     \begin{itemize} 
@@ -560,7 +565,7 @@ We demand that the following properties hold:
     a non-faulty replica is eventually recorded in the log,
      i.e., eventually $\exists s$ and non-faulty replica $i$ such that $\log_i[s]=x$.
 
-    \item[Validity] There is an injective mapping from the set of 
+    \item[Validity] There is an \emph{injective} mapping from the set of 
     log entries (not including $\bot$) to the set of inputs.
     In other words, every log entry must originate from an input and 
     every input appears in the log at most once. 
@@ -574,213 +579,36 @@ We demand that the following properties hold:
 \end{description}
 
 
+\paragraph{Comparison to single-shot consensus, broadcast, and other notes}
+The requirements are similar in multi-shot consensus and 
+single-shot consensus. However, there are some differences
+\begin{description}
+    \item[Consensus on a sequence of values] Conceptually, one can sequentially
+    compose single-shot consensus instances to obtain multi-shot consensus.
+    There are better alternatives, though.
+
+    \item[External validity] Usually multi-shot concensus adds more constraints 
+    (depending on the application) to the validity requirement. 
+    For instance, all accepted values must be valid transactions.
+\end{description}
 
 
+\todo{insert primary-backup for crash-failure in sync model.}
 
+\begin{xca}[Quiz 1.J]
+    Consider a primary backup protocol:
+    \begin{itemize} 
+        \item Show a concrete execution where the client library gets the same output sent to it more than once.
+        \item Show a concrete execution where the backup gets the same command sent to it more than once.
+    \end{itemize}
 
-
-% \begin{description}
-% \item [{Passive}] Also known as Honest-but-curios. Will follow the protocol
-% in earnest, but allows the adversary to learn any information in its
-% $view$.
-% \item [{Crash}] Once corrupted, it'll stop sending or receiving messages.
-% \item [{Omission}] Does not deviate from the protocol, but will lose or
-% wont send messages according to the adversaries will.
-% \item [{Byzantine}] this gives the adversary full power to control the
-% party and take any (arbitrary) action on the corrupted party.
-% \end{description}
-% \begin{rem}
-% Each level of corruption, subsumes the previous level.
-% \end{rem}
-
-% \begin{rem}
-% There are more types of corruptions, which we'll investigate later.
-% \end{rem}
-
-
-% \subsection{Computational power}
-% \begin{description}
-% \item [{Unbounded}] the adversary has unbounded computational power. This
-% model often leads to notions of perfect security or statistical security.
-% \item [{Computationally-bounded}] the adversary is at most a polynomial
-% advantage in computational power over the honest parties. Typically
-% this means that the adversary cannot (except with negligible probability)
-% break the cryptographic primitives being used. For example, typically
-% assume the adversary cannot forge signatures of parties not in its
-% control.
-% \item [{Fine-grained$\,\,$computationally--bounded}] there is some concrete
-% measure of computational power and the adversary is limited in a concrete
-% manner. This model is used in proof-of-work based protocols.
-% \end{description}
-
-% \subsection{Visibility}
-
-% \paragraph{The visibility is the power of the adversary to see the messages
-% and the states of the non-corrupted parties. Again, there are two
-% basic variant:}
-% \begin{description}
-% \item [{Full$\,\,$information}] here we assume the adversary sees the
-% internal state of all parties and the content of all message sent.
-% This often limits the protocol designer. See for example: Feige\textquoteright s
-% selection protocols, or Ben-Or et al\textquoteright s Byzantine agreement. 
-% \item [{Private$\,\,$channels}] in this model, we assume the adversary
-% cannot see the internal state of honest parties and cannot see the
-% internal content of messages between honest parties. The adversary
-% does know when a message is being sent and depending on the communication
-% model can decide to delay it by any value that is allowed by the communication
-% model.
-% \end{description}
-% In round based protocols:
-% \begin{description}
-% \item [{Rush}] the adversary can see all messages in a round before choosing
-% what to send.
-% \item [{non-Rush}] the adversary must commit to the round $i$ messages
-% it sends before it receives any round $i$ messages from non-faulty
-% parties.
-% \end{description}
-
-% \subsection{Adaptivity }
-
-% \paragraph{Adaptivity is the ability of the adversary to corrupt dynamically
-% based on information the adversary learns during the execution. There
-% are three basic variants: static, adaptive, and mobile. The adaptive
-% model has several sub-variant. We will cover here only the simplest
-% one.}
-% \begin{description}
-% \item [{Static}] the adversary has to decide which $f$ parties to corrupt
-% before executing the protocol.
-% \item [{Adaptive}] the adversary can decide dynamically as the protocol
-% progresses who to corrupt based on what the adversary learns over
-% time. The main parameter still needs to be decided on how long
-% it takes between the adversary's decision to corrupt and the event that
-% the control is passed to the adversary. One standard assumption is
-% that this is instantaneous. Another is that it takes an additional
-% round.
-% \item [{Mobile}] the adversary can decide dynamically who to corrupt and
-% who to un-corrupt. The number of corrupted parties at any given
-% time is at most $f$, but the set of corrupted parties
-% may change over time. It is often required that there is a gap between the time
-% the adversary corrupts one party and the time it is allowed to corrupt
-% another.
-% \end{description}
-% %
-
-% \section{The Trusted Setup Phase }
-
-% When you want to understand a decentralized system, you first need to ask whether it has a trusted setup phase.
-
-% \paragraph{Many distributed computing and cryptography protocols require
-% a trusted setup. A trusted setup is a special case of a multi-phase
-% protocol. We call the first \textbf{phase} the setup phase and the
-% second phase the main phase. Two properties often distinguish
-% a setup phase from the \textbf{main phase}:}
-% \begin{itemize}
-% \item Typically, the main phase implements some repeated task. The setup
-% phase is done once and enables repeating many instances of the main
-% phase.
-% \item The setup phase is often input-independent. Namely, it does not use
-% the private inputs of the parties. Furthermore, sometimes the setup
-% phase is even function-independent, meaning that the specific function
-% that the parties wish to compute is irrelevant; the parties at this
-% phase only know that they want to compute some function. As such,
-% the setup and main phases are often called offline (or preprocessing)
-% and online respectively (i.e., parties may run the offline phase when
-% they realize that at some later point in time, they will want to run
-% some function on inputs they do not know yet).
-% \end{itemize}
-
-% \paragraph{think of a setup phase as an ideal functionality run by a wholly
-% trusted entity, denoted T. For instance, assuming Public-Key Infrastructure
-% (PKI) means that we assume there is a wholly trusted entity to
-% which every party submits its public encryption (and verification) key,
-%  and that entity broadcasts those keys to all parties. In this
-% chapter, we will review some of the common types of trusted setup assumptions
-% by looking at their ideal functionalities.}
-
-% \paragraph{One way to model that trusted entity follows: There is an initial
-% set of parties $p_{1},\dots,p_{n}$ who interact with the trusted
-% entity $T$. The parties may send inputs $x_{1},\dots,x_{n}$ to $T$
-% (where $x_{i}$ is $p_{i}$'s input), who in turn, runs some function
-% $f\left(r,x_{1},\dots,x_{n}\right)$ where $r$ is a uniformly random
-% string, obtains outputs $y_{1},\dots,y_{n}$ and hands $y_{i}$ to
-% $p_{i}$. This process may be \textquotedblleft reactive\textquotedblright ,
-% namely, it may repeat multiple times. As this already describes an
-% idealized world, we always assume that the communication channels
-% between the parties and the trusted entity are secure.}
-
-% \paragraph{we argue that most of those functionalities fall into one of out
-% of the five categories below:}
-% \begin{enumerate}
-% \item No Setup: This is the simplest case, in which we don\textquoteright t
-% really use any trusted entity or any trusted setup. The minimal communication
-% assumption is that parties have access to some type of communication
-% medium. Often, though, \textquotedblleft no setup\textquotedblright{}
-% also refers to a setting where parties\textquoteright{} identities
-% are globally known.
-% \item Pairwise setup: Here we assume there is some set of initial parties
-% $p_{1},\dots,p_{n}$ and each two parties have a reliable communication
-% channel between them. In particular, in the simplest pairwise setup
-% assumption when party $p_{i}$ receives a message on the $(i,j)$
-% channel it knows that party $p_{j}$ sent this message. 
-% \item Broadcast setup: We assume a setup whose implementation requires no
-% secrets. The canonical example is a PKI setup that requires broadcast
-% only to relay the public keys. 
-% \item Partially public setup: often called the Common Reference String (CRS)
-% model. Many cryptographic protocols leverage this setup for improved
-% efficiency. A special case of this setup is a randomness beacon. 
-% \item Fully private setup: often called the offline phase in the context
-% of secure multiparty computation (MPC) protocols. Here, the setup
-% phase computes a rather complex output that is party-dependant.
-% \end{enumerate}
-% Let us detail these five setup variants.
-
-% \subsection{No Setup }
-
-% If a protocol has no setup, then there is nothing to worry about.
-% It\textquoteright s easier to trust such protocols. On the other hand,
-% there are inherent limitations.
-
-% \paragraph{A setting with no setup has two main flavors. The first assumes really
-% nothing on the knowledge of the parties and is sometimes called anonymous
-% channel model The second assumes global knowledge of the identities
-% of all parties, which is quite acceptable in many real world applications.
-% Both flavors suffer from non-authenticated channels, meaning that
-% the adversary can launch man-in-the-middle attacks arbitrarily.}
-
-% \paragraph{In traditional cryptography (where the adversary is polynomially-bounded),
-% this type of model was first studied by Dolev, Dwork and Naor, for
-% specific tasks like non-malleable encryption and zero-knowledge and
-% later generalized to arbitrary computations by Barak et al. (The latter
-% assumes global identities.)}
-
-% \paragraph{Another line of research, in the anonymous model, is based on a more
-% refined assumption on the adversarial power. Namely, the assumption
-% limits the computational power of the adversary (e.g., hash rate)
-% compared to the computational power of the honest parties. It was
-% shown possible to construct a limited notion of PKI from scratch even
-% in this slim model. }
-
-% \subsection{Pairwise Setup}
-
-% Here, we assume that the communication channel between every pair
-% of parties is authenticated. This is a classic assumption in distributed
-% cryptography and distributed computing. The Fisher, Lynch and Merritt
-% 1985 lower bounds show that even weak forms of Byzantine Agreement
-% are impossible when $n\le3\cdot f$ even given this setup, and even
-% against a traditional polynomially-bounded adversary.
-
-% \paragraph{For $n>3\cdot f$, on the other hand, this setup allows perfect implementation
-% of any functionality. This is the celebrated result of Ben-Or, Goldwasser
-% and Widgerson 1988 (see Asharov and Lindell for a full proof).}
-
-% \subsection{TODO: complete from this blogm page: }
-
-% https://decentralizedthoughts.github.io/2019-07-19-setup-assumptions/
-
-% \section{Broadcast}
-
-% todo: https://decentralizedthoughts.github.io/2019-10-22-flavours-of-broadcast/
-
-% \section{Sync HotStuff}
-
-% A Simple and Practical State Machine Replication.
+    \paragraph{Solution}
+    \begin{itemize}
+        \item client sends to primary. primary fails after responding to client, once backup changes view it sends output again.
+        \item in the multiple backups case: assume primary is $replica_0$
+         client sends command to $replica_0$. 
+         it sends to $replica_1$ and $replica_2$ then fails.
+         after no heartbeat arrives $replica_1$ resends the last command to $replica_2$. 
+         Since $replica_2$ already saw the command - it sees the same command more than once (as wanted).
+    \end{itemize}
+\end{xca}
