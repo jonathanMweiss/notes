@@ -1,5 +1,15 @@
 
-\chapter{Polynomial Algorithms}
+\chapter{Polynomial Algorithms}\label{polynomials}
+
+
+\section{Coefficient Representation}\label{polynomials:coeffcient-pres}
+A coefficient representation of a polynomial $P(x)$ is a vector of coefficients 
+$a=(a_0,a_1,\dots, a_{n-1})$.
+In coefficient representation, we can evaluate or add a polynomial in $O(n)$ time. 
+unfortunately multiplying two polynomials takes $O(n^2)$.
+The operation of multiplying two polynomials $a,b$ is called convolution $c=a\otimes b$.
+\todo{Define coefficient representation mroe formally}
+
 \section{Polynomial evaluation}
 \red{add begining}
 \begin{defn} \label{def:poly-eval}
@@ -9,8 +19,40 @@
   the expression of the polynomial.
   We call this action polynomial evaluation of $P$ at $a$.
 \end{defn}
-\red{add horners rule/ horners algorithm.}
-\red{consider adding Multipoint evaluation.}
+\todo{add horners rule/ horners algorithm. which is a fast way to evaluate one point}
+\todo{consider adding Multipoint evaluation.}
+
+
+\section{Coefficient vs Point-Value representation}\label{polynomials:point-val-representation}
+We've defined one representation for polynomials, the coefficient representation~\ref{polynomials:coeffcient-pres},
+But there is another representation, which is used in numerous algorithms (e.g.,~\ref{schawtz-zippel},\ref{polynomials:multiplication}):
+
+
+A point-value representation of a polynomial $P(x)$ of degree-bound $n$ is a set of $n+1$ point-value pairs.
+$ \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}$, which uniquely defines it.
+
+\begin{theorem}[Uniqueness of an interpolating polynomial]
+  For any set $ \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}$ of $n+1$
+  point-value pairs such that all the $x_k$ values are distinct,
+  there is a unique polynomial $P(x)$ of degree-bound $n$ such that
+  $y_k = P(x_k)$. for $k\in[n]$ 
+\end{theorem}
+
+\begin{proof}
+  So let there be a polynomial $p(x) \neq 0$ of degree $n$ and a set $ \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}$
+  of points representing it. Let us assume in contradication that there exists $q(x)\neq p(x)$ and it also happens
+  that $p(x_0)=q(x_0), \dots, p(x_n)=q(x_n)$. That is, there is another polynomial that is evaluated to the same points,
+  making the representation non-unique.
+
+  So if such $q(x)$ exists, we can create a new polynomial $(p-q)(x)$, notice that $(p-q)$ is also of degree $n$.
+  $x_i$ is a root $0\le i\le n$ of $(p-q)(x)$, since $(p-q)(x_i)=p(x_i)-q(x_i)$, thus it has $n+1$ roots.
+  This is a contradication to the fundamental theorem of algebra \todo{cite}, that is, a polynomial $p(x)\neq 0$ 
+  of degree $n$ has at most $n$ roots. 
+\end{proof}
+
+Now that we know that this representation is unique, I'll claim without proof that
+there is a mapping that is both injective and surjective (bijective) from both representations.
+Thus these both know representations are isomorphic.
 
 \section{Polynomial Modulo}
 \red{TODO}
@@ -21,8 +63,7 @@ and some issues involving this subject.
 Given two polynomials $P(x)$ and $Q(x)$ of the same degree $d$, 
 how do we prove these are the same polynomials?
 We can calculate it and check $d$ points on each polynomial 
-since each polynomial can be solely defined by its point-value representation.
-\todo{provide proof.}
+since each polynomial can be solely defined by its point-value representation\ref{polynomials:point-val-representation}.
 
 
 Schwartz-Zippel \cite{SZ} made this notion much more efficient 
@@ -98,35 +139,25 @@ are ring homomorphisms.
 So, by finding roots of $F(X)$ one can find possible values where SZ still works. 
 unfortunately, this might be a smaller set than we thought.
 
-\section{Fast Polynomial Multiplications}
-\paragraph{representations of a polynomial}
-we can either use \emph{coefficient representation} or \emph{Point-value representation}.
+\section{Polynomial addition}\label{polynomials:addition}
+\section{Fast Polynomial Multiplications}\label{polynomial:multiplication}
 
-\paragraph{coefficient representation.}
-A coefficient representation of a polynomial $P(x)$ is a vector of coefficients 
-$a=(a_0,a_1,\dots, a_{n-1})$.
-In coefficient representation, we can evaluate or add a polynomial in $O(n)$ time. 
-unfortunately multiplying two polynomials takes $O(n^2)$.
-The operation of multiplying two polynomials $a,b$ is called convolution $c=a\otimes b$.
+We know how to add two polynomials as efficient as possible~\ref{polynomials:addition},
+but the simple definition of polynomial multiplication isn't as efficient, and demand $O(n^2)$.
+Many complex algorithms make use of polynomial multiplication, and as a result, the algortihm 
+we are going to describe was announced as one of the top 10 Algorithms of 20th
+Century by the IEEE magazine Computing in Science and Engineering.\cite{814652}
 
 
-\paragraph{Point-value representation.}
-A point-value representation of a polynomial $P(x)$ of degree-bound $n$ is a set of $n$ point-value pairs.
-$$ \{ (x_0,P(x_0)),\dots , (x_{n-1}, P(x_{n-1})) \}$$
+We begin by remembering the point-value representation~\ref{polynomials:point-val-representation}.
+In this representation, once can perform both addition and multiplication between two polynomials 
+by performing point to point operations (similar to addition in coefficient representation)\todo{provide proof?}.
+As a result multiplication and addition in this representation cost $O(n)$.
 
-\begin{theorem}[Uniqueness of an interpolating polynomial]
-  For any set $ \{ (x_0,P(x_0)),\dots , (x_{n-1}, P(x_{n-1})) \}$ of $n$
-  point-value pairs such that all the $x_k$ values are distinct,
-  there is a unique polynomial $P(x)$ of degree-bound $n$ such that
-  $y_k = P(x_k)$. for $k\in[n]$ 
-\end{theorem}
 
-Due to the above theorem, we can see that this representation defines a polynomial well. 
-And one can move between both representations.
-
-Because $C(X)=A(X)B(X)$ for any $x_j$, then $C(x_j)=A(x_j)B(x_j)$. Meaning 
-multiplication and addition in this representation cost $O(n)$.
- 
+The naive algorithm of moving from coefficient representation to point-value representation
+requires evaluating the polynomials $n+1$ times, and as a result runs in $O(n^2)$.
+Thus, to perform polynomial multiplication we'll begin with finding a clever and fast way to move between representations.
 \subsection{FFT}
 Luckily there is a way to move to and from both representations quickly using the \emph{roots of unity}.
 
