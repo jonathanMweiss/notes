@@ -386,6 +386,7 @@ Each of these broadcasts costs $O(n^2)$. with up to constant rounds of broadcast
 
 
 \section{Largange interpolation in the exponent}\label{lagrange-in-exponent} %https://crypto.stackexchange.com/questions/67500/how-to-apply-lagrange-interpolation-on-bilinear-pairings
+\todo{The following is explanation regarding lagrange interpolation, give it a place of honour in the Algorithm.tex file}
 We can modify cryptographic schemes using Lagrange interpolation to work with $f<n$ participants.
 
 Given a dataset of coordinate pairs $(x_j,y_j)$ on 
@@ -397,6 +398,7 @@ a polynomial $P(X)=\sum_{i=0}^{k}{a_i^{i}\cdot x^k}$ we can interpolate it as fo
 That is, we ensure the new polynomial pass through each point in its correct point-value representation $L(x_j)=y_j$.
 
 
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Information}
 When I think of the interpolation, I think Lagrange did something very clever in the above scheme:
 He didn't know how the polynomial looks like.
 But he knew that there is only one polynomial of degree $f$ that passes
@@ -405,6 +407,9 @@ So he created a polynomial that will pass through the exact $f+1$ points, even i
 where else this polynomial goes through, and because only one polynomial can pass through these same points
 the newly built polynomial (with the method above) must be equal to the original polynomial
 passing through these specific $f+1$ points.
+\end{bclogo}
+
+
 
 \subsection{Using it in crypto}
 For our convinicece, we publish onlt shares of the form: $\{(i,P(i))| i > 0\}$.
