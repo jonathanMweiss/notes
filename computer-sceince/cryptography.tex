@@ -307,11 +307,39 @@ We'll need a few components before being able to construct an IBE:
 \chapter{Secret sharing, distributed key generation and threshold cryptography}
 \section{Shamir secret sharing}
 Given a secret $S$, generate random polynomial 
-$p = S + a_0\cdot x + a_1\cdot x+a_2\cdot x^2+\dots$ of degree $f+1$.
+$p = S + a_0\cdot x + a_1\cdot x^2+a_2\cdot x^3+\dots$ of degree $f+1$.
 create shares $(p(1),p(2),\dots, p(n))$ where $n\ge f+1$ and send it to nodes $(1,2,...n)$.
 The nodes will publish their shares when they want to reconstruct the secret.
-Using Lagrange interpolation and $f+1$ shares, one can reconstruct the polynomial $p(0)=S$ to learn the secret.
 
+
+Once a party in the protocol has a hold of $f+1$ shares, 
+it can recover the secret by creating an equations system,
+and solve for the coefficients using $f+1$ shares as follows:
+\begin{align*}
+  & S +a_0\cdot 1^1 + a_1\cdot 1^2  + \dots = p(1)\\
+  & S +a_0\cdot 2^1 + a_1\cdot 2^2  + \dots = p(2)\\
+  & \vdots \\
+  & S +a_0\cdot (f+1)^1 + a_1\cdot (f+1)^2  + \dots = p(f+1)
+\end{align*}
+
+
+This solution is simple, but is limiting in other factors (see~\ref{lagrange-in-exponent}).
+In addition, it isn't very efficient; most known algorithms for solving linear equations 
+demand $O(n^3)$.
+One can improve performance by relying on Lagrange interpolation, which 
+can be implemented in $O(n^2)$ (again, see \ref{lagrange-in-exponent}).
+
+
+\paragraph{Improving Performance}
+While Lagrange interpolation is highly efficient when interpolating, it assumes we don't have 
+any structure over the points that the polynomial is evaluated on.
+
+By relying on roots of unity, we can both create the shares of the polynomial, and reconstruct it 
+via NTT (see~\ref{ntt}). 
+Doing so, we can perform secret sharing or secret reconstruction in $O(n\log n)$ complexity.
+
+\paragraph{Error Corrections}
+\red{TODO}
 \section{Verifiable secret sharing}
 The dealer will generate a random polynomial $P(x)=S+a_1\cdot x +a_2\cdot x^2 +\dots a_n\cdot x^n$. 
 It'll broadcast the polynomial as follows: $\{g^{a_i} | i\in [n]\cup {S}\}$.
@@ -357,7 +385,7 @@ Each of these broadcasts costs $O(n^2)$. with up to constant rounds of broadcast
  That is, computing $ \{ g^{\sum_{j}{a_{1j}}}, g^{\sum_{j}{a_{2j}}},\dots\} $  is $O(n^2)$, and computing it for each player: $O(n^3)$ 
 
 
-\section{Largange interpolation in the exponent} %https://crypto.stackexchange.com/questions/67500/how-to-apply-lagrange-interpolation-on-bilinear-pairings
+\section{Largange interpolation in the exponent}\label{lagrange-in-exponent} %https://crypto.stackexchange.com/questions/67500/how-to-apply-lagrange-interpolation-on-bilinear-pairings
 We can modify cryptographic schemes using Lagrange interpolation to work with $f<n$ participants.
 
 Given a dataset of coordinate pairs $(x_j,y_j)$ on 
