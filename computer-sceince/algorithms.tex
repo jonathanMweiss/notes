@@ -140,7 +140,7 @@ So, by finding roots of $F(X)$ one can find possible values where SZ still works
 unfortunately, this might be a smaller set than we thought.
 
 \section{Polynomial addition}\label{polynomials:addition}
-\section{Fast Polynomial Multiplications}\label{polynomial:multiplication}
+\section{Fast Polynomial Multiplications}\label{polynomial:multiplication}\label{section:fft}
 
 We know how to add two polynomials as efficient as possible~\ref{polynomials:addition},
 but the simple definition of polynomial multiplication isn't as efficient, and demand $O(n^2)$.
@@ -410,7 +410,7 @@ we can find the rest by computing the powers of $\omega_0$ up to $n$.
 
 But how do we find the generator to begin with? 
 There is a randomised algorithm to find a generator in an expected 
-$\approx O(\sqrt{q-1})O(\log^2{q}\cdot \log (\log(q-1)))$ time for small primes.
+$\approx O(\sqrt{q-1})+O(\log^2{q}\cdot \log (\log(q-1)))$ time for small primes.
 For larger primes it'll longer, but it is still feasible ($O(e^{\log q-1})$).
 
 The algorithm itself is based on factorising $q-1$ into prime factors, and then

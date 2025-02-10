@@ -1,24 +1,28 @@
 
 \part{Algebraic structures}
-This section was motivated by a theorem for polynomial identity, which is used in many cryptography applications:
-\begin{lemma}[DeMillo-Lipton-Schwartz-Zippel lemma] 
-\label{schawtz-zippel}
-Let $p\in \F[x_1,x_2,x_3,\dots, x_n]$ be a non-zero polynomial of a total 
-degree $d\ge0$ over a field $\F$. Let $S$ be a finite set of $\F$ and let 
-$(r_1,r_2,\dots,r_n)$ be selected at random, \emph{independently and uniformly} from $S$.
-Then 
-$$ \Pr{[p(r_1,r_2,\dots,r_n)=0]}\le \frac{d}{|S|}$$
-\end{lemma}
+In this section I'll discuss basic definitions and theorems used in cryptography.
+This is by no means a comprehensive guide, 
+but rather a collection of definitions and theorems that I found useful.
+% This section was motivated by a theorem for polynomial identity, which is used in many cryptography applications:
+% \begin{lemma}[DeMillo-Lipton-Schwartz-Zippel lemma] 
+% \label{schawtz-zippel}
+% Let $p\in \F[x_1,x_2,x_3,\dots, x_n]$ be a non-zero polynomial of a total 
+% degree $d\ge0$ over a field $\F$. Let $S$ be a finite set of $\F$ and let 
+% $(r_1,r_2,\dots,r_n)$ be selected at random, \emph{independently and uniformly} from $S$.
+% Then 
+% $$ \Pr{[p(r_1,r_2,\dots,r_n)=0]}\le \frac{d}{|S|}$$
+% \end{lemma}
 
-Unfortunately, this doesn't work over quotient polynomial rings (e.g., instead of
- $\F[x]$, we have $\F[x]/(x^n+1)$).
+% Unfortunately, this doesn't work over quotient polynomial rings (e.g., instead of
+%  $\F[x]$, we have $\F[x]/(x^n+1)$).
 
-We'll start learning Algebraic structures in hopes we gain enough insight regarding \ref{schawtz-zippel}.
+% We'll start learning Algebraic structures in hopes we gain enough insight regarding \ref{schawtz-zippel}.
 \chapter{Group theory}
 
-\section{Group}
+\section{Groups Rings and Fields}
 \begin{defn}
-    A \emph{group} is a set $G$ with a binary operation $\cdot :G\times G\to G$ that satisfies the following constraints:
+    A \emph{group} is a tuple $(G,\cdot,e)$ where $G$ is a set and $\cdot$ is a binary operation on $G$
+    that satisfies the following constraints:
     \begin{itemize}
         \item the operation holds closure: if $x,y\in G$ so is $x\cdot y\in G$.
         \item the operation is associative: $\forall x,y,z\in G$ it holds that $(x\cdot y)\cdot z = x\cdot (y\cdot z)$.
@@ -26,6 +30,7 @@ We'll start learning Algebraic structures in hopes we gain enough insight regard
         \item Every element $x\in G$ has an inverse $x^{-1}\in G$ such that $x\cdot x^{-1} = e = x^{-1} \cdot x$.
     \end{itemize}
 \end{defn}
+
 
 \begin{remark}
     Note that a group can be an additive group or a multiplicative group.
@@ -39,15 +44,21 @@ We'll start learning Algebraic structures in hopes we gain enough insight regard
     group $G$ is called \emph{commutative}, or \emph{abelian} if for every $x,y\in G$ $x\cdot y=y\cdot x$ holds.
 \end{defn}
 
-\subsection{traits of groups}
-let $(G,\cdot,e)$ be a group, thus
-\begin{itemize}
-    \item $e$ is unique (like in fields).
-    \item the inverse of an element is unique.
-    \item $\forall x\in G (x^{-1})^{-1}=x$.
-    \item $\forall x,y\in G (x\cdot y)^{-1}=y^{-1}\cdot x^{-1}$
-\end{itemize}
 
+\begin{defn}
+    A \emph{monoid} is a group without the requirement of inverses.
+    That is, a monoid is a tuple $(M,\cdot,e)$ where $M$ is a set and $\cdot$ is a binary operation on $M$
+    that satisfies the following constraints:
+
+    \begin{itemize}
+    \item the operation holds closure: if $x,y\in G$ so is $x\cdot y\in G$.
+    \item the operation is associative: $\forall x,y,z\in G$ it holds that $(x\cdot y)\cdot z = x\cdot (y\cdot z)$.
+    \item has an identity element: there exists $e\in G$ such that $\forall x\in G x\cdot e = x = e\cdot x$
+    \end{itemize}
+\end{defn}
+
+
+Now that we've defined what a group is, let's highlight some important theorems and definitions:
 
 \begin{defn}
     denote $|G|$ as the \emph{order} of a group - its size.
@@ -66,135 +77,115 @@ let $(G,\cdot,e)$ be a group, thus
     Let $G$ be a group, and let $x\in G$ such that $order(x)=n$, thus $x^m=e$ iff $n|m$.
 \end{thm}
 
+From a group, we can define a field, which is a more complex structure.
+
+\begin{defn}
+    A \emph{field} is a tuple $(F,+,\cdot,0,1)$ where $F$ is a set and $+,\cdot$ are binary operations on $F$
+    such that $(F,+,0)$ is an abelian group, $(F,\cdot,1)$ is an abelian group, and the distributive law holds.
+
+    \begin{align*}
+        \forall x,y,z\in F, && x\cdot(y+z) = x\cdot y + x\cdot z
+    \end{align*}
+\end{defn}
+
+
+\begin{example}
+    The set of real numbers $\R$ is a field. 
+    The set of integers $\Z$ is not a field.
+    And every set of integers modulo a prime $p$ is a field.
+\end{example}
+
+With the above example, we remind the reader of Fermat's little theorem, which 
+is used in many theorems or applications of group theory. In this summary, I rely on Fermat's little theorem
+when discussing NTT and FFT (see \autoref{section:fft}).
+
 \begin{thm}[Fermat's little theorem]\label{fermats-little-theorem}
     let there be $x$ and $p$ prime, thus $x^p \equiv x \mod p$
     (and as a result $x^{p-1}\equiv e mod p$).
 \end{thm}
 
-\subsection{Subgroups}
+
+Now that we defined groups and fields, we can define rings.
+\begin{defn}
+    A \emph{ring} is a tuple $(R,+,\cdot,0,1)$ where $R$ is a set and $+,\cdot$ are binary operations on $R$
+    such that $(R,+,0)$ is an abelian group, $(R,\cdot,1)$ is a monoid, and the distributive law holds.
+
+\end{defn}
+
+In other words, a ring is a group with respect to addition, and a monoid with respect to multiplication.
+
+\begin{example}
+    The set of integers $\Z$ is a ring, since some numbers don't 
+    have an inverse (e.g., $2$ doesn't have an inverse in $\Z$). 
+\end{example}
+
+
+\subsection{Polynomial Rings}
+Polynomials are heavily used in cryptography, and are a fundamental concept in algebra.
+\begin{defn}
+    Let $R$ be a ring, we'll denote $R[X]$ the ring of polynomials
+    in $x$ with coefficients in $R$. Formally, an element of $R[X]$ is a finite
+    sum: $$ r_0 + r_1x +r_2x^2 +\dots +r_dx^d$$
+    With $d\in\Z\ge0$.
+
+    We treat $x$s as symbols, rather than actual values or variables.
+
+    We define polynomial addition and multiplication as follows:
+    \begin{align*}
+        f(x) + g(x) &= \sum_{i=0}^{d}{(a_i+b_i)x^i} \\
+        f(x) \cdot g(x) &= \sum_{i=0}^{d}{\sum_{j=0}^{d}{a_i\cdot b_j\cdot x^{i+j}}}
+    \end{align*}
+\end{defn}
+
+Since we discuss formal mathematics, it is important to remember that while polynomials seem like functions,
+in our context they are just a formal sum of terms and do not represent functions.
+As a result, to evaluate a polynomial, we'll need to define a function that receives a polynomial 
+and a value and returns the result of the polynomial at that value.
+
 
 \begin{defn}
-    Let there be a group $G$, $\emptyset \neq H\subseteq G$  is a \emph{subgroup} if it is a group
-     with respect to the same operation of $G$.
+    Ideal $I$ is a subset of a ring $R$ that is closed under addition and, or multiplication by elements of $R$.
+
+    Furthermore the product of an element of $R$ and an element of $I$ is in $I$.
+    That is, $\forall r\in R$ and $i\in I$ it holds that $r\cdot i\in I$.
 \end{defn}
-usually, we denote a subgroup with $H\le G$.
 
-\subsection{cosets}
+For instance, the group $7\Z=\{7\cdot i:i\in\Z\}$ is an ideal of $\Z$ because it is closed
+under addition and multiplication by elements of $\Z$,
+and the product of an element of $\Z$ and an element of $7\Z$ is also in $7\Z$.
 
+Given an ideal $I$ and a ring $R$, we can define the quotient ring $R/I$.
+This ring is defined as the set of equivalence classes of $R$ under the equivalence relation 
+$x\sim y$ iff $x-y\in I$ (that is, there exists $i\in I$ such that $x-y=i$).
+This $\sim$ notation can be confusing, so we'll denote the equivalence class of $a$ as $[a]=\{b\in \Z :a\sim b \}$.
+Furthermore, we note that $[a]+[b]=[a+b]$ and $[a]\cdot[b]=[a\cdot b]$.
 
+\begin{example}
+    $\Z/7\Z$ is the set of equivalence classes of $\Z$ under the equivalence relation
+    $x\sim y$ iff $x-y\in 7\Z$. 
+    For instance, $[0]=7\Z$, $[1]=1+7\Z$, $[2]=2+7\Z$, and so on.
 
-% \section{Motivation}
-% \section{Ring theory intro}
-% In this chapter, we'll discuss definitions, and theorems (many without proofs) extracted and summed by me from~\cite{galois-book-edinburgh} And HUJI's Algebraic structures 1.
+    One can quickly see that there are only 7 equivalence classes, because $[7]=7+7\Z=0+7\Z$ (we wrap around, 
+    and don't care about the actual value of the number, only its residue modulo 7).
 
-
-% Historically, the subject of Galois theory was motivated by the desire to solve polynomial equations $p(x)=0$
-% where $p(x)=\sum_{i=0}^{n}{a_i\cdot x^{i}}$.
-% How do we solve for $x$ with some given degree $d$? we know how to do it for $d\in \{0,1,2,3,4\}$. 
-% There was no formal way to solve for $x$ when $d\ge 0$. and it remained an open question for hundred of years.
-% Unfortunatly,Raffini and Abel(1823) proved that there is no formula for roots of a quintic using only. $+, -, \times , \div, \sqrt[n]{}$.
-
-
-% Evariste Galois gave a far more conceptual proof, inventing group theory on the way. 
-% He died at 20 in a duel (1831). The paper was only published in 1846.
-
-% \section{Rings and fields}
-
-% \begin{defn}
-%     We call a group $R$ a \emph{ring} if it is an abelian group (commutative) whose operation $+$,
-%     is called addition, with a second operation $\cdot$ callend multiplication that is 
-%     associative, distributive and has a multiplicative identity element.
-% \end{defn}
-
-% although it isn't always the case, we will assume all our rings are 
-% commutative with a multiplicative identity.
-
-% In terms of fields, a field is always a ring, 
-% it assumes more properties on the ggiven group.
-% a ring can have subsets which are fields.
+    This specific quotient ring is also known as $\Z_7$, which is also a field.
+\end{example}
 
 
-% \begin{example}
-%     There are many ways of building new rings from old. One of the most fundamental
-%      is that from any ring $R$, we can build the ring $R[t]$ of polynomials over
-%      $R$ (i'll define it formally later).
-% \end{example}
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{How I think about ideals}
+    This formal definition is quite confusing. I think about these ideals as groups 
+    with values we don't care about, and $R/I$ defines $R$ without 
+    the values we don't care about.
 
-% \begin{defn}
-%     Given two rings, $R$ and $S$, a \emph{homomorphism} from $R$ to $S$ is 
-%     a function $\phi : R\to S$ satisfying the following equations
-    
-%     \begin{align*}
-%         \phi(x+y) = \phi(x) + \phi(y), && \phi(0)=0  \\
-%         \phi(x\cdot y) = \phi(x)\cdot \phi(y), && \phi(1)=1 \textbf{\red{important!}}
-%     \end{align*}
-% \end{defn}
-% Note that we gain $\phi(-x) = -\phi(x)$ too. furthermore, that we switch the multiplicity
-% and addition operation to be the one that used in $S$
-% that is $\phi(x) \cdot \phi(y)$ elements of $S$, and $x\cdot y$ are elements of $R$.
+    So in the case of $Z/7Z$, we don't care about 
+    all the multiplications of $7$, only the first 7 of them.
+\end{bclogo}
 
-% lalalala
-% \begin{lemma}
-%      If for some function $\phi:R\to S$ it holds that: 
-%     $\phi(x+y) = \phi(x) + \phi(y)$  and $\phi(x\cdot y) = \phi(x)\cdot \phi(y)$,
-%     for all $x,y\in R$ than, $\phi$ is a homomorphism.
-% \end{lemma}
 
-% \begin{defn}
-%     A sub ring of a ring $R$ is a subset $S \subseteq R$ that contains 0 and \red{1} 
-%     and is closed under addition, multiplication and negatives.    
-% \end{defn}
+Another important example if the polynomial quotient ring $R[X]/X^d$. 
+This ring is the set of equivalence classes of $R[X]$ under the equivalence relation
+$f\sim g$ iff $f-g\in X^d$. Or in other words, all polynomials of degree less than $d$ are equivalent.
 
-% \begin{defn}
-%     If $R$ is a ring, we'll denote $R[X]$ the ring of polynomials
-%     in $x$ with coefficients in $R$. Formally, an element of $R[X]$ is a finite
-%     sum: $$ r_0 + r_1x +r_2x^2 +\dots +r_dx^d$$
-%     With $d\in\Z\ge0$.
-%     We treat $x$s as symbols, rather than actual values or variables.
-%     \red{todo: define poly addition and multiplication}
-% \end{defn}
 
-% \begin{remark}[technical but important]
-%     a polynomial $f(x)\in R[X]$ defined as $f(x)=\sum_{i=0}^{d}{a_i\cdot x^{i}}$. 
-%     can be evaluated as a function over $R$, defining $f:R\to R$ by $f(r)=\sum_{i=0}^{d}{a_i\cdot r^{i}}$
-%     However, in this generality, different polynomials can give rise to the same function!
-%     \begin{example}
-%         $R=\Z \\ 2\Z = {0,1}$ the two different polynomials
-%         $f(x)=x, g(x)=x^2$ give rise to the same function $R\to R$.
-%     \end{example}
-% \end{remark}
-
-% \section{Commutative Algebra}
-% In this section we gradually define preliminaries for the schwarts-zippel lemma, 
-% and polynomial homomorphism.
-
-% \begin{defn}
-%     Let $R$ be a ring. An element $a\in R$ is a \emph{unit} if there exists
-%      $b\in R$ such that $a\cdot b = b\cdot a = 1$. The set of all units is denoted by $R^*$.
-% \end{defn}
-
-% \red{define zero divisors as well when you have the time}.
-
-% \begin{defn}
-%     Let $\alpha_0,\alpha_1,\dots \alpha_m-1\in R$. We call $A=\{\alpha_0,\alpha_1,\dots \alpha_m-1\}$ an exceptional set
-%     if and only if $\alpha_i- \alpha_j\in R^*$ for all $i,j\in[m]$ with $i\neq j$. 
-%     We define Lenstra constant of $R$ to be the size of the biggest exceptional subset of $R$.
-% \end{defn}
-
-% \begin{remark}
-%     an exceptional set is a private case of a regular difference set,
-%     I will not discuss this here.
-% \end{remark}
-
-% Now That we've defined exceptional sets, we can talk about the polynomial evaluation homomorphism:
-
-% \begin{defn}[polynomial evaluation homomorphism]
-%     \red{TODO}
-% \end{defn}
-
-% Given an exceptional set, one can prove  the following:
-% \begin{lemma}[schwarts-zippel over rings~\cite{schwarts-zippel-over-rings}]
-%     Let $R$ be a commutative ring and $f: R^n \to R$ be an $n$-variate non-zero 
-%     polynomial. Let $A \subseteq R$ be an exceptional set. Then
-%     $$ \Pr_{x\leftarrow A^n}{[f(x)=0]} \leq \frac{\text{deg} f}{|A|}$$
-% \end{lemma}
+\section{Tricks}
+% TODO: discuss Ittai's trick for $A\cap B$ probabiltiy.
