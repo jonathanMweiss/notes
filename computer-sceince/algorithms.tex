@@ -396,15 +396,28 @@ such that $\alpha^n =1  \mod q $, and for every $0<k<n$ $\alpha^k \neq 1 \mod q$
 \end{thm}
 \begin{proof}
   relying on \autoref{fermats-little-theorem}, we know that $g^{q-1}=1 \mod q$.
-  So $\omega_0^n=g^{(q-1)/n}=1$, now we just need to explain away why $\omega_0^k \ne 1$ for 
+  So $\omega_0^n=(g^{(q-1)/n})^n=1$, now we just need to explain away why $\omega_0^k \ne 1$ for 
   every $0<k<n$.
   Let us assume in contradiction that there exists some $k<n$ such that $\omega_0^k=1$, then 
-  $\omega_0^k=g^{(q-1/n\cdot k)}=1$, more specifically, $g^c=1$ for $c<q-1$. thus, we have a 
+  $\omega_0^k=g^{(q-1/n)\cdot k}=1$, more specifically, $g^c=1$ for $c<q-1$. thus, we have a 
   cycle $(1,g,g^1,...g^{c-1})$, which is less than $q-1$ elements, meaning that $g$ is not 
   a generator, in contradiction.
 \end{proof}
 
-Now that we found the first root of unity, we can find the rest by computing the powers of $\omega_0$ up to $n$.
+Now that we found the first root of unity,
+we can find the rest by computing the powers of $\omega_0$ up to $n$.
+
+
+But how do we find the generator to begin with? 
+There is a randomised algorithm to find a generator in an expected 
+$\approx O(\sqrt{q-1})O(\log^2{q}\cdot \log (\log(q-1)))$ time for small primes.
+For larger primes it'll longer, but it is still feasible ($O(e^{\log q-1})$).
+
+The algorithm itself is based on factorising $q-1$ into prime factors, and then
+check that a random number $g$ is a generator by ensuring $g^{(p-1)/p_i} \not\equiv 1$
+for each $p_i$ prime factor of $q-1$ (where $q$ is the field's prime order).
+
+
 \paragraph{Neat Trick}
 \todo{This section would have saved me days of work, had I known it before.}
 One can make use of these roots of unity to find the roots of $X^n+1$ and $X^n-1$.
@@ -423,7 +436,7 @@ How do we find the roots of $X^{2n}-1$? Those are the $2n$-th roots of unity,
 which are easy to find!
 
 \paragraph{\bf Finding Inverse}
-\todo{explain Bezout's algorithm}
+\todo{explain Bezout's algorithm, majorly known as the extended Euclidean algorithm.}
 
 
 \paragraph{\bf Chinese Remainder Theorem (CRT) For Dummies}
