@@ -144,11 +144,12 @@
     showtabs=false,                  
     tabsize=2
 }
-% \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}}%
-  % {3.25ex \@plus1ex \@minus.2ex}%
-  % {-1em}%
-  % {\normalfont\bfseries}} % Ensures bold text
-
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+  {1.25ex \@plus1ex \@minus.1ex}%
+  {0.1em}%
+  {\normalfont\bfseries}} % Ensures paragraph title is bold
+\makeatother
 
 
 \lstset{style=mystyle}

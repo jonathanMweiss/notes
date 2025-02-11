@@ -12,7 +12,11 @@ The operation of multiplying two polynomials $a,b$ is called convolution $c=a\ot
 \todo{Define coefficient representation mroe formally}
 
 \section{Polynomial evaluation}
-\red{add begining}
+Polynomial evaluation is the process of computing the value of a polynomial at a given point.
+This is a fundamental operation in many algorithms and applications. 
+There are several methods to evaluate polynomials, with varying levels of efficiency.
+Before we delve into the methods, we define what is evaluation of a polynomial and a polynomial evaluation map.
+
 \begin{defn} \label{def:poly-eval}
   For any polynomial $P$ in $Z_q[X]$ and any element $a$ in $Z_q$,
   the substitution of $X$ with $a$ in $P$ defines an element of $Z_q$, which is denoted $P(a)$.
@@ -20,8 +24,54 @@ The operation of multiplying two polynomials $a,b$ is called convolution $c=a\ot
   the expression of the polynomial.
   We call this action polynomial evaluation of $P$ at $a$.
 \end{defn}
-\todo[inline]{add horners rule/ horners algorithm. which is a fast way to evaluate one point}
-\todo[inline]{consider adding Multipoint evaluation.}
+
+Now that we've defined the evaluation of a polynomial, it is important to state that formally, polynomials aren't functions. 
+Thus to evaluate a polynomial at a point, we need to define a function that receives a polynomial and a point and returns the evaluation.
+\begin{defn}
+  A polynomial evaluation map is a function $f_r:Z_q[X]\to Z_q$ such that for every polynomial $P$ and $r\in Z_q$,
+  $f_r(P)=P(r)$.
+\end{defn}
+
+This notation of polynomial evaluation maps is crucial to reason about polynomials, their evaluation, 
+and proving properties. For instance, assume a matrix $M$ and a vector $v$ with polynomials entries in $\Z_q[x]$.
+It isn't clear straight away that $f_r(M\cdot v) = f_r(M)\cdot f_r(v)$. In fact, there are algebraic 
+structures where this above equation is false. 
+Thus, to claim the above statement we need to define ring homomorphisms, and prove that $f_r$ is a ring homomorphism.
+
+\begin{defn}
+  A ring homomorphism is a function $f:R\to S$ between two rings $R$ and $S$ such that for every $a,b\in R$:
+  \begin{align}
+    &f(a+b)=f(a)+f(b)\\
+    &f(a\cdot b)=f(a)\cdot f(b) \\
+    &f(1_R)=1_S
+  \end{align}
+   Where $1_R$ and $1_S$ are the multiplicative identities of $R$ and $S$ respectively.
+\end{defn}
+
+Fortunately, for every point in $\Z_q[X]$, we can construct a polynomial evaluation map that is 
+a ring homomorphism (prove this to ensure you understand the reasoning behind it).
+Consequently, we can assert that $f_r(M\cdot v) = f_r(M)\cdot f_r(v)$.
+
+\subsection{Evaluation Algorithms}
+Evaluating a polynomial at a point is a straightforward process.
+Substituting the point for $X$ in the polynomial gives the result. 
+However, Horner's rule offers a more efficient method.
+
+Horner's rule reduces the number of multiplications required to evaluate the polynomial.
+It rewrites the polynomial in a nested form, making computation more efficient.
+
+To apply Horner's rule to evaluate a polynomial $P(x) = a_0 + a_1x + a_2x^2 + \dots + a_nx^n$ at a 
+point $x = r$, follow these steps:
+
+\begin{lstlisting}[language=Python,
+  caption={fft algorithm in python}
+]
+def horner(p: List[int], r: int) -> int:
+    result = p[-1]
+    for i in range(len(p) - 2, -1, -1): # iterate from n-1 to 0
+        result = result * r + p[i] # result = ((((....)x+a_3)x+a_2)x+a_1)x +a_0 = p(r)
+    return result
+\end{lstlisting}\label{algorithm:polynomial:evaluation}
 
 
 \section{Coefficient vs Point-Value representation}\label{polynomials:point-val-representation}
@@ -94,7 +144,7 @@ choose a random number $r$, and evaluate $P(r)\cdot Q(r) - Z(r)$.
 if this expression equates to $0$, then $P(x)\cdot Q(x)=Z(x)$ with overwhelming 
 probability (depending on the size of $Z_q$).
 
-\subsection{Troubled waters: $Z_q[X]/F(X)$}
+\subsection{Troubled waters in $Z_q[X]/F(X)$}
 Given the above method, we can investigate new and upcoming ideas on numerous
 problems (see  \cite{sz-usage2} and \red{fpir- to be published}).
 The unlucky ones might encounter a troubling problem.
@@ -103,27 +153,19 @@ One would quickly find out that more complex algebraic structures do not
 bend so easily to this powerful technique.
 
 For instance, consider the following quotient polynomial rings $R_q=Z_q[X]/(X^n+1)$,
-choose two random polynomials from $R_q$ and try the method of testing above.
+choose two random polynomials from $R_q$, and try the method of testing above.
 It is highly likely that for some random $r$, $P(r)\cdot Q(r) \ne (PQ \mod (X^n+1))(r)$.
 
-Before we explain the source of the issue, let us define two concepts.
-\begin{defn}
-  Given $a\in Z_q$, we denote the function $f_a: R_q \to Z_q$ as the \bf{polynomial evaluation map},
-  which is defined as follows: $f_a(P)\to P(a)$ \autoref{def:poly-eval}.
-\end{defn}
+This issue arises because not every point $r\in Z_q$ can be used to construct a
+polynomial evaluation map $f_r$ (refer to \autoref{def:poly-eval}) 
+over $R_q$ such that $f_r$ is a ring homomorphism. 
+Consequently, certain values of $r$ will not be compatible with the Schwartz-Zippel method.
+In other words, $f_r(P\cdot Q) \neq f_r(P)\cdot f_r(Q)$.
 
-\begin{defn}
-  If $R$ and $S$ are rings, then a ring homomorphism is a function $f:R \to S$
-that preserves addition, multiplication and multiplicative identity; that is
-$f(a+b) = f(a)+f(b)$, $f(a\cdot b) = f(a) \cdot f(b)$, $f(1_R)=1_s$. 
-\end{defn}
-
-Given these two definitions, we can now fully express what occured above. 
-Not every point $r\in Z_q$ can be used to create a polynomial evaluation map $f_r$ such that 
-$f_r$ is a ring homomorphism. That is $f_r(P\cdot Q) \ne f_r(P)\cdot f_r(Q)$.
 
 \paragraph{Finding valuable points}
-Fortunately, there are some points $r\in Z_q$ which can be used to create polynomial evaluation maps that 
+
+Fortunately, there are some points $r\in \Z_q$ which can be used to create polynomial evaluation maps that 
 are ring homomorphisms.
 \begin{thm}
   Let $R_q=Z_q[X]/F(X)$ and let $r\in Z_q$. If $F(r)=0$ then $f_r$ is a ring homomorphism.
@@ -139,8 +181,9 @@ are ring homomorphisms.
   then $f_r(P(X)\cdot Q(X)) =P(r)\cdot Q(r) - z \cdot 0= P(r)\cdot Q(r)$, as wanted.
 \end{proof}
 
-So, by finding roots of $F(X)$ one can find possible values where SZ still works. 
-unfortunately, this might be a smaller set than we thought.
+So, by finding the roots of $F(X)$, we can identify potential values where 
+the SZ algorithm continues to function effectively. 
+However, this set is quite limited (consider the maximum number of roots of the polynomial $F(X)$).
 
 \section{Polynomial addition}\label{polynomials:addition}
 \section{Fast Polynomial Multiplications}\label{polynomial:multiplication}\label{section:fft}
