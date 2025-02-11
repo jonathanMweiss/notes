@@ -1,4 +1,3 @@
-
 \begin{defn}[$\lambda$-bit strength]
   Defining the strength of security is complex. NIST decided that $\lambda$-bit security 
   means that for any kind of known attack, the attacker would need at least $2^{\lambda}$
@@ -43,6 +42,7 @@ This means that to provide security comparable to AES-128, it suffices to use a 
 so that the time to compute discrete log is $\sqrt{q} \approx 2^{128}$.
 
 \section{a bit of history on elliptic curves}
+\sloppy{
 Elliptic curves come up naturally in several branches of mathematics.
 Here we will follow their development as a branch of arithmetic (the study of rational numbers).
 Diophantus, a greek mathematician who lived in Alexandria in the third century, was interested 
@@ -61,7 +61,8 @@ The chord method was rediscovered several times over the centuries, but it final
 
 Poincare defines the sum of $U, V$, denoted $U \boxplus V$ as $U \boxplus V := -W$
 Diophantus' method, the \emph{tangent method} is another way to build a new rational point from a given rational point. 
-We should later see that the method corresponds to adding the point $P$ to itself: $P\boxplus P$.
+We should later see that the method corresponds to adding the point $P$ to itself: $P\boxplus P$.}
+
 \section{elliptic curves over finite fields}
 We are primarily interested in elliptic curves over finite fields for cryptographic applications.
 \begin{defn}
@@ -92,7 +93,7 @@ The best known algorithm to compute $\alpha$ is $\Omega(\sqrt{q})$.
 There are a few exceptions to these rules, and thus one should be careful when defining a new curve.
 So it's better to use some specific already implemented and used curve rather than 
 generating a random prime $p$ and a random curve over $\F_p$.
-\todo{TODO, put here an encryption scheme, and a signature scheme (can use schnorr here honestly)
+\todo[inline]{TODO, put here an encryption scheme, and a signature scheme (can use schnorr here honestly)
 The most important thing to remember is that elliptic curve cryptography 
 assumes hard exponent, and everything is similar to those algorithms
 }
@@ -128,7 +129,7 @@ ECDSA, which commonly refers to the following algorithm:
 \end{description}
 
 \subsection{Schnorr Signature}
-\todo{need to fill this...}
+\todo[inline]{need to fill this...}
 \section{Pairing based cryptography}
 We now show that certain elliptic curves have an additional structure,
 called a pairing, which enables a world of new schemes that could not be built

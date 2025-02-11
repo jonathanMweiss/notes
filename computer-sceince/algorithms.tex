@@ -1,3 +1,4 @@
+\part{Algorithms}
 
 \chapter{Polynomial Algorithms}\label{polynomials}
 
@@ -19,13 +20,13 @@ The operation of multiplying two polynomials $a,b$ is called convolution $c=a\ot
   the expression of the polynomial.
   We call this action polynomial evaluation of $P$ at $a$.
 \end{defn}
-\todo{add horners rule/ horners algorithm. which is a fast way to evaluate one point}
-\todo{consider adding Multipoint evaluation.}
+\todo[inline]{add horners rule/ horners algorithm. which is a fast way to evaluate one point}
+\todo[inline]{consider adding Multipoint evaluation.}
 
 
 \section{Coefficient vs Point-Value representation}\label{polynomials:point-val-representation}
 We've defined one representation for polynomials, the coefficient representation~\ref{polynomials:coeffcient-pres},
-But there is another representation, which is used in numerous algorithms (e.g.,~\ref{schawtz-zippel},\ref{polynomials:multiplication}):
+But there is another representation, which is used in numerous algorithms (e.g.,~\ref{schawtz-zippel},\ref{polynomial:multiplication}):
 
 
 A point-value representation of a polynomial $P(x)$ of degree-bound $n$ is a set of $n+1$ point-value pairs.
@@ -39,7 +40,9 @@ $ \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}$, which uniquely defines it.
 \end{theorem}
 
 \begin{proof}
-  So let there be a polynomial $p(x) \neq 0$ of degree $n$ and a set $ \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}$
+  \sloppy{
+  So let there be a polynomial $p(x) \neq 0$ of degree 
+  $n$ and a set $ \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}$
   of points representing it. Let us assume in contradication that there exists $q(x)\neq p(x)$ and it also happens
   that $p(x_0)=q(x_0), \dots, p(x_n)=q(x_n)$. That is, there is another polynomial that is evaluated to the same points,
   making the representation non-unique.
@@ -47,7 +50,7 @@ $ \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}$, which uniquely defines it.
   So if such $q(x)$ exists, we can create a new polynomial $(p-q)(x)$, notice that $(p-q)$ is also of degree $n$.
   $x_i$ is a root $0\le i\le n$ of $(p-q)(x)$, since $(p-q)(x_i)=p(x_i)-q(x_i)$, thus it has $n+1$ roots.
   This is a contradication to the fundamental theorem of algebra \todo{cite}, that is, a polynomial $p(x)\neq 0$ 
-  of degree $n$ has at most $n$ roots. 
+  of degree $n$ has at most $n$ roots. }
 \end{proof}
 
 Now that we know that this representation is unique, I'll claim without proof that
@@ -56,7 +59,7 @@ Thus these both know representations are isomorphic.
 
 \section{Polynomial Modulo}
 \red{TODO}
-\section{Polynomial Identity Testing (SZ)}
+\section{Polynomial Identity Testing (SZ)}\label{schawtz-zippel}
 In this section, we talk about identity testing, 
 and some issues involving this subject.
 
@@ -395,6 +398,7 @@ such that $\alpha^n =1  \mod q $, and for every $0<k<n$ $\alpha^k \neq 1 \mod q$
   $\omega_0=g^{(q-1)/n}$ is an $n$-th root of unity.
 \end{thm}
 \begin{proof}
+  \sloppy{
   relying on \autoref{fermats-little-theorem}, we know that $g^{q-1}=1 \mod q$.
   So $\omega_0^n=(g^{(q-1)/n})^n=1$, now we just need to explain away why $\omega_0^k \ne 1$ for 
   every $0<k<n$.
@@ -402,6 +406,7 @@ such that $\alpha^n =1  \mod q $, and for every $0<k<n$ $\alpha^k \neq 1 \mod q$
   $\omega_0^k=g^{(q-1/n)\cdot k}=1$, more specifically, $g^c=1$ for $c<q-1$. thus, we have a 
   cycle $(1,g,g^1,...g^{c-1})$, which is less than $q-1$ elements, meaning that $g$ is not 
   a generator, in contradiction.
+  }
 \end{proof}
 
 Now that we found the first root of unity,
@@ -479,7 +484,7 @@ but change line 7 such that omega is now the $n$-th root of unity in $GF(p)$, an
 all operations in the algorithm are now $\mod p$.
 
 \paragraph{\bf iNTT}
-Just like in \nameref{algorithm:ifft}, but to calculate $\omega^-1$, we'll
+Just like in \nameref{ifft}, but to calculate $\omega^-1$, we'll
 use Bezout's algorithm to find the inverse of every element ($x^-1$).
 
 

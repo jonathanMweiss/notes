@@ -57,7 +57,7 @@ Moreover, there are many known complexity gaps between synchrony and asynchrony.
     \item The Fischer, Lynch and Paterson \cite[FLP, 1985]{flp} lower bound says 
     that in the asynchronous model, any protocol that solves consensus 
     withstanding an adversary (who can fail-stop just one party) must have an infinite execution.
-    \item Authenticated Byzantine Agreement (important problem we will see later\todo{Add reference later}) is possible for 
+    \item Authenticated Byzantine Agreement (important problem we will see later\todo[inline]{Add reference later}) is possible for 
     $n>2\cdot f$ parties in the synchronous model, but impossible for $n \le3\cdot n$ in the asynchronous model.
 \end{itemize}
 
@@ -126,7 +126,7 @@ after GST (only when the system is synchronous).
     \begin{enumerate}
         \item False by definition.
         \item False, all messages arrive, although at an unknown time.
-        \item \todo{Verify with Teach} False, the adversary can delay any message by a finite 
+        \item \todo[inline]{Verify with Teach} False, the adversary can delay any message by a finite 
         amount of time. Therefore, it can delay the message beyond the execution time.
         % $\forall finite RUNS \exists \Delta $ such that the delay is less than $\Delta$.
         % since Delta is finite, can't the adversary choose $\Delta +1$?
@@ -176,7 +176,7 @@ after GST (only when the system is synchronous).
     \end{enumerate}
     
     \paragraph{Solution}
-    \todo{Ask Teach}
+    \todo[inline]{Ask Teach}
     \begin{enumerate}
         \item Yes, by setting $GST=0$, the Partially Synchronous model becomes the Synchronous model.
 
@@ -239,7 +239,7 @@ Since the adversary can corrupt $f$ parties, and often this corruption may inclu
 proof is similar to the first theorem.
 
 \begin{corollary}[Quorum Intersection 3]
-    \todo{add proof.}
+    \todo[inline]{add proof.}
     the intesection of two such sets will have at least $f+1$ non faulty parties.
 \end{corollary}
 As one can notice, $f+1$ means at least one honest between the two sets.
@@ -289,7 +289,7 @@ As one can notice, $f+1$ means at least one honest between the two sets.
 
 \subsection{proof of work and proof of stake}
 both of these don't assume threshold on the number of adversdaries, but on some resoucre (e.g., computation, coins etc).
-\todo{sum more from the blog post }
+\todo[inline]{sum more from the blog post }
 \section{Power of the adversary}
 After we fix the communication model, synchrony, asynchrony, or partial synchrony, 
 and a threshold adversary we still have 5 important modeling decisions about the adversary power:
@@ -344,7 +344,7 @@ There are more types of failures, but these are the main ones.
 Adaptivity is the ability of the adversary to corrupt dynamically based on 
 information the adversary learns during the execution. \todo{is the adversary still limited to $f$?}
 
-\todo{Edit}
+\todo[inline]{Edit}
 \begin{description}
     \item[static] the adversary has to decide which $f$ parties to corrupt in advance
      before the execution of the protocol. 
@@ -375,7 +375,7 @@ information the adversary learns during the execution. \todo{is the adversary st
      the party is immediately corrupted. 
      Moreover, messages sent from the party before corruption that have not yet arrived can be erased 
      (or claw-backed) by the adversary. 
-     \todo{what?}Some lower bounds assume this model to obtain a constant error. 
+     \todo[inline]{what?}Some lower bounds assume this model to obtain a constant error. 
 \end{description}
 
 \subsection{Visibility}
@@ -473,7 +473,7 @@ adversary that just does crash corruptions (for the same number of corruptions).
 \begin{itemize}
     \item Yes.
     \item No? we didn't define malicious corruptions, but i assume you mean byzantine?
-    \item I don't know, the adversary in adaptive can gain more than f?\todo{NOTE: adversary can at most have f.} 
+    \item I don't know, the adversary in adaptive can gain more than f? \bf{NOTE: adversary can at most have f.} 
     \item (no) It can do both.
 \end{itemize}
 \end{xca}
@@ -500,7 +500,7 @@ adversary that just does crash corruptions (for the same number of corruptions).
 \end{xca}
 
 \section{Consensus}
-\todo{fill this section from 
+\todo[inline]{fill this section from 
 
 https://decentralizedthoughts.github.io/2019-10-15-consensus-for-state-machine-replication/}
 \section{Consensus for State Machine Replication}
@@ -534,9 +534,9 @@ In a client-server setting, the server maintains the state machine,
 
 An example state machine is the Bitcoin ledger. 
 The state consists of the set of public keys along with the associated 
-Bitcoins (see UTXO \todo{add url}). 
+Bitcoins (see UTXO \todo[inline]{add url}). 
 Each input (or cmd) to the state machine is a transaction 
-(see \todo{add Bitcoin core api url}).
+(see \todo[inline]{add Bitcoin core api url}).
 The log corresponds to the Bitcoin ledger. 
 The transition function apply is the function that determines whether a 
 transaction is valid, and if it is, 
