@@ -590,8 +590,8 @@ encode the message in a polynomial of degree bound $k-1$,
 and then evaluate the polynomial at $n$ distinct points.
 
 To decode the message, we need to find the polynomial that interpolates the points we received.
-This can be done using the Lagrange interpolation formula, which is a polynomial of degree bound $n-1$.
-This should work if we have $k$ points, and we know which $x$ they were evaluated at.
+Given any $k$ points, once can find a unique polynomial of degree $k-1$ that passes through them
+using the Lagrange interpolation formula.
 
 
 \paragraph{Using NTT for Reed-Solomon} 
