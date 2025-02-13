@@ -581,26 +581,60 @@ This trick can be seen in \cite{SEAL}.
 
 \section{Reed-Solomon}
 It is fairly simple, but effective algorithm to encode words and be able to deal with erasurs.
-\subsection{Naive solution}
-assuming we decide we want our words to be of size $k=4$, and we add additional two redundancies $n=6$. 
-Thus to send it we'll do the following: given a word vector, we'll treat it as coefficients values of a 
-polynomial of degree $k-1$ (because we have k coefficients its a k-1 degree poly), then to encode it, we'll evaluate it on the following $x$ values: $(-1,0,1,2,\dots n)$.
+\subsection{Reed-Solomon for erasures}
+The Reed-Solomon algorithm is a systematic error-correcting code that can correct multiple erasures.
+It is based on polynomial arithmetic over a finite field, and it is used in many applications.
+
+The algorithm works as follows:
+encode the message in a polynomial of degree bound $k-1$,
+and then evaluate the polynomial at $n$ distinct points.
+
+To decode the message, we need to find the polynomial that interpolates the points we received.
+This can be done using the Lagrange interpolation formula, which is a polynomial of degree bound $n-1$.
+This should work if we have $k$ points, and we know which $x$ they were evaluated at.
 
 
-Now given the 6 values that we received over the network we can decode it as follows: 
-We go over every group of 4 points, and try to reconstruct the polynomial. 
+\paragraph{Using NTT for Reed-Solomon} 
+The Reed-Solomon algorithm can be accelerated by employing the NTT algorithm (see \autoref{ntt}).
+Instead of utilizing any arbitrary $n$ distinct points, we can leverage the $n$-th 
+roots of unity (provided they exist within the finite field under consideration).
+Now we can encode messages faster.
 
-the polynomial we've reconstructed the most is the correct one.
+Decoding can still be done using the Lagrange interpolation formula.
+\todo{How to improve decoding speed using NTT!} 
 
-\subsection{Systematic Reed-Solomon}
-Assuming we want to be able to correct up to $s$ values, we'd need at least $2s$ redundant symbols.
-So if $k=4$, and $n=6$, we can only recover a single byte.
 
-It won't work for larger values, like $k=223$, $n=255$ which is a popular value for reed-solomon.
-(Meaning we add 32 more symbols to our message, so we can repair 16 symbols in total).
+\subsection{Reed-Solomon for errors}
+\todo[inline]{This section is not complete}
+The Reed-Solomon algorithm can also correct data corruption.
 
-The previous algorithm will work, but we'd need to send different values then 
-the original message. It would be best to send $Message||\text{addition code word}$.
-that way,we might be able to avoid reconstruction if we can find quickly that there was no error.
 
-this is called a Systematic code. 
+% decoding can be done using the Berlekamp-Welch algorithm, which is a generalization of the Euclidean algorithm.
+% It can be used to find the error locations and values, and then correct them.
+
+
+
+
+% \subsection{Naive solution}
+% assuming we decide we want our words to be of size $k=4$, and we add additional two redundancies $n=6$. 
+% Thus to send it we'll do the following: given a word vector, we'll treat it as coefficients values of a 
+% polynomial of degree $k-1$ (because we have k coefficients its a k-1 degree poly), then to encode it, we'll evaluate it on the following $x$ values: $(-1,0,1,2,\dots n)$.
+
+
+% Now given the 6 values that we received over the network we can decode it as follows: 
+% We go over every group of 4 points, and try to reconstruct the polynomial. 
+
+% the polynomial we've reconstructed the most is the correct one.
+
+% \subsection{Systematic Reed-Solomon}
+% Assuming we want to be able to correct up to $s$ values, we'd need at least $2s$ redundant symbols.
+% So if $k=4$, and $n=6$, we can only recover a single byte.
+
+% It won't work for larger values, like $k=223$, $n=255$ which is a popular value for reed-solomon.
+% (Meaning we add 32 more symbols to our message, so we can repair 16 symbols in total).
+
+% The previous algorithm will work, but we'd need to send different values then 
+% the original message. It would be best to send $Message||\text{addition code word}$.
+% that way,we might be able to avoid reconstruction if we can find quickly that there was no error.
+
+% this is called a Systematic code. 
