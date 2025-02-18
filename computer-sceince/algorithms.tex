@@ -1,5 +1,80 @@
 \part{Algorithms}
 
+\chapter{Finite Fields}\label{finite-fields}
+\section{GCD and Extended Euclidean Algorithm}
+
+\subsection{GCD}
+The greatest common divisor (GCD) of two integers
+ $a$ and $b$ is the largest integer that divides both $a$ and $b$.
+ While seemingly simple, the GCD is a fundamental concept in number theory
+ and used extensively when working with integers over finite fields.
+
+
+ \begin{lstlisting}[language=Python,
+  caption={GCD algorithm in python}
+]
+
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a%b
+
+    return a
+
+ \end{lstlisting}
+
+This simple algorithm works since 
+$a=b*q+r$ where $r$ is some remainder. The $GCD(a,b)=x$
+must divide both of these numbers, thus it should be able to divide $b$, and $r$ (
+otherwise, $a/x = \frac{b*q+r}{x}=\frac{b*q}{x}+\frac{r}{x}$, and if $\frac{r}{x}$ has a remainder 
+then it is a contradication to it being a gcd of $a$).
+Thus, $GCD(a,b)=GCD(b,r)$, and we can continue the algorithm until the smaller 
+value is $0$.
+
+
+\subsection{Extended Euclidean Algorithm (inverse algorithm)}
+\label{sec:finite-field:extended-euclidean}
+The Extended Euclidean Algorithm is an important algorithm in any number theory course.
+This algorithm is used to find the inverse of an element in a finite field.
+
+The algorithm is based on Bezout's identity, which states
+that for any two integers $a$ and $b$, there exist integers $x$ and $y$ such that
+$ax+by=GCD(a,b)$. As a result of this identity, we can find the inverse of an element
+in a finite field $GF(q)$. How can we use this to find the inverse?
+Welp, in a finite field $q$ is a prime right? so $GCD(a,q)=1$ for every $a\in GF(q)$.
+As a result, we have $ax+qy=ax+0=GCD(a,q)=1$ (where $qy=0$ since we are in $GF(q)$), and thus $ax=1 \mod q$. and luckily, the 
+extended Euclidean algorithm can find this $x$ and this $y$ (we toss the $y$).
+
+
+The algorithm is basically applying the GCD algorithm, but keeping track of the coefficients
+$x$ and $y$ in the process.
+
+\begin{lstlisting}[language=Python,
+  caption={Extended Euclidean Algorithm in python}
+]
+def extended_euclidean(a, b):
+    x0, x1, y0, y1 = 1, 0, 0, 1
+    while b != 0:
+        q, a, b = a // b, b, a % b # advancing the algorithm by one step.
+
+        # updating the x coefficients. try doing gcd by hand to understand this.
+        x0, x1 = x1, x0 - q * x1 
+        y0, y1 = y1, y0 - q * y1
+
+    return a, x0, y0
+
+\end{lstlisting}
+
+
+\todo{ensure the algorithmis okay. taken form chatgpt.+ write intuition}
+
+\section{Chinese Remainder Theorem}
+
+\section{Generator}
+
+\section{Roots of Unity}
+
+
+
 \chapter{Polynomial Algorithms}\label{polynomials}
 
 
@@ -483,10 +558,6 @@ not a root of $X^n-1$ is a root of $X^n+1$.
 How do we find the roots of $X^{2n}-1$? Those are the $2n$-th roots of unity, 
 which are easy to find!
 
-\paragraph{\bf Finding Inverse}
-\todo{explain Bezout's algorithm, majorly known as the extended Euclidean algorithm.}
-
-
 \paragraph{\bf Chinese Remainder Theorem (CRT) For Dummies}
 CRT is a way of representing elements $x\in Z_q$ (
   where $q=p_1,p_2,\dots,p_k$ and $p_i\in\text{Primes}$)
@@ -528,7 +599,8 @@ all operations in the algorithm are now $\mod p$.
 
 \paragraph{\bf iNTT}
 Just like in \nameref{ifft}, but to calculate $\omega^-1$, we'll
-use Bezout's algorithm to find the inverse of every element ($x^-1$).
+use the algorithm shown in \autoref{sec:finite-field:extended-euclidean} 
+to find the inverse of every element ($x^-1$).
 
 
 
