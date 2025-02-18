@@ -88,7 +88,6 @@ From a group, we can define a field, which is a more complex structure.
     \end{align*}
 \end{defn}
 
-
 \begin{example}
     The set of real numbers $\R$ is a field. 
     The set of integers $\Z$ is not a field.
@@ -98,6 +97,12 @@ From a group, we can define a field, which is a more complex structure.
 With the above example, we remind the reader of Fermat's little theorem, which 
 is used in many theorems or applications of group theory. In this summary, I rely on Fermat's little theorem
 when discussing NTT and FFT (see \autoref{section:fft}).
+
+
+Some use the notation $GF(q)$ to denote a finite field of size $q$.
+\begin{thm}
+    Let $q$ be a prime, thus $GF(q)$ is a field.
+\end{thm}
 
 \begin{thm}[Fermat's little theorem]\label{fermats-little-theorem}
     let there be $x$ and $p$ prime, thus $x^p \equiv x \mod p$
@@ -185,6 +190,24 @@ Furthermore, we note that $[a]+[b]=[a+b]$ and $[a]\cdot[b]=[a\cdot b]$.
 Another important example if the polynomial quotient ring $R[X]/X^d$. 
 This ring is the set of equivalence classes of $R[X]$ under the equivalence relation
 $f\sim g$ iff $f-g\in X^d$. Or in other words, all polynomials of degree less than $d$ are equivalent.
+
+
+\section{Extension Fields}
+
+One can take a field $GF(q)$, and extend it.
+To do so, first find a polynomial $p(x)$ of degree $d$ that is irreducible over $GF(q)$
+(We'll use prime polynomials).
+Then, define the extension field $GF(q^d)$ as the set of polynomials of degree less than $d$ with coefficients in $GF(q)$.
+THis field is basically $GF(q)[X]/p(X)$. BUT, Once we have this field, 
+we can define it in order, and change the notations of the polynomials to be integers 
+in the range $[0,q^d-1]$. This is a way to extend the field, and get a larger field.
+
+
+For instance $GF(2)$ can be extended to any power $m$ of 2.
+
+For instance, $GF(2)[X]/(X^2+X+1)$ is $GF(2^2)$, and has the following elements:
+$0,1,X,X+1$. Once we define the elements and how they interact with their operations, we can 
+switch their notation to be integers in the range $[0,3]$. 
 
 
 \section{Tricks}
