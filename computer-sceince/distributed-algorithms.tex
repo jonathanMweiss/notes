@@ -222,10 +222,10 @@ Since the adversary can corrupt $f$ parties, and often this corruption may inclu
    (similar to the Pigeonhole principle).
    Let us describe a few of these:
 
-\begin{thm}[Quorum Intersection 1]
+\begin{theorem}[Quorum Intersection 1]
     if $2f<n$, any set of size $n-f$  will have at least one party in their
     intersection.
-\end{thm} 
+\end{theorem} 
  \begin{proof}
     $2f<n \iff n-2f>0 \iff n-2f +(n-n) >0 \iff n-2f+n>n \iff 2(n-f)>n$
     That is, having two groups of size $(n-f)$ means we have more elements than the entire group.
@@ -235,9 +235,9 @@ Since the adversary can corrupt $f$ parties, and often this corruption may inclu
     as wanted.
  \end{proof}
 
-\begin{thm}[Quorum Intersection 2]
+\begin{theorem}[Quorum Intersection 2]
     Given $3f<n$, any set of size $n-f$ will have at least one non faulty party in their intersection.
-\end{thm}
+\end{theorem}
 proof is similar to the first theorem.
 
 \begin{corollary}[Quorum Intersection 3]

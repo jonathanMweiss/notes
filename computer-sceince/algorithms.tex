@@ -242,9 +242,9 @@ In other words, $f_r(P\cdot Q) \neq f_r(P)\cdot f_r(Q)$.
 
 Fortunately, there are some points $r\in \Z_q$ which can be used to create polynomial evaluation maps that 
 are ring homomorphisms.
-\begin{thm}
+\begin{theorem}
   Let $R_q=Z_q[X]/F(X)$ and let $r\in Z_q$. If $F(r)=0$ then $f_r$ is a ring homomorphism.
-\end{thm}
+\end{theorem}
 \begin{proof}
   $f_r$ preserve the multiplicativeidentity: $f_r(1_{R_q}) = 1(r)=1$.
   Every $f_r$ preserver addition.
@@ -490,13 +490,13 @@ NTT can use the same FFT algorithms but requires a
 different DFT matrix~\ref{dft-matrix}.
 
 This fact lies in the foundational theorem of NTT:
-\begin{thm}[\cite{ntt}]
+\begin{theorem}[\cite{ntt}]
   A length $N$ transform having the DFT structure will
   implement cyclic convolution if and only if there exists an 
   inverse of N and an element $\alpha$,
   a root of unity of order $N$ , i.e., $N$ is the least 
   positive integer such that $\alpha^N =1$.
-\end{thm}
+\end{theorem}
 This is a very general result applying to both \emph{rings and fields} that are
 finite or infinite.
 
@@ -511,10 +511,10 @@ such that $\alpha^n =1  \mod q $, and for every $0<k<n$ $\alpha^k \neq 1 \mod q$
 
 \paragraph{Finding roots of unity in a field}
 
-\begin{thm}
+\begin{theorem}
   Let $g\in GF(q)$ be a generator, thus
   $\omega_0=g^{(q-1)/n}$ is an $n$-th root of unity.
-\end{thm}
+\end{theorem}
 \begin{proof}
   \sloppy{
   relying on \autoref{fermats-little-theorem}, we know that $g^{q-1}=1 \mod q$.
