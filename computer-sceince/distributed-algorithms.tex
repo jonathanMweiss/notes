@@ -1,4 +1,6 @@
 \chapter{Distributed Algorithms}
+
+
 % \todo{This chapter is a work in progress.}
 Many thanks to the Decentralized thoughts blog.
 \section{Models}
@@ -91,107 +93,107 @@ is asynchronous) but provide liveness and termination guarantees only
 after GST (only when the system is synchronous).
 
 
-\begin{xca}[quiz 1.A]
-    In the Synchronous model with parameter $\Delta$ which of the following are true:
-    \begin{enumerate}
-        \item Some message is sent at time $t$ and arrives at time $t+\Delta/4$.
-        \item Some message is sent at time $t$ and arrives at time $t+3\Delta$.
-        \item Any message sent at any time $t$ arrives at time at most $2t$.
-        \item The protocol designer does not know the value of $\Delta$.
-    \end{enumerate}
+% \begin{xca}[quiz 1.A]
+%     In the Synchronous model with parameter $\Delta$ which of the following are true:
+%     \begin{enumerate}
+%         \item Some message is sent at time $t$ and arrives at time $t+\Delta/4$.
+%         \item Some message is sent at time $t$ and arrives at time $t+3\Delta$.
+%         \item Any message sent at any time $t$ arrives at time at most $2t$.
+%         \item The protocol designer does not know the value of $\Delta$.
+%     \end{enumerate}
 
 
-\paragraph{Solution}
-        \begin{enumerate}
-            \item correct since $t+ \Delta/4$ is less than $t+ \Delta$ which is
-            the latest a message sent at time $t$ can arrive.
-            \item is false because the adversary can delay the message by at most $\Delta$.
-            \item is false because $2\cdot t$ can be greater than $\Delta$.
-            \item The protocol designer should set the value of $\Delta$.
-        \end{enumerate}
+% \paragraph{Solution}
+%         \begin{enumerate}
+%             \item correct since $t+ \Delta/4$ is less than $t+ \Delta$ which is
+%             the latest a message sent at time $t$ can arrive.
+%             \item is false because the adversary can delay the message by at most $\Delta$.
+%             \item is false because $2\cdot t$ can be greater than $\Delta$.
+%             \item The protocol designer should set the value of $\Delta$.
+%         \end{enumerate}
 
-\end{xca}
+% \end{xca}
 
-\begin{xca}[Quiz 1.B]
-    In the Asynchronous model which of the following are true:
-    \begin{enumerate}
-        \item There is some finite number $\Delta$ such that for every finite execution, all
-         message delays in that execution are at most $\Delta$.
-        \item Some messages that are sent may never arrive to their destinations.
-        \item For every finite execution, there is some finite number $\Delta$ such that 
-        all message delays in that execution are at most $\Delta$.
-        \item The protocol designer can always assume that message sent will arrive after at most one day.
-    \end{enumerate}
-    \paragraph{Solution}
-    \begin{enumerate}
-        \item False by definition.
-        \item False, all messages arrive, although at an unknown time.
-        \item \todo[inline]{Verify with Teach} False, the adversary can delay any message by a finite 
-        amount of time. Therefore, it can delay the message beyond the execution time.
-        % $\forall finite RUNS \exists \Delta $ such that the delay is less than $\Delta$.
-        % since Delta is finite, can't the adversary choose $\Delta +1$?
-        \item False, the protocol designer cannot assume any time bound.
-    \end{enumerate}
-\end{xca}
+% \begin{xca}[Quiz 1.B]
+%     In the Asynchronous model which of the following are true:
+%     \begin{enumerate}
+%         \item There is some finite number $\Delta$ such that for every finite execution, all
+%          message delays in that execution are at most $\Delta$.
+%         \item Some messages that are sent may never arrive to their destinations.
+%         \item For every finite execution, there is some finite number $\Delta$ such that 
+%         all message delays in that execution are at most $\Delta$.
+%         \item The protocol designer can always assume that message sent will arrive after at most one day.
+%     \end{enumerate}
+%     \paragraph{Solution}
+%     \begin{enumerate}
+%         \item False by definition.
+%         \item False, all messages arrive, although at an unknown time.
+%         \item \todo[inline]{Verify with Teach} False, the adversary can delay any message by a finite 
+%         amount of time. Therefore, it can delay the message beyond the execution time.
+%         % $\forall finite RUNS \exists \Delta $ such that the delay is less than $\Delta$.
+%         % since Delta is finite, can't the adversary choose $\Delta +1$?
+%         \item False, the protocol designer cannot assume any time bound.
+%     \end{enumerate}
+% \end{xca}
 
 
-\begin{xca}[Quiz 1.C]
-    In the Partially Synchronous model with parameter $\Delta$ which of the following are true:
-    \begin{enumerate}
-        \item The protocol designer can design protocols that wait till they 
-        see the GST event and then take advantage of synchrony.
-        \item A message sent $2\Delta$ time before GST will have a delay of at most $3\Delta$.
-        \item There is some finite number $\Lambda$ such that for every
-         execution, messages sent before GST have a delay of at most $\Lambda$.
-         \item A message sent $2\Delta$ time after GST will have a delay of at most $2\Delta$.
-    \end{enumerate}
+% \begin{xca}[Quiz 1.C]
+%     In the Partially Synchronous model with parameter $\Delta$ which of the following are true:
+%     \begin{enumerate}
+%         \item The protocol designer can design protocols that wait till they 
+%         see the GST event and then take advantage of synchrony.
+%         \item A message sent $2\Delta$ time before GST will have a delay of at most $3\Delta$.
+%         \item There is some finite number $\Lambda$ such that for every
+%          execution, messages sent before GST have a delay of at most $\Lambda$.
+%          \item A message sent $2\Delta$ time after GST will have a delay of at most $2\Delta$.
+%     \end{enumerate}
     
-    \paragraph{Solution}
-    \begin{enumerate}
-        \item No. The GST cannot be signaled or detected.
-        \item Yes,from the definition. any message sent at time $x$ ($=2\cdot \Delta$) must be delivered by
-         time $\Delta + \max(x, GST)$. 
-         Consequently, a message sent at time $GST - 2\Delta$ will be delivered at most by time $GST + \Delta$.
-        \item no. but if GST is the same for all executions yes, setting $\Lambda$ equal to $GST + \Delta$ implies 
-        that every message transmitted before $GST$ will reach its intended recipients by the time $\Lambda$ elapses.
-        \item False. it'll have a delay of at most $\Delta$.
-    \end{enumerate}
-\end{xca}
+%     \paragraph{Solution}
+%     \begin{enumerate}
+%         \item No. The GST cannot be signaled or detected.
+%         \item Yes,from the definition. any message sent at time $x$ ($=2\cdot \Delta$) must be delivered by
+%          time $\Delta + \max(x, GST)$. 
+%          Consequently, a message sent at time $GST - 2\Delta$ will be delivered at most by time $GST + \Delta$.
+%         \item no. but if GST is the same for all executions yes, setting $\Lambda$ equal to $GST + \Delta$ implies 
+%         that every message transmitted before $GST$ will reach its intended recipients by the time $\Lambda$ elapses.
+%         \item False. it'll have a delay of at most $\Delta$.
+%     \end{enumerate}
+% \end{xca}
 
 
-\begin{xca}[Quiz 1.D]
-    Which are true?
-    \begin{enumerate}
-        \item Any execution in the Partially Synchronous model with parameter
-         $\Delta$ is also a legal execution in the Synchronous model with parameter $\Delta$.
+% \begin{xca}[Quiz 1.D]
+%     Which are true?
+%     \begin{enumerate}
+%         \item Any execution in the Partially Synchronous model with parameter
+%          $\Delta$ is also a legal execution in the Synchronous model with parameter $\Delta$.
 
-        \item Any execution in the Synchronous model with parameter 
-        $2 \Delta$ is also a legal execution in the Partial Synchronous model with parameter $\Delta$.
+%         \item Any execution in the Synchronous model with parameter 
+%         $2 \Delta$ is also a legal execution in the Partial Synchronous model with parameter $\Delta$.
 
-        \item Any execution in the Partially Synchronous model with parameter 
-        $2\Delta$ is also a legal execution in the Asynchronous model.
+%         \item Any execution in the Partially Synchronous model with parameter 
+%         $2\Delta$ is also a legal execution in the Asynchronous model.
 
-        \item There exists a number $\Delta$, such that any execution in the Asynchronous 
-        is also a legal execution in the Synchronous model with parameter $\Delta$.
-    \end{enumerate}
+%         \item There exists a number $\Delta$, such that any execution in the Asynchronous 
+%         is also a legal execution in the Synchronous model with parameter $\Delta$.
+%     \end{enumerate}
     
-    \paragraph{Solution}
-    \todo[inline]{Ask Teach}
-    \begin{enumerate}
-        \item Yes, by setting $GST=0$, the Partially Synchronous model becomes the Synchronous model.
+%     \paragraph{Solution}
+%     \todo[inline]{Ask Teach}
+%     \begin{enumerate}
+%         \item Yes, by setting $GST=0$, the Partially Synchronous model becomes the Synchronous model.
 
-        \item No, if $GST > 2\Delta$, then the message will be
-        delayed beyond the Synchronous model's $\Delta$, which breaks the assumptions.
+%         \item No, if $GST > 2\Delta$, then the message will be
+%         delayed beyond the Synchronous model's $\Delta$, which breaks the assumptions.
 
-        \item Yes. Partial async models assume that GST time is unknown and cannot count on it, just like 
-        message delays in the Asynchronous model.
+%         \item Yes. Partial async models assume that GST time is unknown and cannot count on it, just like 
+%         message delays in the Asynchronous model.
 
-        \item No, the statementr $\exists \Delta$ such that $\forall$ async executation is also a legal sync execution,
-        is false since we first set the sync model's $\Delta$ and then the async model's $\Delta$.
-        since the async model can delay any message by any finite amount of time, it can delay the message beyond the sync model's $\Delta$.
+%         \item No, the statementr $\exists \Delta$ such that $\forall$ async executation is also a legal sync execution,
+%         is false since we first set the sync model's $\Delta$ and then the async model's $\Delta$.
+%         since the async model can delay any message by any finite amount of time, it can delay the message beyond the sync model's $\Delta$.
 
-    \end{enumerate}
-\end{xca}
+%     \end{enumerate}
+% \end{xca}
 
 
 
@@ -242,50 +244,51 @@ proof is similar to the first theorem.
     \todo[inline]{add proof.}
     the intesection of two such sets will have at least $f+1$ non faulty parties.
 \end{corollary}
-As one can notice, $f+1$ means at least one honest between the two sets.
-\begin{xca}[Quiz 1.E]
-    Which of the following are true:
-    \begin{enumerate}
-        \item In the dishonest minority model the adversary can corrupt at most half the parties but
-         no more than that.
-        \item If the adversary can corrupt at most $f<n/3$ parties then for a fixed $f$, the 
-        smallest number $n$ where this holds is $n=3f+1$.
-        \item If the adversary can corrupt at most $f<n/2$ parties, then any set of $k<n/2$ must 
-        contain at least one non-corrupt party.
-        \item When $f<n/4$ then any two sets of size $n-f$ have at least $2f$ 
-        non-corrupt parties in the intersection.
-    \end{enumerate}
+
+% As one can notice, $f+1$ means at least one honest between the two sets.
+% \begin{xca}[Quiz 1.E]
+%     Which of the following are true:
+%     \begin{enumerate}
+%         \item In the dishonest minority model the adversary can corrupt at most half the parties but
+%          no more than that.
+%         \item If the adversary can corrupt at most $f<n/3$ parties then for a fixed $f$, the 
+%         smallest number $n$ where this holds is $n=3f+1$.
+%         \item If the adversary can corrupt at most $f<n/2$ parties, then any set of $k<n/2$ must 
+%         contain at least one non-corrupt party.
+%         \item When $f<n/4$ then any two sets of size $n-f$ have at least $2f$ 
+%         non-corrupt parties in the intersection.
+%     \end{enumerate}
     
-    \paragraph{Solution}
+%     \paragraph{Solution}
 
-    \begin{enumerate}
-        \item I think so? i mean $n \ge 2f+1$, so the adversary can have one less then half.
-        \item Yes.
-        \item No, a set of size n/2-1 can contain just honest members.
-        \item No, for instance $n=4f+1$, the intersection of these two sets is at most of size $2f+1$ which means we can have 
-        $f$ corrupts there, thus we can assume only$f+1$ honests.
-    \end{enumerate}
+%     \begin{enumerate}
+%         \item I think so? i mean $n \ge 2f+1$, so the adversary can have one less then half.
+%         \item Yes.
+%         \item No, a set of size n/2-1 can contain just honest members.
+%         \item No, for instance $n=4f+1$, the intersection of these two sets is at most of size $2f+1$ which means we can have 
+%         $f$ corrupts there, thus we can assume only$f+1$ honests.
+%     \end{enumerate}
 
 
-\end{xca}
+% \end{xca}
 
-\begin{xca}[Quiz 1.F]
-    Which of the following are true:
-    \begin{enumerate}
-        \item If $f<n/3$ then any two sets of size $n-f$ intersect with at least $f+1$ non-faulty parties.
-        \item If $f<n/5$ then any two sets of size $n-f$ intersect with at least $3f+1$ parties.
-        \item If $f<n/4$ then any two sets of size $n-f$ have at least $2f+1$ parties in their intersection.
-        \item If $f<n/2$ then any two set of size $n-f$ have at least two parties in their intersection.    
-    \end{enumerate}
+% \begin{xca}[Quiz 1.F]
+%     Which of the following are true:
+%     \begin{enumerate}
+%         \item If $f<n/3$ then any two sets of size $n-f$ intersect with at least $f+1$ non-faulty parties.
+%         \item If $f<n/5$ then any two sets of size $n-f$ intersect with at least $3f+1$ parties.
+%         \item If $f<n/4$ then any two sets of size $n-f$ have at least $2f+1$ parties in their intersection.
+%         \item If $f<n/2$ then any two set of size $n-f$ have at least two parties in their intersection.    
+%     \end{enumerate}
 
-    \paragraph{Solution}
-    \begin{enumerate}
-        \item No. interact with f+1 parties. so at least one honest, but not necessarily more.
-        \item Yes.
-        \item yes.
-        \item No.
-    \end{enumerate}
-\end{xca}
+%     \paragraph{Solution}
+%     \begin{enumerate}
+%         \item No. interact with f+1 parties. so at least one honest, but not necessarily more.
+%         \item Yes.
+%         \item yes.
+%         \item No.
+%     \end{enumerate}
+% \end{xca}
 
 \subsection{proof of work and proof of stake}
 both of these don't assume threshold on the number of adversdaries, but on some resoucre (e.g., computation, coins etc).
@@ -431,73 +434,73 @@ be able to remove in-memory corrupt data).
 
 
 
-\begin{xca}[Quiz 1.G]
-    Against a deterministic protocol:
-    \begin{itemize} 
-        \item An adaptive adversary has the same power as a static adversary.
-        \item A strongly adaptive adversary for omission faults can create executions 
-        that an adaptive adversary for omission cannot create.
-        \item The full information adversary has more information than the private channel adversary.
-        \item The mobile adversary has the same power as a fixed model adversary.
-\end{itemize}
+% \begin{xca}[Quiz 1.G]
+%     Against a deterministic protocol:
+%     \begin{itemize} 
+%         \item An adaptive adversary has the same power as a static adversary.
+%         \item A strongly adaptive adversary for omission faults can create executions 
+%         that an adaptive adversary for omission cannot create.
+%         \item The full information adversary has more information than the private channel adversary.
+%         \item The mobile adversary has the same power as a fixed model adversary.
+% \end{itemize}
     
-\paragraph{Solution}
-\begin{itemize}
-    \item Depends. If the the input is known in advance- it doesn't matter.
-    if the input isn't know in advance, then once it is revealed the adversary can take hold of its specific targets.
-    Which the static one cannot.
+% \paragraph{Solution}
+% \begin{itemize}
+%     \item Depends. If the the input is known in advance- it doesn't matter.
+%     if the input isn't know in advance, then once it is revealed the adversary can take hold of its specific targets.
+%     Which the static one cannot.
 
-    \item This is not clear enough. does it take time for the adversary to understand whether it wants to corrupt? 
-    Can the advesary understand what the participant can send before it does? does it know the input for the system 
-    in advance?
-    \item Yep, it knows the secret keys of the honest parties too, and can read the messages even before encryption for instance
-    \item Not necessarily, it can learn the secrets of the honest parties due time. where the fixed one cannot.
-\end{itemize}
-\end{xca}
+%     \item This is not clear enough. does it take time for the adversary to understand whether it wants to corrupt? 
+%     Can the advesary understand what the participant can send before it does? does it know the input for the system 
+%     in advance?
+%     \item Yep, it knows the secret keys of the honest parties too, and can read the messages even before encryption for instance
+%     \item Not necessarily, it can learn the secrets of the honest parties due time. where the fixed one cannot.
+% \end{itemize}
+% \end{xca}
 
 
 
-\begin{xca}[Quiz 1.H]
-    Which of the following are true:
-    \begin{itemize} 
-\item Any adversary that can cause $f$ omission corruptions can simulate an adversary that
- can cause $f$ crash corruptions.
-\item  Any adversary that can cause $f$ crash corruptions can simulate an adversary that 
-can cause $f$ malicious corruptions.
-\item  A static malicious adversary can always simulate an adaptive 
-adversary that just does crash corruptions (for the same number of corruptions).
-\item  An omission corruption adversary can either block incoming message or outgoing messages but not both.
-    \end{itemize}
+% \begin{xca}[Quiz 1.H]
+%     Which of the following are true:
+%     \begin{itemize} 
+% \item Any adversary that can cause $f$ omission corruptions can simulate an adversary that
+%  can cause $f$ crash corruptions.
+% \item  Any adversary that can cause $f$ crash corruptions can simulate an adversary that 
+% can cause $f$ malicious corruptions.
+% \item  A static malicious adversary can always simulate an adaptive 
+% adversary that just does crash corruptions (for the same number of corruptions).
+% \item  An omission corruption adversary can either block incoming message or outgoing messages but not both.
+%     \end{itemize}
     
-\paragraph{Solution}
-\begin{itemize}
-    \item Yes.
-    \item No? we didn't define malicious corruptions, but i assume you mean byzantine?
-    \item I don't know, the adversary in adaptive can gain more than f? \bf{NOTE: adversary can at most have f.} 
-    \item (no) It can do both.
-\end{itemize}
-\end{xca}
+% \paragraph{Solution}
+% \begin{itemize}
+%     \item Yes.
+%     \item No? we didn't define malicious corruptions, but i assume you mean byzantine?
+%     \item I don't know, the adversary in adaptive can gain more than f? \bf{NOTE: adversary can at most have f.} 
+%     \item (no) It can do both.
+% \end{itemize}
+% \end{xca}
 
 
-\begin{xca}[Quiz 1.I]
-    Say the first round a protocol chooses a uniformly random sub-committee of 
-    size $<f$. Then only parties in the sub-committee send messages for two rounds.
-    \begin{itemize} 
-        \item A static adversary can always manage to block the sub-committee from sending messages.
-        \item A strongly adaptive adversary can always manage to block the sub-committee from sending messages.
-        \item A weakly adaptive adversary with parameter $k=3$ can always manage to block the sub-committee from sending messages their second round of messages.
-        \item A delayed adaptive adversary can always block the sub-committee from sending messages their first round of messages.
-    \end{itemize}
+% \begin{xca}[Quiz 1.I]
+%     Say the first round a protocol chooses a uniformly random sub-committee of 
+%     size $<f$. Then only parties in the sub-committee send messages for two rounds.
+%     \begin{itemize} 
+%         \item A static adversary can always manage to block the sub-committee from sending messages.
+%         \item A strongly adaptive adversary can always manage to block the sub-committee from sending messages.
+%         \item A weakly adaptive adversary with parameter $k=3$ can always manage to block the sub-committee from sending messages their second round of messages.
+%         \item A delayed adaptive adversary can always block the sub-committee from sending messages their first round of messages.
+%     \end{itemize}
     
-\paragraph{Solution}
-\begin{itemize}
-    \item No, if the subcommittee is chosen by random, then the adversary can't know in advance who to block.
-    \item Seems true, it can choose who to corupt after the subcommittee is chosen, and do so immediately.
-    \item I don't know what $k=3$ means for weakly adaptive adversary. but it should be able to corrupt by the second round.
-    ( it'll learn who is in the comittee by the end of first round and will be allowed to corrupt after everyone sends their messages in that round).
-    \item no. it can take X time to block them, which might be too late.
-\end{itemize}
-\end{xca}
+% \paragraph{Solution}
+% \begin{itemize}
+%     \item No, if the subcommittee is chosen by random, then the adversary can't know in advance who to block.
+%     \item Seems true, it can choose who to corupt after the subcommittee is chosen, and do so immediately.
+%     \item I don't know what $k=3$ means for weakly adaptive adversary. but it should be able to corrupt by the second round.
+%     ( it'll learn who is in the comittee by the end of first round and will be allowed to corrupt after everyone sends their messages in that round).
+%     \item no. it can take X time to block them, which might be too late.
+% \end{itemize}
+% \end{xca}
 
 \section{Consensus}
 \todo[inline]{fill this section from 
@@ -657,3 +660,20 @@ for instance, quorum write, but not quorum read (quorum is performed only by the
 
 \todo{could not find formal definition.}
 
+
+
+
+\section{Key Insights}
+In this section I subsume the key insights gained from undergoing the course \emph{Reliability in Distributed Systems}
+taught by Dr. Ittai Abraham at the Hebrew University of Jerusalem.
+
+\subsection{Agreement}
+We've first seen leader based protocols to acheive agreement (called Paxos), and discussed 
+what is possible and impossible given specific assumptions on the network and the adversary.
+\todo{attach a diagram of the protocol + pseudo-code}
+
+We've seen that given $f<n/2$ in a partial synchrony model, and omission failures we can achieve consensus,
+and for $f\ge n/2$ we cannot achieve consensus at all.
+
+The key insight of Paxos 
+\subsection{Crypto tools and MPCs}

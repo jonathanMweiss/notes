@@ -1,0 +1,149 @@
+\chapter{Code Theory}
+
+small sum about code theory. needed for a project of mine.
+
+\section{Introduction}
+We begin with some basic notions. What is a codeword? what is a code? what are symbols?
+\begin{definition}
+    Let $A=\{a_1, a_2, \dots a_q \}$ be a set of size $q$.
+    We refer to $A$ as the \emph{alphabet} of the code. and each element is a \emph{code symbol}.
+
+    \begin{enumerate}
+        \item A q-ary word is a sequence of $n$ symbols from $A$:  $w=w_1w_2\dots w_n$ 
+        where $w_i\in A$.
+        \item A q-ary \emph{block code} of length $n$ over $A$ is a non-empty set $C$ of q-ary words
+        having the same length $n$.
+        \item An element in $C$ is called a \emph{codeword} in $C$.
+        \item The number of codewords in $C$ is called the \emph{size} of $C$ and is denoted by $|C|$.
+        \item A code of length $n$ and size $M$ is called an $(n,M)$-code.
+    \end{enumerate}
+\end{definition}
+
+For instance, $C=\{000, 111, 010, 101\}$ is a block code of length $3$ over the binary alphabet $\{0,1\}$,
+and q-ary of size $3$ each. This is a $(3,4)$-code.
+
+\begin{definition}
+A \emph{communication channel} consists of a finite channel alphabet $A=\{a_1, a_2, \dots a_q \}$, 
+as well as a \emph{forward channel probabilties} $\Pr[a_j\text{ received}| a_i\text{ sent}]$, satisfying
+$$ \sum_{j=0}^q \Pr[a_j\text{ received}| a_i\text{ sent}] = 1$$
+
+for each different $i$.
+\end{definition}
+
+In other words, a communication channel allows specific symbols to be sent, but when sending something 
+something else might arrive (with some probabiltiy).
+
+\begin{definition}
+    A communication channel is said to be \emph{memoryless}  if the outcome
+    of any one transmition is independent of the outcome of the previous 
+    transmitions.
+    I.e., if $c=c_1c_2\dots c_n$ and $x=x_1x_2\dots x_n$ are words of length $n$ then 
+    $$ \Pr[x \text{ received}| c \text{ sent}] = \prod_{i=1}^n \Pr[x_i \text{ received}| c_i \text{ sent}]$$
+\end{definition}
+
+\begin{definition}
+a q-ary \emph{symmetric channel} is a memoryless channel such that 
+\begin{enumerate}
+    \item Each symbol trasmitted has the same probability $p$ of being received in error.
+    \item if a symbol is received in error, then it is equally likely to be received as any of the other $q-1$ symbols.
+\end{enumerate}
+\end{definition}
+
+For instance, let's look at the \emph{Binary symmetric channel} (BSC) with error probability $p$.
+The channel alphabet is $\{0,1\}$, and the forward channel probabilities are:
+\begin{itemize}
+\item $ \Pr[0\text{ received}| 0\text{ sent}] = 1-p$
+\item $ \Pr[1\text{ received}| 0\text{ sent}] = p$
+\item $ \Pr[1\text{ received}| 1\text{ sent}] = 1-p$
+\item $ \Pr[0\text{ received}| 1\text{ sent}] = p$
+\end{itemize}
+
+Given such a channel one can create a code that relies on the channel's properties to correct errors.
+For instance, the Maximum likelihood decoding algorithm (which I skip).
+
+
+\subsection{Distance of a code}
+
+We use distances of codes to measure how well they can correct and detect errors.
+The most common distance used is the Hamming distance.
+
+\begin{definition}
+    Let $x$ and $y$ be words of the same length $n$ over an alphabet $A$.
+    The \emph{(Hamming) distance} between $x$ and $y$ is the number of positions in which they differ.
+    If $x=x_1x_2\dots x_n$ and $y=y_1y_2\dots y_n$ then the distance is defined as:
+    $$ d(x,y) = |\{i: x_i\neq y_i\}|$$
+
+    where $x_i$ and $y_i$ are regarded as words of length $1$.
+\end{definition}
+
+For instance, the distance between $101$ and $111$ is $1$, 
+and the distance between $101$ and $000$ is $3$.
+
+Few properties of the Hamming distance:
+\begin{itemize}
+    \item $d(x,y)\ge0$ and $d(x,y)=0$ if and only if $x=y$ (non negativity).
+    \item $d(x,y)=d(y,x)$ (symmetry).
+    \item $d(x,y)\le d(x,z)+d(z,y)$ (triangle inequality).
+\end{itemize}
+
+Given a code block $C$, one can develop a decoding mechanism
+based on the Hamming distance, known as the \emph{nearest neighbor decoding} (which I skip).
+
+
+\begin{definition}
+    The \emph{minimum distance} of a code $C$ is the smallest distance between any two distinct codewords in $C$.
+    It is denoted by $d(C)$.
+    I.e., $d(C) = \min\{d(x,y): x,y\in C, x\neq y\}$.
+\end{definition}
+
+\begin{definition}
+    An $(n,M)$-code $C$ with minimum distance $d$ is called an $(n,M,d)$-code.
+\end{definition}
+
+\begin{example}
+    $C=\{00000, 00111, 11111\}$ is a $(5,3,2)$-code. (since the minimal distance is $2$).
+\end{example}
+
+
+It turns out that the distance of a code is intimately related to the error-
+detecting and error-correcting capabilities of the code.
+
+\begin{definition}
+Let $u$ be a positive integer. A code $C$ is $u-error-detecting$ 
+if, whenever a codeword receives at least 1 error but no more than $u$ results
+in a word that is not a codeword.
+\end{definition}
+
+\begin{example}
+    The set $C=\{00000, 00111, 11111\}$ is a $1-error-detecting$ code because a single bit flip
+    cannot result in a codeword being changed. 
+    However, it is not a $2-error-detecting$ code because changing $00111$ to $11111$ is possible with 
+    only two bit flips.
+\end{example}
+
+\begin{thm}
+    A code $C$ is $u-error-detecting$ if and only if the minimum distance of $C$ is at least $u+1$.
+    (i.e., $d(C)\ge u+1$).
+\end{thm}
+We skip the proof.
+
+
+We have the same notion for error detecting codes, but for error correcting codes.
+\begin{definition}
+Let $v$ be a positive integer. A code $C$ is $v-error-correcting$
+if minimum distance decoding is able to correct $v$ or fewer errors.
+\end{definition}
+
+\begin{example}
+    Consider the binary code $C = \{000, 111\}$. By using the mini-
+mum distance decoding rule, we see that
+\begin{itemize}
+    \item If $000$ is sent and one error occurs in the transmission, then the received word
+    ($100$, $010$ or $001$) will be decoded to $000$.
+    \item If $111$ is sent and one error occurs in the transmission, then the received word
+    ($011$, $101$ or $110$) will be decoded to $111$.
+\end{itemize}
+
+In all cases 
+
+\end{example}
