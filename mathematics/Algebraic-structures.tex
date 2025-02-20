@@ -20,7 +20,7 @@ but rather a collection of definitions and theorems that I found useful.
 \chapter{Group theory}
 
 \section{Groups Rings and Fields}
-\begin{defn}
+\begin{definition}
     A \emph{group} is a tuple $(G,\cdot,e)$ where $G$ is a set and $\cdot$ is a binary operation on $G$
     that satisfies the following constraints:
     \begin{itemize}
@@ -29,7 +29,7 @@ but rather a collection of definitions and theorems that I found useful.
         \item has an identity element: there exists $e\in G$ such that $\forall x\in G x\cdot e = x = e\cdot x$
         \item Every element $x\in G$ has an inverse $x^{-1}\in G$ such that $x\cdot x^{-1} = e = x^{-1} \cdot x$.
     \end{itemize}
-\end{defn}
+\end{definition}
 
 
 \begin{remark}
@@ -40,12 +40,12 @@ but rather a collection of definitions and theorems that I found useful.
     $(\F, \cdot, 1)$ is not because there is no inverse to $0$ in $\F$.
 \end{example}
 
-\begin{defn}
+\begin{definition}
     group $G$ is called \emph{commutative}, or \emph{abelian} if for every $x,y\in G$ $x\cdot y=y\cdot x$ holds.
-\end{defn}
+\end{definition}
 
 
-\begin{defn}
+\begin{definition}
     A \emph{monoid} is a group without the requirement of inverses.
     That is, a monoid is a tuple $(M,\cdot,e)$ where $M$ is a set and $\cdot$ is a binary operation on $M$
     that satisfies the following constraints:
@@ -55,19 +55,19 @@ but rather a collection of definitions and theorems that I found useful.
     \item the operation is associative: $\forall x,y,z\in G$ it holds that $(x\cdot y)\cdot z = x\cdot (y\cdot z)$.
     \item has an identity element: there exists $e\in G$ such that $\forall x\in G x\cdot e = x = e\cdot x$
     \end{itemize}
-\end{defn}
+\end{definition}
 
 
 Now that we've defined what a group is, let's highlight some important theorems and definitions:
 
-\begin{defn}
+\begin{definition}
     denote $|G|$ as the \emph{order} of a group - its size.
-\end{defn}
+\end{definition}
 
-\begin{defn}
+\begin{definition}
     denote the order of $x\in G$ to be the minimal $m!=0\in\N$ such that  $x^m=e$. if there is no such $m$, then
     the order of $x$ is infinite.
-\end{defn}
+\end{definition}
 
 \begin{thm}
     Let there a finite group $G$, thus $\forall x\in G$ has a finite order.
@@ -79,14 +79,14 @@ Now that we've defined what a group is, let's highlight some important theorems 
 
 From a group, we can define a field, which is a more complex structure.
 
-\begin{defn}
+\begin{definition}
     A \emph{field} is a tuple $(F,+,\cdot,0,1)$ where $F$ is a set and $+,\cdot$ are binary operations on $F$
     such that $(F,+,0)$ is an abelian group, $(F,\cdot,1)$ is an abelian group, and the distributive law holds.
 
     \begin{align*}
         \forall x,y,z\in F, && x\cdot(y+z) = x\cdot y + x\cdot z
     \end{align*}
-\end{defn}
+\end{definition}
 
 \begin{example}
     The set of real numbers $\R$ is a field. 
@@ -111,11 +111,11 @@ Some use the notation $GF(q)$ to denote a finite field of size $q$.
 
 
 Now that we defined groups and fields, we can define rings.
-\begin{defn}
+\begin{definition}
     A \emph{ring} is a tuple $(R,+,\cdot,0,1)$ where $R$ is a set and $+,\cdot$ are binary operations on $R$
     such that $(R,+,0)$ is an abelian group, $(R,\cdot,1)$ is a monoid, and the distributive law holds.
 
-\end{defn}
+\end{definition}
 
 In other words, a ring is a group with respect to addition, and a monoid with respect to multiplication.
 
@@ -127,7 +127,7 @@ In other words, a ring is a group with respect to addition, and a monoid with re
 
 \subsection{Polynomial Rings}
 Polynomials are heavily used in cryptography, and are a fundamental concept in algebra.
-\begin{defn}
+\begin{definition}
     Let $R$ be a ring, we'll denote $R[X]$ the ring of polynomials
     in $x$ with coefficients in $R$. Formally, an element of $R[X]$ is a finite
     sum: $$ r_0 + r_1x +r_2x^2 +\dots +r_dx^d$$
@@ -140,7 +140,7 @@ Polynomials are heavily used in cryptography, and are a fundamental concept in a
         f(x) + g(x) &= \sum_{i=0}^{d}{(a_i+b_i)x^i} \\
         f(x) \cdot g(x) &= \sum_{i=0}^{d}{\sum_{j=0}^{d}{a_i\cdot b_j\cdot x^{i+j}}}
     \end{align*}
-\end{defn} \label{def:polynomial-ring}\label{def:polynomial}
+\end{definition} \label{def:polynomial-ring}\label{def:polynomial}
 
 Since we discuss formal mathematics, it is important to remember that while polynomials seem like functions,
 in our context they are just a formal sum of terms and do not represent functions.
@@ -148,12 +148,12 @@ As a result, to evaluate a polynomial, we'll need to define a function that rece
 and a value and returns the result of the polynomial at that value.
 
 
-\begin{defn}
+\begin{definition}
     Ideal $I$ is a subset of a ring $R$ that is closed under addition and, or multiplication by elements of $R$.
 
     Furthermore the product of an element of $R$ and an element of $I$ is in $I$.
     That is, $\forall r\in R$ and $i\in I$ it holds that $r\cdot i\in I$.
-\end{defn}
+\end{definition}
 
 For instance, the group $7\Z=\{7\cdot i:i\in\Z\}$ is an ideal of $\Z$ because it is closed
 under addition and multiplication by elements of $\Z$,

@@ -13,10 +13,10 @@ work in or faults the servers might encounter.
 
 When we discuss Network models, we mainly refer to three types of networks:
 
-\begin{defn}[Synchronous]
+\begin{definition}[Synchronous]
     There exists some known and finite time bound $\Delta$.
 For any message sent, the adversary can delay its delivery by at most $\Delta$.
-\end{defn}
+\end{definition}
 
 At first thought, the Synchronous model may seem to be good enough. 
 Why not just assume, for example, that any message sent over the internet will be delivered by say
@@ -31,13 +31,13 @@ Why not just assume, for example, that any message sent over the internet will b
 \end{itemize}
 
 
-\begin{defn}[Asynchronous]
+\begin{definition}[Asynchronous]
     For any message sent, the adversary can delay its delivery 
     by any finite amount of time.
     In other words, messages can be scrambled and delivered in any order. 
     Furthermore, while a message is delayed 
     by an infinite amount of time, it must eventually be delivered.        
-\end{defn}
+\end{definition}
 
 
 Unlike the synchrony model, 
@@ -73,7 +73,7 @@ up to some time called $GST$ (global stabilization time), and after that time it
 of time and that no protocol can explicitly detect that $GST$ has occurred.
 Furthermore, there is no external signal that tells you that $GST$ happened
 
-\begin{defn}[Partially Synchronous \cite{partial-async}]
+\begin{definition}[Partially Synchronous \cite{partial-async}]
     There exists some known finite time bound $\Delta$,
     and a special event called GST (global stabilization time) such that:
     \begin{itemize}
@@ -82,7 +82,7 @@ Furthermore, there is no external signal that tells you that $GST$ happened
         \item Any message that is sent at time $x$ must be delivered by 
         time $\Delta+\max\left(x,GST\right)$.
     \end{itemize}
-\end{defn}
+\end{definition}
 
 Partial synchrony captures the intuition that we would like to design protocols for 
 systems that are usually synchronous but have reasonable guarantees, 

@@ -1,4 +1,4 @@
-\begin{defn}[$\lambda$-bit strength]
+\begin{definition}[$\lambda$-bit strength]
   Defining the strength of security is complex. NIST decided that $\lambda$-bit security 
   means that for any kind of known attack, the attacker would need at least $2^{\lambda}$
   operations to break the scheme.
@@ -7,19 +7,19 @@
   For instance, over an elliptic curve, either multiplication or additions are assumed to 
   take 1 single CPU cycle.
   
-\end{defn}
+\end{definition}
 
 \chapter{Basics}
 \section{Diffie-Helman}
 Diffie-Helman relies on the following assumption.
 
-\begin{defn} [Decisional Diffie-Helman (DDH)]\label{DDH}
+\begin{definition} [Decisional Diffie-Helman (DDH)]\label{DDH}
   Consider a (multiplicative) cyclic group $\G$ of order $q$ and with generator $g$. 
   Given $g^a$ and $g^b$ for $a,b\in_R Z_q$ then $(g^a,g^b,g^{ab})$, $(g^a,g^b,g^{ab})$ are computationally indistinguishable:
 
   $$ \Pr[A((g^a,g^b,g^{ab}))=1] - \Pr[A(g^a,g^b,g^{c})=1]\le \delta(n)$$
   for $\delta(n)$ a negligable function in $n$.
-\end{defn}
+\end{definition}
 
 Given this assumption, which most of the world takes as FACT (until proven otherwise), then
 we can define the key exchange protocol.
@@ -65,22 +65,22 @@ We should later see that the method corresponds to adding the point $P$ to itsel
 
 \section{elliptic curves over finite fields}
 We are primarily interested in elliptic curves over finite fields for cryptographic applications.
-\begin{defn}
+\begin{definition}
   Let $p >3 $ be a prime. An \textbf{elliptic curve} $E$ defined over $\mathbb{F}_p$ is an 
   equation  
   $$ y^2 = x^3 +ax + b$$
   where $a,b \in \mathbb{F}_p$ satisfy $4a^3 +27b^2 \neq 0$. We write $E/\mathbb{F}_p$ to denote
   the fact that $E$ is defined over $\F_p$.
-\end{defn}
+\end{definition}
 The weird condition $4a^3 +27b^2 \neq 0 $ ensures that the equation 
 $ x^3 + ax + b = 0$ does not have a double root (needed to avoid degeneracies).
 
-\begin{defn}
+\begin{definition}
   We say that point $P=(x,y)$, where $x,y \in \F_p$, is on curve $E$ if it satisfies the equation of $E$.
-\end{defn}
-\begin{defn}
+\end{definition}
+\begin{definition}
   $E(\F)$ denotes the set of all points on the curve E and are defined over $\F$.
-\end{defn}
+\end{definition}
 
 The addition law, and adding to the set $E(F_p)$ the member $\mathcal{O}$,
  which servers as the identity member, turns it into a group. I'm not getting into the addition laws.
@@ -135,7 +135,7 @@ We now show that certain elliptic curves have an additional structure,
 called a pairing, which enables a world of new schemes that could not be built
  from discrete log groups without this other structure.
 
- \begin{defn}
+ \begin{definition}
   Let $\G_0, \G_1, \G_T$ be three cyclic groups of prime order $q$ where 
   $g_0\in\G_0$ and $g_1\in\G_1$ are generators. A \textbf{pairing} is an efficiently
   computable function $e: \G_0 \times \G_1 \to \G_T$ satisfying the 
@@ -145,7 +145,7 @@ called a pairing, which enables a world of new schemes that could not be built
         $$ e(u\cdot u',v) = e(u,v) \cdot e(u',v) and  e(u,v\cdot v') = e(u,v)\cdot e(u,v')$$
     \item non-degenerate: $g_T := e(g_0,g_1)$  is a generator of $\G_T$.
   \end{itemize}
-\end{defn}
+\end{definition}
 We refer to $\G_0,\G_1$ as the pairing groups and $\G_T$ as the target group.
 
 Bilinearity implies the following central property of pairing that will be used
@@ -224,7 +224,7 @@ and send it back to Bob.
 Now anyone, including Alice, can send bob messages without looking up his public key. 
 Assuming, of course, that Alice knows $mpk$.
 
-\begin{defn}
+\begin{definition}
   An \textbf{Identiy based encryption scheme $ \mathcal{E}_id =(S,G,E,D)$}
   is a tuple of four efficient algorithms: a \textbf{setup algorithm $S$}, a 
   \textbf{Key generation algorithm $G$}, an \textbf{encryption algorithm $E$}
@@ -241,7 +241,7 @@ Assuming, of course, that Alice knows $mpk$.
     \item identities, messages, and ciphertexts are in their respective finite spaces,
     and $\mathcal{E}_id$ is defined over $(\mathcal{ID},\mathcal{M},\mathcal{C})$.
   \end{itemize}
-\end{defn}
+\end{definition}
 
 We can view IBE as a particular public key encryption scheme where the messages
 to be encrypted pairs $(id, m)\in\mathcal{ID\times M}$. The master secret key can
@@ -698,7 +698,7 @@ has access to $vk$, and that it had seen a conversation between $P$
 and $V$. The idea is to show that these conversations do not help
 the adversary, because the adversary could have efficiently generated
 these conversations by himself, given $vk$ (but not $sk$).
-\begin{defn}
+\begin{definition}
 Let $\mathcal{I}=(G,P,V)$ be an identification protocol. We say that
 $\mathcal{I}$ is honest verifier zero knowledge, or $HVZK$ for short,
 if there exists an efficient probabilistic algorithm $Sim$ (called
@@ -706,7 +706,7 @@ a simulator) such that for all possible outputs $(vk,sk)$ of $G$,
 the output distribution of $Sim$ on input $vk$ is identical to the
 distribution of a transcript of a conversation between $P$ (on input
 $sk$) and V (on input $vk$).
-\end{defn}
+\end{definition}
 
 
 \paragraph{Comments on the terminology are in order. The term \textquotedblleft zero
@@ -752,14 +752,14 @@ We'll soon see the basic concepts associated with Sigma protocols
 and how they can become helpful to us.\\
 Later we'll see how Sigma protocols are useful to us, even out of
 the context of identification and signatures.
-\begin{defn}
+\begin{definition}
 (Effective relation). An effective relation is a binary relation $R\subseteq X\times Y$,
 where $X,Y$ and $R$ are efficiently recognizable finite sets. Elements
 of $Y$ are called \textbf{statements}. If $\left(x,y\right)\in R$,
 then $x$ is called a witness for $y$.
-\end{defn}
+\end{definition}
 
-\begin{defn}
+\begin{definition}
 Sigma Protocol. Let $R\subseteq X\times Y$ be an effective relation.
 A \textbf{Sigma Protocol }for $R$ is a pair $\left(P,V\right)$.
 \begin{itemize}
@@ -789,7 +789,7 @@ deterministic.
 We require that for all $\left(x,y\right)\in R$, when $P\left(x,y\right)$
 and $V\left(y\right)$ interact with each other, $V\left(y\right)$
 always outputs accept.
-\end{defn}
+\end{definition}
 
 \begin{rem}
 So a sigma protocol, is any prover verifier challenge where the prover

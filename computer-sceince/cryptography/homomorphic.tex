@@ -3,7 +3,7 @@
 Homomorphic encryption (\emph{HE}) is a form of encryption that allows 
 computations to be performed on encrypted data without first having to decrypt it.
 More formally:
-\begin{defn}[HE]
+\begin{definition}[HE]
  Let there be an encryption scheme $\pi = (KeyGen,Enc, Dec)$
  We say that $\pi$ is an homomorphic encryption scheme if
  given $f:\text{PTX-SPACE}\to \text{PTX-SPACE}$ then there
@@ -11,7 +11,7 @@ More formally:
  given two encrypted messages $c_1=Enc(m_1)$ $c_2=Enc(m_2)$ the following
  applies
    $Dec(F(c_1,c_2))=f(m_1,m_2)$
-\end{defn}
+\end{definition}
 
 That is, we can compute some wanted function $f$.
 
@@ -46,7 +46,7 @@ which is equivalent under specific conditions and parameters to
 the "decisional-RLWE" problem.
 
 For a full, and accurate definition see~\cite[def 3.3]{RLWE}.
-\begin{defn} (toy decisional-RLWE)
+\begin{definition} (toy decisional-RLWE)
     Let 
     \begin{enumerate}
         \item $a_i(x)$ be a set of random but known polynomials from $Z_q/\Phi(X)$ with 
@@ -60,7 +60,7 @@ For a full, and accurate definition see~\cite[def 3.3]{RLWE}.
     
     Given a list of polynomial pairs $(a_i(x),b_i(x)$) it is computationally infeasible 
     to determine $s(x)$.
-\end{defn}
+\end{definition}
 
 \section{The BGV Encryption Scheme}
 

@@ -92,20 +92,20 @@ This is a fundamental operation in many algorithms and applications.
 There are several methods to evaluate polynomials, with varying levels of efficiency.
 Before we delve into the methods, we define what is evaluation of a polynomial and a polynomial evaluation map.
 
-\begin{defn} \label{def:poly-eval}
+\begin{definition} \label{def:poly-eval}
   For any polynomial $P$ in $Z_q[X]$ and any element $a$ in $Z_q$,
   the substitution of $X$ with $a$ in $P$ defines an element of $Z_q$, which is denoted $P(a)$.
   This element is obtained by carrying on in $Z_q$ after the substitution of the operations indicated by 
   the expression of the polynomial.
   We call this action polynomial evaluation of $P$ at $a$.
-\end{defn}
+\end{definition}
 
 Now that we've defined the evaluation of a polynomial, it is important to state that formally, polynomials aren't functions. 
 Thus to evaluate a polynomial at a point, we need to define a function that receives a polynomial and a point and returns the evaluation.
-\begin{defn}
+\begin{definition}
   A polynomial evaluation map is a function $f_r:Z_q[X]\to Z_q$ such that for every polynomial $P$ and $r\in Z_q$,
   $f_r(P)=P(r)$.
-\end{defn}
+\end{definition}
 
 This notation of polynomial evaluation maps is crucial to reason about polynomials, their evaluation, 
 and proving properties. For instance, assume a matrix $M$ and a vector $v$ with polynomials entries in $\Z_q[x]$.
@@ -113,7 +113,7 @@ It isn't clear straight away that $f_r(M\cdot v) = f_r(M)\cdot f_r(v)$. In fact,
 structures where this above equation is false. 
 Thus, to claim the above statement we need to define ring homomorphisms, and prove that $f_r$ is a ring homomorphism.
 
-\begin{defn}
+\begin{definition}
   A ring homomorphism is a function $f:R\to S$ between two rings $R$ and $S$ such that for every $a,b\in R$:
   \begin{align}
     &f(a+b)=f(a)+f(b)\\
@@ -121,7 +121,7 @@ Thus, to claim the above statement we need to define ring homomorphisms, and pro
     &f(1_R)=1_S
   \end{align}
    Where $1_R$ and $1_S$ are the multiplicative identities of $R$ and $S$ respectively.
-\end{defn}
+\end{definition}
 
 Fortunately, for every point in $\Z_q[X]$, we can construct a polynomial evaluation map that is 
 a ring homomorphism (prove this to ensure you understand the reasoning behind it).
@@ -282,10 +282,10 @@ Thus, to perform polynomial multiplication we'll begin with finding a clever and
 \subsection{FFT}
 Luckily there is a way to move to and from both representations quickly using the \emph{roots of unity}.
 
-\begin{defn}
+\begin{definition}
 An $n$th root of unity is a complex number $\omega$ such that
 $\omega^n =1$.
-\end{defn}
+\end{definition}
 
 There are exactly $n$ roots of unity $e^{2\pi i k/n}$ for $k\in[n-1]$ 
 ($e^{iu}= \cos{u}+i \sin{u}$).
