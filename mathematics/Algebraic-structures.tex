@@ -1,5 +1,5 @@
 
-\chapter{Algebraic structures}
+\chapter{Algebraic Structures}
 In this section I'll discuss basic definitions and theorems used in cryptography.
 This is by no means a comprehensive guide, 
 but rather a collection of definitions and theorems that I found useful.
@@ -17,9 +17,8 @@ but rather a collection of definitions and theorems that I found useful.
 %  $\F[x]$, we have $\F[x]/(x^n+1)$).
 
 % We'll start learning Algebraic structures in hopes we gain enough insight regarding \ref{schawtz-zippel}.
-\chapter{Group theory}
+\chapter{Groups Rings and Fields}
 
-\section{Groups Rings and Fields}
 \begin{definition}
     A \emph{group} is a tuple $(G,\cdot,e)$ where $G$ is a set and $\cdot$ is a binary operation on $G$
     that satisfies the following constraints:
@@ -45,7 +44,7 @@ but rather a collection of definitions and theorems that I found useful.
 \end{definition}
 
 
-\begin{definition}
+\begin{definition}[monoid] \label{def:monoid}
     A \emph{monoid} is a group without the requirement of inverses.
     That is, a monoid is a tuple $(M,\cdot,e)$ where $M$ is a set and $\cdot$ is a binary operation on $M$
     that satisfies the following constraints:
@@ -79,6 +78,10 @@ Now that we've defined what a group is, let's highlight some important theorems 
 
 From a group, we can define a field, which is a more complex structure.
 
+\section{Finite Fields}
+We are familiar with fields from Linear Algebra and Calculus.
+In this section, we introduce finite fields and explore some of their key properties.
+
 \begin{definition}
     A \emph{field} is a tuple $(F,+,\cdot,0,1)$ where $F$ is a set and $+,\cdot$ are binary operations on $F$
     such that $(F,+,0)$ is an abelian group, $(F,\cdot,1)$ is an abelian group, and the distributive law holds.
@@ -94,30 +97,56 @@ From a group, we can define a field, which is a more complex structure.
     And every set of integers modulo a prime $p$ is a field.
 \end{example}
 
-With the above example, we remind the reader of Fermat's little theorem, which 
-is used in many theorems or applications of group theory. In this summary, I rely on Fermat's little theorem
-when discussing NTT and FFT (see \autoref{section:fft}).
+In the context of finite fields, 
+some people use the notation $GF(q)$ to represent a field with a 
+size of $q$, while others use $F_q$. In this summary, I'll use them interchangeably.
 
 
-Some use the notation $GF(q)$ to denote a finite field of size $q$.
+I'm skipping proving properties over the addition, multiplication, and distributive law,
+since they are quite trivial and can be found in any algebra book.
+
 \begin{theorem}
-    Let $q$ be a prime, thus $GF(q)$ is a field.
+    Let $F$ be a set of $q$ elements, and addition and multiplications are defined 
+    over $F$ via modulo $q$. Then $F$ is a field iff $q$ is prime.
 \end{theorem}
+
+We usually write the above types of fields as $GF(q)$, $F_q$ or $Z_q$.
+
+\begin{definition}
+    Let $F$ be a field. The caracteristic of $F$ is the smallest \bf{positive} integer 
+    $p\in F$ such that $p\cdot 1=0$. 
+    If no such $p$ exists, the characteristic is $0$.
+\end{definition}
+
+For instance, the characteristic of $\Z_p$ is $p$, and the characteristic of $\R$ is $0$.
+
+\begin{theorem}
+The characteristic of a field is either $0$ or a prime number.
+\end{theorem}
+
+I skip the proofs.
+
+
+\paragraph{Fermat's little theorem} 
+This theorem is very useful in cryptography, algorithms, and many other fields.
+I specifically used it to explain to myself some aspects of the NTT algorithm (see \autoref{section:fft}). 
+
 
 \begin{theorem}[Fermat's little theorem]\label{fermats-little-theorem}
     let there be $x$ and $p$ prime, thus $x^p \equiv x \mod p$
-    (and as a result $x^{p-1}\equiv e mod p$).
+    (and as a result $x^{p-1}\equiv 1  mod p$).
 \end{theorem}
 
 
-Now that we defined groups and fields, we can define rings.
+\section{Polynomial Rings}
+
+Now that we defined groups and fields, we can define rings, and then polynomial rings.
 \begin{definition}
     A \emph{ring} is a tuple $(R,+,\cdot,0,1)$ where $R$ is a set and $+,\cdot$ are binary operations on $R$
     such that $(R,+,0)$ is an abelian group, $(R,\cdot,1)$ is a monoid, and the distributive law holds.
-
 \end{definition}
 
-In other words, a ring is a group with respect to addition, and a monoid with respect to multiplication.
+In other words, a ring is a group with respect to addition, and a monoid with respect to multiplication (see \autoref{def:monoid}).
 
 \begin{example}
     The set of integers $\Z$ is a ring, since some numbers don't 
