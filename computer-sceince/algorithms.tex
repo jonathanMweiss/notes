@@ -77,55 +77,17 @@ def extended_euclidean(a, b):
 
 \chapter{Polynomial Algorithms}\label{polynomials}
 
-
-% \section{Coefficient Representation}\label{polynomials:coeffcient-pres}
-% A coefficient representation of a polynomial $P(x)$ is a vector of coefficients 
-% $a=(a_0,a_1,\dots, a_{n-1})$.
-% In coefficient representation, we can evaluate or add a polynomial in $O(n)$ time. 
-% unfortunately multiplying two polynomials takes $O(n^2)$.
-% The operation of multiplying two polynomials $a,b$ is called convolution $c=a\otimes b$.
-% \todo{Define coefficient representation mroe formally}
-
 \section{Polynomial evaluation}
 Polynomial evaluation is the process of computing the value of a polynomial at a given point.
 This is a fundamental operation in many algorithms and applications. 
 There are several methods to evaluate polynomials, with varying levels of efficiency.
-Before we delve into the methods, we define what is evaluation of a polynomial and a polynomial evaluation map.
 
-\begin{definition} \label{def:poly-eval}
-  For any polynomial $P$ in $Z_q[X]$ and any element $a$ in $Z_q$,
-  the substitution of $X$ with $a$ in $P$ defines an element of $Z_q$, which is denoted $P(a)$.
-  This element is obtained by carrying on in $Z_q$ after the substitution of the operations indicated by 
-  the expression of the polynomial.
-  We call this action polynomial evaluation of $P$ at $a$.
-\end{definition}
-
-Now that we've defined the evaluation of a polynomial, it is important to state that formally, polynomials aren't functions. 
-Thus to evaluate a polynomial at a point, we need to define a function that receives a polynomial and a point and returns the evaluation.
-\begin{definition}
-  A polynomial evaluation map is a function $f_r:Z_q[X]\to Z_q$ such that for every polynomial $P$ and $r\in Z_q$,
-  $f_r(P)=P(r)$.
-\end{definition}
-
-This notation of polynomial evaluation maps is crucial to reason about polynomials, their evaluation, 
-and proving properties. For instance, assume a matrix $M$ and a vector $v$ with polynomials entries in $\Z_q[x]$.
-It isn't clear straight away that $f_r(M\cdot v) = f_r(M)\cdot f_r(v)$. In fact, there are algebraic 
-structures where this above equation is false. 
-Thus, to claim the above statement we need to define ring homomorphisms, and prove that $f_r$ is a ring homomorphism.
-
-\begin{definition}
-  A ring homomorphism is a function $f:R\to S$ between two rings $R$ and $S$ such that for every $a,b\in R$:
-  \begin{align}
-    &f(a+b)=f(a)+f(b)\\
-    &f(a\cdot b)=f(a)\cdot f(b) \\
-    &f(1_R)=1_S
-  \end{align}
-   Where $1_R$ and $1_S$ are the multiplicative identities of $R$ and $S$ respectively.
-\end{definition}
-
-Fortunately, for every point in $\Z_q[X]$, we can construct a polynomial evaluation map that is 
-a ring homomorphism (prove this to ensure you understand the reasoning behind it).
-Consequently, we can assert that $f_r(M\cdot v) = f_r(M)\cdot f_r(v)$.
+I highly recommend reading the section on polynomial evaluation before 
+proceeding (refer to~\ref{sec:poly-eval}), as I have personally used it in 
+practice to both verify the correctness of my algorithms (as outlined
+ in paper~\cite{SPIR} \todo{once published}) and gain a deeper 
+ understanding of the capabilities and limitations of polynomials.
+% To see the formal definition of a polynomial, refer to \autoref{def:poly-eval}
 
 \subsection{Evaluation Algorithms}
 Evaluating a polynomial at a point is a straightforward process.
