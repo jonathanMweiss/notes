@@ -220,6 +220,12 @@ these algebraic strucutres too have GCD and LCM.
 \end{definition}
 
 \begin{definition}
+    a \emph{monic} polynomial is a polynomial whose leading coefficient is $1$.
+    That is $f(x)= \bf{1}\cdot x^d + a_{d-1}x^{d-1}+\dots +a_1x+a_0$.
+    (see that the leading coefficient is $1$ and not some other value).
+\end{definition}
+
+\begin{definition}
     GCD of two polynomials $f(x)$ and $g(x)$ is the monomic polynomial $h(x)$
     of the highest degree which is a divisor of both.
     In particular, we say that $f(x)$ and $g(x)$ are coprime if their GCD is $1$.
@@ -398,6 +404,25 @@ where one cannot efficiently store the table.
 This method is also inefficient when doing very few 
 operations in the finite field, because one spends more time 
 computing the table than one does in actual calculation.
+
+
+\section{Minimal Polynomials}
+
+Let $F_q$ be a subfield of $F_r$. For an element $\alpha\in F_r$,
+we are interested in nonzero
+polynomials $f(x)\in F_q[x]$ of of the least degree such that $f(\alpha)=0$.
+\begin{definition}
+    A minimal polynomial of an element $\alpha\in F_{q^m}$ 
+    with respect to $F_q$ is a nonzero monic polynomial 
+    $f(x)\in F_q[x]$ of the least degree such that $f(\alpha)=0$.
+\end{definition}
+
+\todo{need to write this section.}
+% \begin{theorem}
+%     (i) The minimal polynomial of an element of $F_{q^m}$ with respect
+%     to $F_q$ exists and is unique. It is also irreducible over $F_q$.
+%     (ii)
+% \end{theorem}
 
 \section{Tricks}
 \todo{If you have any tricks or theorems you think are important, put them here.}
