@@ -126,18 +126,6 @@ The characteristic of a field is either $0$ or a prime number.
 
 I skip the proofs.
 
-
-\paragraph{Fermat's little theorem} 
-This theorem is very useful in cryptography, algorithms, and many other fields.
-I specifically used it to explain to myself some aspects of the NTT algorithm (see \autoref{section:fft}). 
-
-
-\begin{theorem}[Fermat's little theorem]\label{fermats-little-theorem}
-    let there be $x$ and $p$ prime, thus $x^p \equiv x \mod p$
-    (and as a result $x^{p-1}\equiv 1  mod p$).
-\end{theorem}
-
-
 \section{Polynomial Rings}
 
 Now that we defined groups and fields, we can define rings, and then polynomial rings.
@@ -219,6 +207,27 @@ a ring homomorphism (prove this to ensure you understand the reasoning behind it
 
 Consequently, we can assert that $f_r(M\cdot v) = f_r(M)\cdot f_r(v)$.
 
+\paragraph{GCD and LCM}
+
+Like with other fields and rings, 
+we can define modulo operations over polynomials, and as a result
+these algebraic strucutres too have GCD and LCM.
+\begin{definition}
+    Let $f(x)\in F[X]$ be a polynomial of degree $d\ge 1$.
+    Then, for any polynomial $g(x)\in F[x]$, there exists a unique 
+    pair of polynomials $q(x),r(x)\in F[x]$ such that $g(x)=q(x)\cdot f(x) +r(x)$.
+    The polynomial $r(x)$ is called the remainder of $g(x)$ modulo $f(x)$.
+\end{definition}
+
+\begin{definition}
+    GCD of two polynomials $f(x)$ and $g(x)$ is the monomic polynomial $h(x)$
+    of the highest degree which is a divisor of both.
+    In particular, we say that $f(x)$ and $g(x)$ are coprime if their GCD is $1$.
+
+
+    The LCM of these two polynomials is monic polynomial of the lowest 
+    degree which is a multiple of both
+\end{definition}
 
 
 \subsection{Polynomial Fields}
@@ -258,16 +267,69 @@ Furthermore, we note that $[a]+[b]=[a+b]$ and $[a]\cdot[b]=[a\cdot b]$.
 
     So in the case of $Z/7Z$, we don't care about 
     all the multiplications of $7$, only the first 7 of them.
-\end{bclogo}
 
 
-Another important example if the polynomial quotient ring $R[X]/X^d$. 
+    Another important example if the polynomial quotient ring $R[X]/X^d$. 
 This ring is the set of equivalence classes of $R[X]$ under the equivalence relation
 $f\sim g$ iff $f-g\in X^d$. Or in other words, all polynomials of degree less than $d$ are equivalent.
+\end{bclogo}
+
+\begin{definition}[irreducible polynomials]
+    Let $F$ be a field, and $f(x)\in F[X]$ be a polynomial of degree $d\ge 1$.
+    We say that $f(x)$ is irreducible over $F$ if it cannot be factored into 
+    two polynomials of lower degree.
+\end{definition}
+
+\begin{definition}[prime polynomials]
+    Let $F$ be a field, and $f(x)\in F[X]$ be a polynomial of degree $d\ge 1$.
+    We say that $f(x)$ is prime if for every two polynomials $g(x),h(x)\in F[X]$
+    such that $f(x)|g(x)\cdot h(x)$, then $f(x)|g(x)$ or $f(x)|h(x)$. (Stronger)
+\end{definition}
+
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{primes, irreducibility and roots}
+Note, the irreducible or primality of polynomials has nothing to do with roots 
+of the polynomial. For instance, $x+1$ is irreducible over $GF(157)$, but has 
+a root of $156$.
+\end{bclogo}
+
+\begin{theorem}
+    Let $f(x)\in F[X]$ be a polynomial of degree $d\ge 1$.
+    Then, $F[x]/f(x)$ is a field iff $f(x)$ is irreducible over $F$.
+\end{theorem}
 
 
-\section{Extension Fields}
+\section{Structure of Finite Fields}
 
+
+
+
+\begin{theorem}[Fermat's little theorem]\label{fermats-little-theorem}
+    For every element of a finite field $F$ with $q$ elements, 
+    $x^q=x$. 
+\end{theorem}
+
+\begin{corollary}
+    Let $F$ be a finite field with $q$ elements, and let $x\ne0\in F$.
+    Then, $x^{q-1}=1$.
+\end{corollary}
+
+This theorem is very useful in cryptography, algorithms, and many other fields.
+I specifically used it to explain to myself some aspects of the NTT algorithm (see \autoref{section:fft}). 
+
+
+\begin{corollary}
+    Let $F$ be a subfield of $E$ with $|F|=q$. Then 
+    an element $x\in E$ is in $F$ iff $x^q=x$.
+\end{corollary}
+
+
+
+\begin{theorem}
+    For any prime $p$ and any integer $n$, there exists a field of size $p^n$.
+\end{theorem}
+
+(This is without proof). 
+To create such a field:
 One can take a field $GF(q)$, and extend it.
 To do so, first find a polynomial $p(x)$ of degree $d$ that is irreducible over $GF(q)$
 (We'll use prime polynomials).
@@ -283,6 +345,59 @@ For instance, $GF(2)[X]/(X^2+X+1)$ is $GF(2^2)$, and has the following elements:
 $0,1,X,X+1$. Once we define the elements and how they interact with their operations, we can 
 switch their notation to be integers in the range $[0,3]$. 
 
+\begin{remark}
+    Usually,  if we take a root of an irreducible
+    polynomial $f(x)$ over $F[X]$, say $\alpha$, we can 
+    represent the field $F[X]/f(x)$ as $F[\alpha]$, as follows
+    
+    $$F[x]/f(x)=F[\alpha]= \{a0 + a1 \alpha + \dots + a_{n-1} \alpha_{d-1} : a_i \in F\}$$
+    (we treat $\alpha$ as a symbol, rather than a value). 
+\end{remark}
+
+
+\begin{definition}(generator/primitive element)
+    An element $\alpha$ in a finite field $F_q$ is called a primitive element
+    (or generator) of $F_q$ if 
+    $F_q = \{0, \alpha, \alpha^2, \dots , \alpha^{q-1}\}$.
+\end{definition}
+That is, a primitive element is a generator 
+of the multiplicative group of the field.
+
+\begin{definition}
+    The order of a non zero element $\alpha$ in a finite field $F_q$ 
+    is the smallest positive integer $m$ such that
+    $\alpha^m=1$.
+\end{definition}
+
+
+It is important to note that, if $\alpha$ is a 
+root of an irreducible polynomial $f(x)$ over $F[X]$ of degree $m$, 
+then it is also a primitive element of $F_{q^m}=F_q[\alpha]$.
+As a result, every element can be written as a power of $\alpha$: 
+$F_{q^m}=\{0,1,\alpha,\alpha^2,\dots,\alpha^{q^{m-1}}\}$.
+
+Addition, and multiplication is easier while represented in terms of $\alpha$ 
+(since it doesn't demand polynomial multiplication and modulo).
+
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Ordering of elements}
+    You don't know the ordering of the elements using the generator $\alpha$.
+\end{bclogo}
+
+\paragraph{Zech logarithms}
+Zech logarithms are used to implement addition in finite fields 
+(via a look up table)
+when elements are represented as powers of a generator. 
+
+For sufficiently small finite fields,
+ a table of Zech logarithms allows an especially efficient 
+ implementation of all finite field arithmetic in terms of a small 
+ number of integer addition/subtractions and table look-ups.
+
+The utility of this method diminishes for large fields 
+where one cannot efficiently store the table. 
+This method is also inefficient when doing very few 
+operations in the finite field, because one spends more time 
+computing the table than one does in actual calculation.
 
 \section{Tricks}
 \todo{If you have any tricks or theorems you think are important, put them here.}
