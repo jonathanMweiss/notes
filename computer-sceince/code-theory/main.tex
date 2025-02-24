@@ -67,7 +67,7 @@ For instance, the Maximum likelihood decoding algorithm (which I skip).
 We use distances of codes to measure how well they can correct and detect errors.
 The most common distance used is the Hamming distance.
 
-\begin{definition}
+\begin{definition}\label{def:hamming-distance}
     Let $x$ and $y$ be words of the same length $n$ over an alphabet $A$.
     The \emph{(Hamming) distance} between $x$ and $y$ is the number of positions in which they differ.
     If $x=x_1x_2\dots x_n$ and $y=y_1y_2\dots y_n$ then the distance is defined as:
@@ -145,6 +145,217 @@ mum distance decoding rule, we see that
     ($011$, $101$ or $110$) will be decoded to $111$.
 \end{itemize}
 
-In all cases 
-
+In all cases, the distance is enough to correct a single error. Notice that two errors 
+are too much for this code to correct.
 \end{example}
+
+\begin{theorem}
+    A code $C$ is $v-error-correcting$ if and only if the minimum distance of $C$ is at least $2v+1$.
+    I.e., $d(C)\ge 2v+1$ (at most $\lfloor \frac{d-1}{2}\rfloor$).
+\end{theorem}
+
+Without proof.
+
+
+\section{Linear Codes}
+
+\todo{at least describe what a linear code is, and the difference between linear and non-linear codes}
+
+\section{Construction of Linear Codes}
+
+\begin{theorem}
+    Suppose there is an $[n, k, d]$-linear code over $F_q$. Then
+    \begin{enumerate}
+        \item (lengething) There exists an $[n + r, k, d]$-linear code over 
+        $F_q$ for any $r \ge 1$.
+
+        \item (subcodes) there exists an $[n, k-r, d]$-linear code over $F_q$ for any 
+        $1 \le r \le k- 1$.
+
+        \item (puncturing) there exists an $[n- r, k, d- r]$-linear code over $F_q$ for any
+        $1 \le r \le d- 1$.
+
+        \item there exists an $[n, k, d- r]$-linear code over $F_q$ for any $1 \le r \le d- 1$.
+        
+        \item there exists an $[n- r, k- r, d]$-linear code over $F_q$ for any $1 \le r \le k- 1$.
+    \end{enumerate}
+\end{theorem}
+
+\begin{bclogo}[couleur=blue!10, arrondi=0.1, logo=\bcinfo]{How useful is it?}
+The above theorem produces codes with worse
+parameters than the old ones. We usually do not make new codes using these
+constructions. However, they are quite useful when we study codes
+\end{bclogo}
+
+
+\section{Reed-Solomon codes}
+
+\todo{...}
+
+\subsection{Robust Interpolation}
+In this section we discuss the Berlekamp-Welch algorithm, 
+which is used to correct errors in Reed-Solomon codes.
+
+The algortihm expects a set number of points and attempts to reconstruct 
+a polynomial that passes through these points, given a finite number of errors.
+
+\begin{bclogo}[logo=\bcattention,noborder=true]{Problem: Decode $RS_q(\bar{\alpha},n,k)$ from $e\le \lfloor\frac{n-k}{2}\rfloor$}
+Given a word of $w=w_1w_2\dots w_n$ of length $n$, 
+find a polynomial $f(x)\in F_q[x]$ such that
+\begin{itemize}
+    \item $\deg(f)\le k$.
+    \item $f(\alpha_i)\ne w_i$ for at most $e$ values of i. Else, return $\bot$.
+\end{itemize}
+
+\end{bclogo}
+
+The key idea, is assuming we can create some special polynomial $E(x)$ called the \emph{Error Locator Polynomial}.
+This polynomial has roots at each $\alpha_i$ where $w_i\ne f(\alpha_i)$. That is, 
+for each $\alpha_i$  that we have an error: $w_i\ne f(\alpha_i)$, we have a root in $E(x)$.
+So, we define $ E(x) = \prod_{i:w_i\ne f(\alpha_i)}^{n} (x-\alpha_i)$.
+Notice that if we plug the $\alpha_i$, such that $w_i\ne f(\alpha_i)$, we get $E(\alpha_i)=0$.
+This polynomial exists, but unfortunately, we don't know it. 
+
+Now that defined $E(x)$, notice that for all $i$:
+$$ w_i\cdot E(\alpha_i) = f(\alpha_i)\cdot E(\alpha_i)= Q(\alpha)$$
+
+
+\begin{bclogo}[logo=\bcinfo,noborder=true]{Explanation}
+    Notice that for $\alpha_i$, if $w_i\ne f(\alpha_i)$, then $E(\alpha_i)=0$.
+    and thus we have $w_i\cdot 0 = f(\alpha_i)\cdot 0$, which is true.
+    Otherwise, $f(\alpha_i)=w_i$ and we have
+     $w_i\cdot E(\alpha_i) = f(\alpha_i)\cdot E(\alpha_i)$, which is also true.
+\end{bclogo}
+
+The goal of the algorithm is finding $Q(x)$ and $E(x)$,
+ then $f(x)$ can be found by $f(x)=\frac{Q(x)}{E(x)}$.
+
+\paragraph{High Level Idea}
+\begin{enumerate}
+    \item Find a monic (see \autoref{def:monic}) degree $e$ polynomial $E(x)$.
+    \item Find a polynomial $Q(x)$ of degree $\le e+k-1$ such 
+    that $w_i\cdot E(\alpha_i)=Q(\alpha_i)$, for all $i$.
+
+    If there isn't, then return $\bot$.
+    \item Set $\tilde{f}(x)=\frac{Q(x)}{E(x)}$. and check hamming distance 
+    (see \autoref{def:hamming-distance}) $\Delta(\tilde{f}(\alpha_i),w)$ 
+    between $\tilde{f(\alpha_i)}$ and $w_i$.\todo{is the hamming distance here for bits, or 1 per evaluation}
+    if the distance is greater than $e$, return $\bot$.
+    \item Return $\tilde{f}(x)$.
+\end{enumerate}
+
+
+\begin{bclogo}[logo=\bcquestion]{Why?}
+    The algorithm above raises two key questions.
+    \begin{enumerate}
+        \item How do we find $E(x)$ and $Q(x)$?
+        \item Why is this a good idea? even if we found some $E(x)$ and $Q(x)$, 
+        how do we know that they give as the correct question?
+    \end{enumerate}    
+\end{bclogo}
+
+
+\begin{theorem}
+ If there exists a polynomial $f(x)$ such that $\Delta(f,w)\le e$
+ then there exists $E(x)$ and $Q(x)$ such that 
+
+ \begin{itemize}
+    \item $E(x)$ is monic of degree $e$.
+    \item $Q(x)$ is of degree $e+k-1$.
+    \item $\forall i, w_i\cdot E(\alpha_i)=Q(\alpha_i)$ for all $i$.
+ \end{itemize}\label{theorem:berlekamp-welch:demands}
+
+ and $f(x)=\frac{Q(x)}{E(x)}$.
+\end{theorem}
+
+\begin{proof}
+    Let $E(x)=\prod_{i:w_i\ne f(\alpha_i)}^{n} (x-\alpha_i)\cdot x^{e-\Delta(f,w)}$.
+    (we multiplied by $x^{e-\Delta(f,w)}$ to make sure it's of degree $e$).
+    Let $Q(x)=E(x)\cdot f(x)$.
+    
+    Given these defintions, all the requirements we requested above 
+    (\S\ref{theorem:berlekamp-welch:demands}) are satisfied (check it for yourself).
+
+    We just need to show uniqueness, and we are done.
+    \begin{lemma}
+        Given $(E_1, Q_1)$ and $(E_2, Q_2)$ that satisfy the requirements in \ref{theorem:berlekamp-welch:demands},
+        then $E_1(x)/Q_1(x) = E_2(x)/Q_2(x)$.
+    \end{lemma}
+
+    \begin{proof}
+        Let us assume by contradication that $E_1(x)/Q_1(x) \ne E_2(x)/Q_2(x)$.
+        We build a new polynomial  $R(x)=E_1(x)Q_2(x) - E_2(x)Q_1(x)$.
+        Since $E_1(x)/Q_1(x) \ne E_2(x)/Q_2(x)$, then $R(x)\ne 0$.
+
+        The degree of $R(x)$ is at most $2e+k-1$. Let us consider what happens when we 
+        evaluate it over $\alpha_i$.
+        $R(\alpha_i)= E_1(\alpha_i)Q_2(\alpha_i) - E_2(\alpha_i)Q_1(\alpha_i)$
+        and from the requirements in \ref{theorem:berlekamp-welch:demands}, we know that
+        $$E_1(\alpha_i)Q_2(\alpha_i) = E_1(\alpha_i)\cdot w_i\cdot E_2(\alpha_i)$$
+        and that 
+        $$E_2(\alpha_i)Q_q(\alpha_i) = E_2(\alpha_i)\cdot w_i\cdot E_1(\alpha_i)$$
+        So $R(\alpha_i)= w_i(E_1(\alpha_i)E_2(\alpha_i) - E_2(\alpha_i)E_1(\alpha_i))=0$.
+
+        Notice that we have $n$ points where $R(\alpha_i)=0$, and $R(x)$ is of degree $2e+k-1$,
+        Furthermore, $e<\lfloor \frac{n-k+1}{2}\rfloor$, so $2e+k-1<n$.
+        This means that $R(x)$ is a polynomial of degree less than $n$ that has $n$ roots.
+        This is a contradication to the fundamental theorem of arithmetics,
+        and thus $E_1(x)/Q_1(x) = E_2(x)/Q_2(x)$.
+    \end{proof}
+
+    So finding $E(x)$ and $Q(x)$ is enough to find $f(x)$.
+\end{proof}
+
+
+\begin{bclogo}[logo=\bcquestion]{Why is it important that $E(x)$ is monic?}
+    Consider polynomial long division, specifically 
+    the division of $x^2-1$ by $2x$ over $\mathbb{Z}[X]$. 
+    As we attempt the division, we quickly realize that the element 
+    $\frac{1}{2}$ is required, which is not an element of $\mathbb{Z}$. 
+    In other words, if $E(x)$ is not monic, we cannot guarantee that we can divide $Q(x)$ by $E(x)$.
+\end{bclogo}
+
+\paragraph{Finding $E(x)$ and $Q(x)$}
+
+We solve a system of linear equations to find $E(x)$ and $Q(x)$.
+More specifically, we have $n$ constraints of the form $w_i\cdot E(\alpha_i)=Q(\alpha_i)$.
+These constraints are linear in the coefficients of $E(x)$ and $Q(x)$.
+We have $e$ coefficients in $E(x)$ and $e+k$ coefficients in $Q(x)$. Thus 
+we have $2e+k$ variables (coefficients).
+
+We know from our proof that a solution exists, and that any solution will do.
+So we just need to solve the system of linear equations.
+
+\begin{align*}
+    w_1\cdot E(\alpha_1) &= Q(\alpha_1)\\
+    w_2\cdot E(\alpha_2) &= Q(\alpha_2)\\
+    &\vdots\\
+    w_n\cdot E(\alpha_n) &= Q(\alpha_n)\\
+\end{align*}
+which is translated to matrix form as:
+
+\[
+    \left(\begin{array}{ccc|lcc}
+        w_{1}\cdot\alpha_{1}^{e} & w_{1}\cdot\alpha_{1}^{e-1}\dots w_{1}\alpha_{1} & w_{1} & -\alpha_{1}^{e+k-1} & \dots-\alpha_{1} & -1\\
+        w_{2}\cdot\alpha_{2}^{e} & w_{2}\cdot\alpha_{2}^{e-1}\dots w_{2}\alpha_{2} & w_{2} & -\alpha_{2}^{e+k-1} & \dots-\alpha_{2} & -1\\
+         &  & \vdots
+        \end{array}\right)=\left(\begin{array}{c}
+        1\\
+        a_{e-1}\\
+        \vdots\\
+        a_{1}\\
+        a_{0}\\
+        \hline b_{e+k-1}\\
+        b_{e+k-2}\\
+        \vdots\\
+        b_{1}\\
+        b_{0}
+        \end{array}\right)
+\]
+
+Solving the linear equations is done by using Gaussian elimination,
+which is a standard algorithm for solving systems of linear equations.
+Thus, although the berlekamp-welch algorithm is infinetly faster than try to find agreement 
+between $f(x)$ and $w$ by brute force, it still takes $O(n^3)$ time. 
+
+Dividing these two polynomials can be done via NTT (Number Theoretic Transform) or FFT (Fast Fourier Transform).
