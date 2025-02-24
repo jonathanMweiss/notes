@@ -192,7 +192,8 @@ constructions. However, they are quite useful when we study codes
 
 \todo{...}
 
-\subsection{Robust Interpolation}
+\section{Robust Interpolation}
+\subsection{Berlekamp-Welch Algorithm}
 In this section we discuss the Berlekamp-Welch algorithm, 
 which is used to correct errors in Reed-Solomon codes.
 
@@ -358,4 +359,17 @@ which is a standard algorithm for solving systems of linear equations.
 Thus, although the berlekamp-welch algorithm is infinetly faster than try to find agreement 
 between $f(x)$ and $w$ by brute force, it still takes $O(n^3)$ time. 
 
-Dividing these two polynomials can be done via NTT (Number Theoretic Transform) or FFT (Fast Fourier Transform).
+% Dividing these two polynomials can be done via NTT (Number Theoretic Transform) or FFT (Fast Fourier Transform).
+
+\paragraph{Speeding up the algorithm using NTT}
+We won't get better in this algorithm than $O(n^3)$, but we can reduce the constant.
+For instance, filling the matrix above takes $O(n^2)$ time, where each matrix entry is a set of 
+exponents over the field. This is quite costly. 
+If we know the polynomial is evaluated using roots of unity, we can 
+create a look-up-table (LUT) and evaluate $\omega$'s $e+k-1$ powers. 
+Then, whenever we need to evaluate $\omega_i^j$, we look for it in entry $i\cdot j \mod n$ 
+in the LUT.
+In addition, this specific matrix can be built ahead of time, then multiply the entries in 
+the matrix by the corresponding $w_i$. 
+
+
