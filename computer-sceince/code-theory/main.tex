@@ -414,6 +414,55 @@ As a result, Gao utilises this fact to avoid implementing actual Lagrange's inte
 
 
 We assume we receive $b=\{b_1,b_2,\dots,b_n\}$, which might have corruptions
-and might not. If no corruptions are present, 
-then $b_i=f(\omega_i)$ for some polynomial $f(x)$ of degree $k$.
+(i.e., $b_i\ne f(\alpha_i)$ for some $i$).
+We also assume that the polynomial $f(x)$ is of degree $k$.
 
+The algorithm is as follows:
+\begin{enumerate}
+    \item Compute $G_0(x)=\prod_{i=0}^{n-1}(x-\omega_i)$. 
+    This polynomial can be precomputed and reused for decoding any 
+    $n$th-degree polynomial. 
+    (In this case, it resembles $x^n-1$ if $n$ divides $q-1$,
+    where $q$ is the field size, which is always the case for NTT.) 
+
+    \item Compute $g(x)$ using lagrange interpolation from the points $\{(i,b_i)\}_{i=1}^{n}$.
+    \todo {This step is tricky. what does it mean to interpolate $g(x)$? 
+    cause interpolation doesn't return a poly in coeff form!
+    Does it mean to ensure we have b elements (fill with 0 when no value found), and use iNTT??}.
+
+    \item Perform Partial GCD with a threshold:  $pGCD(g(x),G_0(x), 
+    frac{n+k}{2})\rightarrow uG(x) +vg(x)=D(x)$. 
+
+    \item Divide $D(x)$ by $v$ to get $g=f(x)\cdot v+r$.
+
+    \item if $\deg(r)< deg(v)$, return $f(x)$. Else fail.
+\end{enumerate}
+
+\begin{bclogo}[logo=\bcquestion]{Lagrange Interpolation?}
+    \begin{itemize}
+        \item How can we perform lagrange interpolation to get $g(x)$? 
+        The interpolation has a strict formula, which is easy to get
+        a value out of computing over $L(x)$. However, the formula is not
+        easy to get a coefficient representation of the polynomial (i.e., computationally
+        expensive).
+    
+        So how can we interpolate $g(x)$? 
+        I assume that since we know all evaluations of $g(x)$ are over 
+        the $n$th roots of unity, we can use the inverse NTT to get the
+        coefficients of $g(x)$.
+    
+        But what happens when we have an evaluation missing (i.e., ereasure of $b_i$)?
+        We fill it with $0$, and get a corrupted polynomial (which is fine).
+
+        \item If we know in advance that we work over $n$ roots of unity, 
+        Can we build in advance some parts of the interpolation algorithm?
+        For instance, compute in advance each  of the $\ell_i(x)$ polynomials (which is $O(n^2)$ work)
+        Then, each time we need to interpolate, we just need to perform $n$ 
+        additions, where each is of demand $O(n)$ time.
+        But is this even needed if we have the NTT? values?
+
+        \item I've read that one can do pGCD fast using NTT, if that is the case, 
+        why do we need to interpolate $g(x)$? we already have it?
+    \end{itemize}
+    
+\end{bclogo}
