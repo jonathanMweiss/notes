@@ -613,34 +613,49 @@ This exploitation allows us to perform $NTT$ without expanding to $2n$ parameter
 meaning we can send less bandwidth over the network, and perform fewer computations too. 
 This trick can be seen in \cite{SEAL}.
 
-\section{Reed-Solomon}
-It is fairly simple, but effective algorithm to encode words and be able to deal with erasurs.
-\subsection{Reed-Solomon for erasures}
-The Reed-Solomon algorithm is a systematic error-correcting code that can correct multiple erasures.
-It is based on polynomial arithmetic over a finite field, and it is used in many applications.
 
-The algorithm works as follows:
-encode the message in a polynomial of degree bound $k-1$,
-and then evaluate the polynomial at $n$ distinct points.
+\section{Lagrange's Interpolation}
+Given a set of points $(x_0,y_0),\dots,(x_n,y_n)$, 
+we can find a unique polynomial of degree-bound $n$ that passes through all of them.
 
-To decode the message, we need to find the polynomial that interpolates the points we received.
-Given any $k$ points, once can find a unique polynomial of degree $k-1$ that passes through them
-using the Lagrange interpolation formula.
+The output of the algorithm is a polynomial in coefficient form.
+This is a generalisation of inverse NTT for evaluation on arbitrary points.
 
+Naively computing the lagrange polynomial will cost us $O(n^3)$, 
+but it can be done in $O(n^2)$ time if computed carefuly (utilising cleverly both 
+memory and computation - kind of like dynamic programming).
 
-\paragraph{Using NTT for Reed-Solomon} 
-The Reed-Solomon algorithm can be accelerated by employing the NTT algorithm (see \autoref{ntt}).
-Instead of utilizing any arbitrary $n$ distinct points, we can leverage the $n$-th 
-roots of unity (provided they exist within the finite field under consideration).
-Now we can encode messages faster.
-
-Decoding can still be done using the Lagrange interpolation formula.
-\todo{How to improve decoding speed using NTT!} 
+\todo{Complete this section, You can get }
 
 
-\subsection{Reed-Solomon for errors}
-\todo[inline]{This section is not complete}
-The Reed-Solomon algorithm can also correct data corruption.
+% \section{Reed-Solomon}
+% It is fairly simple, but effective algorithm to encode words and be able to deal with erasurs.
+% \subsection{Reed-Solomon for erasures}
+% The Reed-Solomon algorithm is a systematic error-correcting code that can correct multiple erasures.
+% It is based on polynomial arithmetic over a finite field, and it is used in many applications.
+
+% The algorithm works as follows:
+% encode the message in a polynomial of degree bound $k-1$,
+% and then evaluate the polynomial at $n$ distinct points.
+
+% To decode the message, we need to find the polynomial that interpolates the points we received.
+% Given any $k$ points, once can find a unique polynomial of degree $k-1$ that passes through them
+% using the Lagrange interpolation formula.
+
+
+% \paragraph{Using NTT for Reed-Solomon} 
+% The Reed-Solomon algorithm can be accelerated by employing the NTT algorithm (see \autoref{ntt}).
+% Instead of utilizing any arbitrary $n$ distinct points, we can leverage the $n$-th 
+% roots of unity (provided they exist within the finite field under consideration).
+% Now we can encode messages faster.
+
+% Decoding can still be done using the Lagrange interpolation formula.
+% \todo{How to improve decoding speed using NTT!} 
+
+
+% \subsection{Reed-Solomon for errors}
+% \todo[inline]{This section is not complete}
+% The Reed-Solomon algorithm can also correct data corruption.
 
 
 % decoding can be done using the Berlekamp-Welch algorithm, which is a generalization of the Euclidean algorithm.
