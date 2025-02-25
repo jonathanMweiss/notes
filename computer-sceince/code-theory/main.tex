@@ -6,31 +6,38 @@ small sum about code theory. needed for a project of mine.
 We begin with some basic notions. What is a codeword? what is a code? what are symbols?
 \begin{definition}
     Let $A=\{a_1, a_2, \dots a_q \}$ be a set of size $q$.
-    We refer to $A$ as the \emph{alphabet} of the code. and each element is a \emph{code symbol}.
+    We refer to $A$ as the \emph{alphabet} of the code. and each element is a 
+    \emph{code symbol}.
 
     \begin{enumerate}
         \item A q-ary word is a sequence of $n$ symbols from $A$:  $w=w_1w_2\dots w_n$ 
         where $w_i\in A$.
-        \item A q-ary \emph{block code} of length $n$ over $A$ is a non-empty set $C$ of q-ary words
+        \item A q-ary \emph{block code} of length $n$ over $A$ is a non-empty 
+        set $C$ of q-ary words
         having the same length $n$.
         \item An element in $C$ is called a \emph{codeword} in $C$.
-        \item The number of codewords in $C$ is called the \emph{size} of $C$ and is denoted by $|C|$.
+        \item The number of codewords in $C$ is called the \emph{size} of 
+        $C$ and is denoted by $|C|$.
         \item A code of length $n$ and size $M$ is called an $(n,M)$-code.
     \end{enumerate}
 \end{definition}
 
-For instance, $C=\{000, 111, 010, 101\}$ is a block code of length $3$ over the binary alphabet $\{0,1\}$,
+For instance, $C=\{000, 111, 010, 101\}$ is a block code of length 
+$3$ over the binary alphabet $\{0,1\}$,
 and q-ary of size $3$ each. This is a $(3,4)$-code.
 
 \begin{definition}
-A \emph{communication channel} consists of a finite channel alphabet $A=\{a_1, a_2, \dots a_q \}$, 
-as well as a \emph{forward channel probabilties} $\Pr[a_j\text{ received}| a_i\text{ sent}]$, satisfying
+A \emph{communication channel} consists of a finite channel alphabet 
+$A=\{a_1, a_2, \dots a_q \}$, 
+as well as a \emph{forward channel probabilties} 
+$\Pr[a_j\text{ received}| a_i\text{ sent}]$, satisfying
 $$ \sum_{j=0}^q \Pr[a_j\text{ received}| a_i\text{ sent}] = 1$$
 
 for each different $i$.
 \end{definition}
 
-In other words, a communication channel allows specific symbols to be sent, but when sending something 
+In other words, a communication channel allows specific symbols to be sent, 
+but when sending something 
 something else might arrive (with some probabiltiy).
 
 \begin{definition}
@@ -45,11 +52,13 @@ something else might arrive (with some probabiltiy).
 a q-ary \emph{symmetric channel} is a memoryless channel such that 
 \begin{enumerate}
     \item Each symbol trasmitted has the same probability $p$ of being received in error.
-    \item if a symbol is received in error, then it is equally likely to be received as any of the other $q-1$ symbols.
+    \item if a symbol is received in error, then it is equally likely 
+    to be received as any of the other $q-1$ symbols.
 \end{enumerate}
 \end{definition}
 
-For instance, let's look at the \emph{Binary symmetric channel} (BSC) with error probability $p$.
+For instance, let's look at the \emph{Binary symmetric channel} (BSC) 
+with error probability $p$.
 The channel alphabet is $\{0,1\}$, and the forward channel probabilities are:
 \begin{itemize}
 \item $ \Pr[0\text{ received}| 0\text{ sent}] = 1-p$
@@ -58,7 +67,8 @@ The channel alphabet is $\{0,1\}$, and the forward channel probabilities are:
 \item $ \Pr[0\text{ received}| 1\text{ sent}] = p$
 \end{itemize}
 
-Given such a channel one can create a code that relies on the channel's properties to correct errors.
+Given such a channel one can create a code that relies on the channel's
+ properties to correct errors.
 For instance, the Maximum likelihood decoding algorithm (which I skip).
 
 
@@ -69,7 +79,8 @@ The most common distance used is the Hamming distance.
 
 \begin{definition}\label{def:hamming-distance}
     Let $x$ and $y$ be words of the same length $n$ over an alphabet $A$.
-    The \emph{(Hamming) distance} between $x$ and $y$ is the number of positions in which they differ.
+    The \emph{(Hamming) distance} between $x$ and $y$ is the number of
+     positions in which they differ.
     If $x=x_1x_2\dots x_n$ and $y=y_1y_2\dots y_n$ then the distance is defined as:
     $$ d(x,y) = |\{i: x_i\neq y_i\}|$$
 
@@ -91,7 +102,8 @@ based on the Hamming distance, known as the \emph{nearest neighbor decoding} (wh
 
 
 \begin{definition}
-    The \emph{minimum distance} of a code $C$ is the smallest distance between any two distinct codewords in $C$.
+    The \emph{minimum distance} of a code $C$ is the smallest distance 
+    between any two distinct codewords in $C$.
     It is denoted by $d(C)$.
     I.e., $d(C) = \min\{d(x,y): x,y\in C, x\neq y\}$.
 \end{definition}
@@ -116,14 +128,17 @@ in a word that is not a codeword.
 \end{definition}
 
 \begin{example}
-    The set $C=\{00000, 00111, 11111\}$ is a $1-error-detecting$ code because a single bit flip
+    The set $C=\{00000, 00111, 11111\}$ is a $1-error-detecting$ code
+     because a single bit flip
     cannot result in a codeword being changed. 
-    However, it is not a $2-error-detecting$ code because changing $00111$ to $11111$ is possible with 
+    However, it is not a $2-error-detecting$ code because changing
+     $00111$ to $11111$ is possible with 
     only two bit flips.
 \end{example}
 
 \begin{theorem}
-    A code $C$ is $u-error-detecting$ if and only if the minimum distance of $C$ is at least $u+1$.
+    A code $C$ is $u-error-detecting$ if and only if the minimum
+     distance of $C$ is at least $u+1$.
     (i.e., $d(C)\ge u+1$).
 \end{theorem}
 We skip the proof.
@@ -175,9 +190,11 @@ Without proof.
         \item (puncturing) there exists an $[n- r, k, d- r]$-linear code over $F_q$ for any
         $1 \le r \le d- 1$.
 
-        \item there exists an $[n, k, d- r]$-linear code over $F_q$ for any $1 \le r \le d- 1$.
+        \item there exists an $[n, k, d- r]$-linear code over
+         $F_q$ for any $1 \le r \le d- 1$.
         
-        \item there exists an $[n- r, k- r, d]$-linear code over $F_q$ for any $1 \le r \le k- 1$.
+        \item there exists an $[n- r, k- r, d]$-linear code over
+         $F_q$ for any $1 \le r \le k- 1$.
     \end{enumerate}
 \end{theorem}
 
@@ -200,7 +217,8 @@ which is used to correct errors in Reed-Solomon codes.
 The algortihm expects a set number of points and attempts to reconstruct 
 a polynomial that passes through these points, given a finite number of errors.
 
-\begin{bclogo}[logo=\bcattention,noborder=true]{Problem: Decode $RS_q(\bar{\alpha},n,k)$ from $e\le \lfloor\frac{n-k}{2}\rfloor$}
+\begin{bclogo}[logo=\bcattention,noborder=true]{Problem: Decode 
+    $RS_q(\bar{\alpha},n,k)$ from $e\le \lfloor\frac{n-k}{2}\rfloor$}
 Given a word of $w=w_1w_2\dots w_n$ of length $n$, 
 find a polynomial $f(x)\in F_q[x]$ such that
 \begin{itemize}
@@ -210,11 +228,13 @@ find a polynomial $f(x)\in F_q[x]$ such that
 
 \end{bclogo}
 
-The key idea, is assuming we can create some special polynomial $E(x)$ called the \emph{Error Locator Polynomial}.
+The key idea, is assuming we can create some special polynomial $E(x)$ called
+ the \emph{Error Locator Polynomial}.
 This polynomial has roots at each $\alpha_i$ where $w_i\ne f(\alpha_i)$. That is, 
 for each $\alpha_i$  that we have an error: $w_i\ne f(\alpha_i)$, we have a root in $E(x)$.
 So, we define $ E(x) = \prod_{i:w_i\ne f(\alpha_i)}^{n} (x-\alpha_i)$.
-Notice that if we plug the $\alpha_i$, such that $w_i\ne f(\alpha_i)$, we get $E(\alpha_i)=0$.
+Notice that if we plug the $\alpha_i$, such that $w_i\ne f(\alpha_i)$,
+ we get $E(\alpha_i)=0$.
 This polynomial exists, but unfortunately, we don't know it. 
 
 Now that defined $E(x)$, notice that for all $i$:
@@ -240,7 +260,8 @@ The goal of the algorithm is finding $Q(x)$ and $E(x)$,
     If there isn't, then return $\bot$.
     \item Set $\tilde{f}(x)=\frac{Q(x)}{E(x)}$. and check hamming distance 
     (see \autoref{def:hamming-distance}) $\Delta(\tilde{f}(\alpha_i),w)$ 
-    between $\tilde{f(\alpha_i)}$ and $w_i$.\todo{is the hamming distance here for bits, or 1 per evaluation}
+    between $\tilde{f(\alpha_i)}$ and $w_i$.\todo{is the hamming distance here 
+    for bits, or 1 per evaluation}
     if the distance is greater than $e$, return $\bot$.
     \item Return $\tilde{f}(x)$.
 \end{enumerate}
@@ -279,7 +300,8 @@ The goal of the algorithm is finding $Q(x)$ and $E(x)$,
 
     We just need to show uniqueness, and we are done.
     \begin{lemma}
-        Given $(E_1, Q_1)$ and $(E_2, Q_2)$ that satisfy the requirements in \ref{theorem:berlekamp-welch:demands},
+        Given $(E_1, Q_1)$ and $(E_2, Q_2)$ that satisfy the requirements in
+         \ref{theorem:berlekamp-welch:demands},
         then $E_1(x)/Q_1(x) = E_2(x)/Q_2(x)$.
     \end{lemma}
 
@@ -297,7 +319,8 @@ The goal of the algorithm is finding $Q(x)$ and $E(x)$,
         $$E_2(\alpha_i)Q_q(\alpha_i) = E_2(\alpha_i)\cdot w_i\cdot E_1(\alpha_i)$$
         So $R(\alpha_i)= w_i(E_1(\alpha_i)E_2(\alpha_i) - E_2(\alpha_i)E_1(\alpha_i))=0$.
 
-        Notice that we have $n$ points where $R(\alpha_i)=0$, and $R(x)$ is of degree $2e+k-1$,
+        Notice that we have $n$ points where $R(\alpha_i)=0$, and $R(x)$ is 
+        of degree $2e+k-1$,
         Furthermore, $e<\lfloor \frac{n-k+1}{2}\rfloor$, so $2e+k-1<n$.
         This means that $R(x)$ is a polynomial of degree less than $n$ that has $n$ roots.
         This is a contradication to the fundamental theorem of arithmetics,
@@ -313,7 +336,8 @@ The goal of the algorithm is finding $Q(x)$ and $E(x)$,
     the division of $x^2-1$ by $2x$ over $\mathbb{Z}[X]$. 
     As we attempt the division, we quickly realize that the element 
     $\frac{1}{2}$ is required, which is not an element of $\mathbb{Z}$. 
-    In other words, if $E(x)$ is not monic, we cannot guarantee that we can divide $Q(x)$ by $E(x)$.
+    In other words, if $E(x)$ is not monic, we cannot guarantee 
+    that we can divide $Q(x)$ by $E(x)$.
 \end{bclogo}
 
 \paragraph{Finding $E(x)$ and $Q(x)$}
@@ -363,8 +387,8 @@ between $f(x)$ and $w$ by brute force, it still takes $O(n^3)$ time.
 
 \paragraph{Speeding up the algorithm using NTT}
 We won't get better in this algorithm than $O(n^3)$, but we can reduce the constant.
-For instance, filling the matrix above takes $O(n^2)$ time, where each matrix entry is a set of 
-exponents over the field. This is quite costly. 
+For instance, filling the matrix above takes $O(n^2)$ time, where each matrix entry 
+is a set of exponents over the field. This is quite costly. 
 If we know the polynomial is evaluated using roots of unity, we can 
 create a look-up-table (LUT) and evaluate $\omega$'s $e+k-1$ powers. 
 Then, whenever we need to evaluate $\omega_i^j$, we look for it in entry $i\cdot j \mod n$ 
@@ -372,4 +396,24 @@ in the LUT.
 In addition, this specific matrix can be built ahead of time, then multiply the entries in 
 the matrix by the corresponding $w_i$. 
 
+
+\subsection{Gao's decoder}
+Gao's decoder is a faster version of the Berlekamp-Welch algorithm.
+It utilises roots of unity to achieve $O(n^2)$ runtime.
+\todo{Understand yo.}
+
+\paragraph{High Level Idea}
+Like every reed-solomon decoder, we assume the message that one 
+wishes to send was first encoded into a polynomial's coefficients.
+Then, the polynomial was evaluated at some points $\alpha_i$ and 
+each such evaluation was sent.
+The \emph{key} difference between Gao's decoder and the Berlekamp-Welch algorithm
+is that Gao's decoder assumes that the polynomial was evaluated at
+the \emph{$n$-th roots of unity}.
+As a result, Gao utilises this fact to avoid implementing actual Lagrange's interpolation.
+
+
+We assume we receive $b=\{b_1,b_2,\dots,b_n\}$, which might have corruptions
+and might not. If no corruptions are present, 
+then $b_i=f(\omega_i)$ for some polynomial $f(x)$ of degree $k$.
 
