@@ -209,8 +209,7 @@ constructions. However, they are quite useful when we study codes
 
 \todo{...}
 
-\section{Robust Interpolation}
-\subsection{Berlekamp-Welch Algorithm}
+\section{Berlekamp-Welch Algorithm}
 In this section we discuss the Berlekamp-Welch algorithm, 
 which is used to correct errors in Reed-Solomon codes.
 
@@ -397,12 +396,20 @@ In addition, this specific matrix can be built ahead of time, then multiply the 
 the matrix by the corresponding $w_i$. 
 
 
-\subsection{Gao's decoder}
+\section{Gao's decoder}
 Gao's decoder is a faster version of the Berlekamp-Welch algorithm.
 It utilises roots of unity to achieve $O(n^2)$ runtime.
-\todo{Understand yo.}
 
-\paragraph{High Level Idea}
+\subsection{prequisites}
+The algorithm relies on three sub algorithms: extended Euclidean algorithm (EEA),
+Lagrange interpolation, and polynomial division.
+
+We discuss each of those algorithms in \S\ref{chapter:polynomial-algorithms}, 
+but since the proof relies on specific notation, I'll just state 
+that the input and output of EAA: given $r_0$ and $r_1$, the algorithm
+outputs $r_m,u_m,v_m$ satisfying $r_m=r_0u_m+r_1v_m$.
+
+\subsection{Algorithm}
 Like every reed-solomon decoder, we assume the message that one 
 wishes to send was first encoded into a polynomial's coefficients.
 Then, the polynomial was evaluated at some points $\alpha_i$ and 
@@ -412,57 +419,138 @@ is that Gao's decoder assumes that the polynomial was evaluated at
 the \emph{$n$-th roots of unity}.
 As a result, Gao utilises this fact to avoid implementing actual Lagrange's interpolation.
 
+The algorithm begins by receiving $b=(b_1,b_2,\dots,b_n)$ that is presumed to
+be the corrupted codeword $c=(c_1,c_2,\dots c_n)=(f(\omega_1),f(\omega_2)\dots, f(\omega_n))$,
+where $f(x)$ is a polynomial of degree $k$.
 
-We assume we receive $b=\{b_1,b_2,\dots,b_n\}$, which might have corruptions
-(i.e., $b_i\ne f(\alpha_i)$ for some $i$).
-We also assume that the polynomial $f(x)$ is of degree $k$.
-
-The algorithm is as follows:
 \begin{enumerate}
-    \item Compute $G_0(x)=\prod_{i=0}^{n-1}(x-\omega_i)$. 
+    \item Compute $g_0(x)=\prod_{i=0}^{n-1}(x-\omega_i)$. 
     This polynomial can be precomputed and reused for decoding any 
     $n$th-degree polynomial. 
     (In this case, it resembles $x^n-1$ if $n$ divides $q-1$,
     where $q$ is the field size, which is always the case for NTT.) 
 
-    \item Compute $g(x)$ using lagrange interpolation from the points $\{(i,b_i)\}_{i=1}^{n}$.
-    \todo {This step is tricky. what does it mean to interpolate $g(x)$? 
-    cause interpolation doesn't return a poly in coeff form!
-    Does it mean to ensure we have b elements (fill with 0 when no value found), and use iNTT??}.
+    This polynomial has roots at $\omega_i$, what does it imply?
+    Notice that it contains the error locator polynomial $E(x)$.
 
-    \item Perform Partial GCD with a threshold:  $pGCD(g(x),G_0(x), 
-    frac{n+k}{2})\rightarrow uG(x) +vg(x)=D(x)$. 
+    \item Compute $g_1(x)$ using lagrange interpolation from the points $\{(i,b_i)\}_{i=1}^{n}$.
+    \todo{Do we fill missing $b_i$ with zero? can't we use iNTT? i.e., do we have to do lagrange? probably not.}
 
-    \item Divide $D(x)$ by $v$ to get $g=f(x)\cdot v+r$.
+    \item (Partial GCD) apply the extended Euclidean algorithm to 
+    $g_0$ and $g_1$. Stop when the remainder, $g(x)$, has degree $<\frac{n+k}{2}$.
+    At this time we have $ug_0(x)+vg_1(x)=g(x)$.
 
-    \item if $\deg(r)< deg(v)$, return $f(x)$. Else fail.
+    \item Divide $g(x)=f1(x)v(x)+r(x)$ by $v(x)$ (where $deg(r(x))<deg(v(x))$).
+    if $r(x)$=0 and $f(x)$ has degree $<k$, return $f(x)$. Else fail 
+    (more than $(n-k)/2$ errors occured).
 \end{enumerate}
 
-\begin{bclogo}[logo=\bcquestion]{Lagrange Interpolation?}
-    \begin{itemize}
-        \item How can we perform lagrange interpolation to get $g(x)$? 
-        The interpolation has a strict formula, which is easy to get
-        a value out of computing over $L(x)$. However, the formula is not
-        easy to get a coefficient representation of the polynomial (i.e., computationally
-        expensive).
-    
-        So how can we interpolate $g(x)$? 
-        I assume that since we know all evaluations of $g(x)$ are over 
-        the $n$th roots of unity, we can use the inverse NTT to get the
-        coefficients of $g(x)$.
-    
-        But what happens when we have an evaluation missing (i.e., ereasure of $b_i$)?
-        We fill it with $0$, and get a corrupted polynomial (which is fine).
 
-        \item If we know in advance that we work over $n$ roots of unity, 
-        Can we build in advance some parts of the interpolation algorithm?
-        For instance, compute in advance each  of the $\ell_i(x)$ polynomials (which is $O(n^2)$ work)
-        Then, each time we need to interpolate, we just need to perform $n$ 
-        additions, where each is of demand $O(n)$ time.
-        But is this even needed if we have the NTT? values?
 
-        \item I've read that one can do pGCD fast using NTT, if that is the case, 
-        why do we need to interpolate $g(x)$? we already have it?
-    \end{itemize}
-    
+During the proof of the algorithm, Gao shows that the $v(x)$ is the error 
+locator polynomial $E(x)$ (from the Berlekamp-Welch algorithm).
+
+\subsection{In depth}
+
+
+Understanding Gao's algorithm is not trivial.
+It assumes that if the polynomial can be "fixed", then its fix is 
+similar to berlekamp-welch algortihm. It prepares in advance 
+a polynomial $g_0$ which is like the error locator polynomial $E(x)$,
+but assumes everything is an error. 
+Then it excavates the differences between the correct polynomial $f(x)$ and the
+corrupted interpolated polynomial $g_1(x)$ using the extended Euclidean algorithm
+between $g_0$ and $g_1$.
+
+This excavation capitalises on the notion that a corruptor polynomial
+must be present in $g_1$, and it is coprime with $E(X)$ (gcd=1). Leading 
+to a smart and quick way to find the error locator polynomial.
+
+Given it knows the error locator polynomial, it can 
+find the wanted $f(x)$ by dividing $g(x)$ by the extracted 
+error locator polynomial.
+
+
+\begin{bclogo}[logo=\bcquestion]{Can you spot the crux?}
+    What if there are too much errors? 
+    If there are too much errors, than $f$ can't be extracted 
+    after dividing by $E(x)$.
+    So, how do we know that $g$ is "good enough" to be fixed?
+    \emph{We don't in Gao's algorithm}.
+
+    Furthermore, why not go deeper when performing the partial GCD?
+    After a certain depth, we get 
 \end{bclogo}
+
+\paragraph{Correctness}
+I'm writing down to lemma's which i don't prove, for the sake of completeness.
+The first lemma is about the extended Euclidean algorithm.
+The second lemma is about the usage of the extended Euclidean algorithm
+to excavate the error locator polynomial out of the corrupted polynomial.
+
+
+\begin{lemma}
+    Let $r_0$ and $r_1$ be two nonzero polynomials over $F_q[x]$.
+    Suppose the extended Euclidean algorithm performs the computation as
+    described in the pseudo-code above,
+    then 
+    $$ u_{m+1}=(-1)^{m+1}\cdot \frac{r_1}{r_m}, v_{m+1}= (-1)^{m}\cdot\frac{r_0}{r_m}$$
+\end{lemma}
+
+Remember, $r_m=r_0u_m+r_1v_m$, the result of the extended Euclidean algorithm.
+The above lemma used to prove the following
+\begin{lemma} 
+    Let $g_0=w_0\cdot r_0+\epsilon_0$ and $g_1=w_0\cdot r_1+\epsilon_1$, where 
+    $GCD(r_0,r_1)=1$ and $deg(\epsilon_i)\le\ell$, $deg(r_i)\le t$ ($t=\#errors$).
+    Suppose $deg(w_0) \ge d_0 \ge \ell+t$
+
+    Apply the extended Euclidean algorithm to $g_0$ and $g_1$  and stop whenever 
+    the remainder $g(x)$ has degree $d_0$, then for the output 
+    $g(x),u(x),v(x)$ that satisfy 
+    $$g(x)=g_0(x)u(x)+g_1(x)v(x)$$
+    it happens that $u(x)=-\alpha r_1(x)$, and $v(x)=\alpha r_0(x)$ for some 
+    $\alpha\in F_q[x]$. \todo{the original paper used $F_q$, but i think this is a mistake
+    since it uses $\alpha=(-1)^m/r_m$ where $r_m$ is polynomial.}
+\end{lemma}
+
+This lemma is complex. and it isn't clear why it is built like that on first glance. 
+First, notice that $g_0=w\cdot w_0(x)$ where $w$ is the error locator polynomial,
+and $w_0(x)$ is a cofactor, indicating the \emph{correct} locations.
+
+Now that we defined $g_0$, we want to describe $g_1$ 
+in a similar manner. We know that $g_1$ is the polynomial that interpolates
+some points correctly, and some points incorrectly.
+Namely, $g_1=w_0(x)\cdot \tilde{w}(x)+f(x)$, for each $i$ with no fault $w_0(\omega_i)=0$
+and then $g_1(\omega_i)=f(\omega_i)$. Otherwise, there is a fault at $\omega_i$, 
+we can think about $\tilde{w}(\omega_i)$ as a polynomial,
+that moves $f(\omega_i)$ to its new location:
+$\tilde{w}(\omega_i)=(b_i-c_i)/w_0(\omega_i)$ and $g_1(x)$ is the resulting polynomial.
+
+Clearly, we have $GCD(w(X),\tilde{w}(X))=1$, right? 
+Since this polynomial has no roots in common with 
+$w(x)$, and therefore they don't have any common
+ factors, leading to $GCD=1$.
+
+Reread the whole section, and you'll see we have $g_0$ and $g_1$ as wanted by the lemma.
+
+Now we can finally prove correctness of the algorithm.
+\begin{proof}
+By the lemmas from above, we have 
+$u(x)=-\alpha\tilde{w}(x)$ and $v(x)=\alpha w(x)$. for some $\alpha\in F_q[x]$.
+That is, 
+\begin{equation}
+    \begin{split}
+    g(x) & = u g_0+vg_1= \\
+         & = -\alpha\tilde{w}\cdot g_0 + \alpha w g_1= \\
+         & = -\alpha\tilde{w}\cdot (w_0 \cdot w) + \alpha w (w_0 \cdot \tilde{w}+f) = \\
+         & = -\alpha w w_0 \tilde{w} + \alpha w w_0 \tilde{w} + \alpha w f = \\
+         & = 0 + \alpha w f = v\cdot f
+    \end{split}
+\end{equation}
+
+So if we divide $g(x)$ with $v(x)$ we'll get $f(x)$!
+
+The next steps of the proof define why it's okay it returns failure when it does.
+I SKIP them.
+\end{proof}
+
