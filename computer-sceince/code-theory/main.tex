@@ -207,11 +207,37 @@ constructions. However, they are quite useful when we study codes
 
 \section{Reed-Solomon codes}
 
-\todo{...}
+Encode your data $m=(m_0, m_1 ,\dots m_{k-1})$ into a polynomial:
+$$ p(x)=m_0 +m_1 \cdot x + \dots  m_{k-1}\cdot ^{k-1}$$
 
+Then, instead of sending $m$, we evaluate the polynomial 
+over $|\{\alpha_1,\alpha_2,\dots,\alpha_n\}=n\ge k-1$ 
+points and send codewords instead
+$$c=(c_1,c_2,\dots c_n) =(p(\alpha_1), p(\alpha_2)\dots p(\alpha_n))$$.
+
+If there are missing points (i.e., \emph{erasures}),
+we can still still decode the message by interpolating 
+from any $k$ points we have.
+
+
+\paragraph{Voting and Corruptions}
+    The original Reed-Solomon codes worked quite well for erasures,
+    but some times, there is no way to know what is a valid 
+    value, and what isn't (commonly known as \emph{corruptions}).
+
+    Sometimes, corruptions can't be detected, and 
+    interpolating the codewords isn't enough. 
+
+    The original Reed-Solomon codes suggested a theoretical solution
+    to this problem, by interpolating the $\binom{n}{k}$ polynomials
+    and then taking the majority vote.
+    Making this algortihm not practical.
+
+    The following section discusses the Berlekamp-Welch algorithm,
+    which came 27 years after, and finally put an end to this problem.
 \section{Berlekamp-Welch Algorithm}
 In this section we discuss the Berlekamp-Welch algorithm, 
-which is used to correct errors in Reed-Solomon codes.
+which is used to correct corruptions in Reed-Solomon codes.
 
 The algortihm expects a set number of points and attempts to reconstruct 
 a polynomial that passes through these points, given a finite number of errors.
@@ -259,8 +285,8 @@ The goal of the algorithm is finding $Q(x)$ and $E(x)$,
     If there isn't, then return $\bot$.
     \item Set $\tilde{f}(x)=\frac{Q(x)}{E(x)}$. and check hamming distance 
     (see \autoref{def:hamming-distance}) $\Delta(\tilde{f}(\alpha_i),w)$ 
-    between $\tilde{f(\alpha_i)}$ and $w_i$.\todo{is the hamming distance here 
-    for bits, or 1 per evaluation}
+    between $\tilde{f(\alpha_i)}$ and $w_i$.\todo{We don't use hamming distance, 
+    all errors in a word are counted as 1, even if it is more than 1 bit}
     if the distance is greater than $e$, return $\bot$.
     \item Return $\tilde{f}(x)$.
 \end{enumerate}
@@ -434,14 +460,14 @@ where $f(x)$ is a polynomial of degree $k$.
     Notice that it contains the error locator polynomial $E(x)$.
 
     \item Compute $g_1(x)$ using lagrange interpolation from the points $\{(i,b_i)\}_{i=1}^{n}$.
-    \todo{Do we fill missing $b_i$ with zero? can't we use iNTT? i.e., do we have to do lagrange? probably not.}
+    \todo{If some values of $b_i$ are missing, we can replace them with zeros (i.e., add faults).}
 
     \item (Partial GCD) apply the extended Euclidean algorithm to 
     $g_0$ and $g_1$. Stop when the remainder, $g(x)$, has degree $<\frac{n+k}{2}$.
     At this time we have $ug_0(x)+vg_1(x)=g(x)$.
 
-    \item Divide $g(x)=f1(x)v(x)+r(x)$ by $v(x)$ (where $deg(r(x))<deg(v(x))$).
-    if $r(x)$=0 and $f(x)$ has degree $<k$, return $f(x)$. Else fail 
+    \item Divide $g(x)=f(x)v(x)+r(x)$ by $v(x)$ (where $deg(r(x))<deg(v(x))$).
+    if the resulting remainder $r(x)$=0 and $f(x)$ has degree $<k$, return $f(x)$. Else fail 
     (more than $(n-k)/2$ errors occured).
 \end{enumerate}
 
@@ -469,18 +495,18 @@ to a smart and quick way to find the error locator polynomial.
 Given it knows the error locator polynomial, it can 
 find the wanted $f(x)$ by dividing $g(x)$ by the extracted 
 error locator polynomial.
+Notice that if there are too much errors, we won't be able to get a remainder $r(x)=0$,
+and thus the algorithm will fail.
+% \begin{bclogo}[logo=\bcquestion]{Can you spot the crux?}
+%     What if there are too much errors? 
+%     If there are too much errors, than $f$ can't be extracted 
+%     after dividing by $E(x)$.
+%     So, how do we know that $g$ is "good enough" to be fixed?
+%     \emph{We don't in Gao's algorithm}.
 
-
-\begin{bclogo}[logo=\bcquestion]{Can you spot the crux?}
-    What if there are too much errors? 
-    If there are too much errors, than $f$ can't be extracted 
-    after dividing by $E(x)$.
-    So, how do we know that $g$ is "good enough" to be fixed?
-    \emph{We don't in Gao's algorithm}.
-
-    Furthermore, why not go deeper when performing the partial GCD?
-    After a certain depth, we get 
-\end{bclogo}
+%     Furthermore, why not go deeper when performing the partial GCD?
+%     After a certain depth, we get 
+% \end{bclogo}
 
 \paragraph{Correctness}
 I'm writing down to lemma's which i don't prove, for the sake of completeness.
@@ -553,4 +579,13 @@ So if we divide $g(x)$ with $v(x)$ we'll get $f(x)$!
 The next steps of the proof define why it's okay it returns failure when it does.
 I SKIP them.
 \end{proof}
+
+\subsection{Open Questions I haven't solved}
+I describe in this section things of interest that I haven't solved yet.
+\begin{itemize}
+    \item I have managed to implement the algorithm, and make it as fast as $O(log(n)\cdot n^2)$, 
+    but I can't figure out how to reduce the cost of the division using NTT.
+
+    \item Why can we always stop the partial GCD at the same point?
+\end{itemize}
 
