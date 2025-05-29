@@ -57,7 +57,7 @@ survey its connection to worst-case lattice problems, and explore some of its ba
 cryptographic implications. (Further applications are described in~\cite[Chapters 5 and 6]{latticebook})
 
 
-\begin{definition} [Short Integer Solution (${SIS}_{n,q,\beta,m}$)]
+\begin{definition} [Short Integer Solution (${SIS}_{n,q,\beta,m}$)]\label{def:sis}
     Given $m$ uniformly random vectors $a_i\in \mathbb{Z}_q^n$ form-
 ing the columns of a matrix $A\in \mathbb{Z}_q^{n\times m}$, find \emph{nonzero}
 integer vector $z\in \mathbb{Z}^m$ of norm $||z|| \le \beta$ such that
@@ -79,58 +79,98 @@ words, we can ignore columns $a_i$ as desired, so the SIS problem can only becom
 
 \emph{SIS} is NP-Total. it has a solution, and easy to verify but hard to find a solution.
 % TODO: fix following
-% \subsection{Learning With Errors}
-% A very important work of Regev \todo{cite! On lattices, learning with errors, random linear codes} from 2005 introduced the average-case learning with errors (LWE)
-% problem, which is the “encryption-enabling” analogue of the SIS problem.
+\subsection{Learning With Errors}
+A very important work of Regev \todo{cite! On lattices, learning with errors, random linear codes} from 2005 introduced the average-case learning with errors (LWE)
+problem, which is the "encryption-enabling" analogue of the SIS problem.
 
-% The two problems are
-% syntactically very similar, and can meaningfully be seen as duals of each other
+The two problems are syntactically very similar, and can meaningfully be seen as duals of each other
 
-%
-%
-% CHAPTER
-%
-%
-\chapter{Fully Homomorphic Encryption}
-Homomorphic encryption (\emph{HE}) is a form of encryption that allows 
-computations to be performed on encrypted data without first having to decrypt it.
-More formally:
-\begin{definition}[HE]
- Let there be an encryption scheme $\pi = (KeyGen,Enc, Dec)$
- We say that $\pi$ is an homomorphic encryption scheme if
- given $f:\text{PTX-SPACE}\to \text{PTX-SPACE}$ then there
- exists $F:\text{CTX-SPACE} \to \text{CTX-SPACE}$ such that
- given two encrypted messages $c_1=Enc(m_1)$ $c_2=Enc(m_2)$ the following
- applies
-   $Dec(F(c_1,c_2))=f(m_1,m_2)$
+\paragraph{defs:}
+LWE is parameterized by positive integers $n$ and $q$, and an error distribution $\mathcal{X}$ over $\mathbb{Z}$. For concreteness, $n$
+and $q$ can be thought of as roughly the same as in SIS, and $\mathcal{X}$ is usually taken to be a discrete Gaussian of
+width $\alpha q$ for some $\alpha<1$, which is often called the relative "error rate".
+
+\begin{definition}[LWE distribution] 
+    for a vector $s\in\mathbb{Z}_q^n$ called the secret, the LWE distribution
+    $A_{s,\mathcal{X}}$ over $\mathbb{Z}_q^n \times \mathbb{Z}_q$ sampled by choosing $a\in \mathbb{Z}_q^n$ uniformly at random, choosing $e\leftarrow\mathcal{X}$ and outputting $(a, <a,s>+e \mod q)$.
 \end{definition}
 
-That is, we can compute some wanted function $f$.
+There are two main versions of the LWE problem: \emph{search}, which is to find the secret given LWE samples,
+and decision, which is to distinguish between LWE samples and uniformly random ones.
 
-We have multiple encryption schemes. Some are \emph{partially HE},
-like ElGamal, where only multiplication is possible.
-\begin{theorem}
- We call the encryption scheme $\pi$ \emph{fully homomorphic encryption} (FHE) if it 
- can support addition, negation and multiplication.
-\end{theorem}
+\label{def:LWE}
+\begin{definition}[Search-LWE] 
+    Given $m$ independent samples $(a_i,b_i) \in\mathbb{Z}_q^n \times \mathbb{Z}_q$ drawn from $A_{s,\mathcal{X}}$
+for a uniformly random $s \in \mathbb{Z}^n_q$ (fixed for all samples), find $s$.
+\end{definition}
 
-As of the year 2024, most of the FHEs are heavy and slow,
-or called leveled-FHE, where one must first define their parameters, 
-and then it has a limited amount of operations to perform (many additions and a 
-handful of multiplications.)
+Note that $b_i$ is derived using the secret and $A$, as defined by \emph{LWE distribution}.
 
-In the following sections, I'll talk about a specific scheme called BGV \cite{BGV},
-this is a (leveled)-FHE scheme, which is easy to work with, and relatively efficient.
+\begin{definition}[decision-LWE] 
+    Given $m$ independent samples $(a_i,b_i) \in\mathbb{Z}_q^n \times \mathbb{Z}_q$ where every sample is distributed according to either:  (1)
+    $A_{s,\mathcal{X}}$ for a uniformly random $s \in \mathbb{Z}^n_q$ (fixed for all samples), or (2) the uniform distribution,
+    
+    Distinguish which is the case (with non-negligible advantage)
+\end{definition}
 
-\section{Usages}
-\red{TODO: describe PIR, private machine learning (for finance and medicals), 
-private set intersection see 
-\href{https://bit-ml.github.io/blog/post/bgv-fully-homomorphic-encryption-scheme-in-python/}{bgv repo}}
-\subsection{Hardness}
-Unlike older schemes, modern HE schemes don't rely on DDH~\ref{DDH} 
-but have a different \emph{hardness} assumption.
-So, before we discuss BGV, we must introduce its hardness assumption,
-called Ring Learning With Errors (RLWE). 
+Some highlights (like we did for SIS):
+\begin{itemize}
+    \item Without the error terms from $\mathcal{X}$ both problems are easy to solve, because we can efficiently recover s
+from LWE samples by Gaussian elimination.
+\item We can write instead of the $m$ samples $(a_i,b_i)$ simply: $b^t = s^t A +e^t$. where $e \leftarrow\mathcal{X}^m$.
+\end{itemize}
+
+
+\paragraph{\bf Normal Form} 
+Similarly to SIS, the LWE problem also has a normal form, in which the coordinates
+of the secret s are chosen independently from the error distribution $\mathcal{X}$.Using this form can
+yield substantial efficiency gains for certain cryptographic constructions.
+
+Pieker's survey discuss the hardness, but i skip it.
+
+
+\subsection{Ring-SIS}
+Micciancio introduced a compact ring-based analogue of Ajtai's SIS problem and its associated function $f_A$
+from \autoref{def:sis}.
+
+\paragraph{Definitions}
+The ring-SIS problem is parameterized by:
+\begin{itemize}
+    
+    \item A ring R, which is often (but not always) taken to be a degree-$n$ polynomial ring of the form
+$R_q= Z_q[X]/(f(X))$, e.g., $f(X) = X^{2^k} + 1$. (For more information, see \autoref{def:polynomial-ring})
+$R_q$ has the following norm: For a vector $z$ over $R_q$ we define $||z||=(\$sum_i{||z_i||^2})^{1/2}$.
+    \item real norm bound $\beta > 0$ for the "short" solution, and a number $m$ of samples. (m is not super important)
+
+\end{itemize}
+    
+\begin{definition}[Ring-Short-Integer-Solution (R-SIS)]\label{def:ring-sis}
+    Given $m$ uniformly random elements $a_i \in R_q$, defining a vector  $a\in R^m_q$,
+find a nonzero vector $z\in R^m$ (i.e., $R$ is like $R_q$ but without $\mod q$) of norm 
+$||z||<\beta$ such that:
+
+    $$f_a:=<a,z> = 0\in R_q$$
+    
+
+    note that $<a,z>$ is a vector multiplication between two vectors with polynomial entries.
+\end{definition}
+
+R-SIS is relatively more compact, where $m$ can be approximatly $log q$, instead of $n\log q$  as in the non-ring case.
+
+
+
+\paragraph{Relation to SIS}
+One can translate between cryptographic constructions over the two. 
+read more in (4.3.2 Peikert survey).
+
+
+\paragraph{\b One-wayness} For the ring $R= Z[X]/(X^n-1)$ and other appropriate parameters, Micciancio proved that
+the function $f_a$ defined in \autoref{def:ring-sis} is one-way.
+
+
+
+\subsection{Ring-LWE}
+
 I will define the RLWE "decision" problem, since by using decisional-RLWE,
 it is relatively easier to define encryption schemes under this notion of hardness.
 Do note that there is an additional hardness assumption, called "search", 
@@ -154,20 +194,84 @@ For a full, and accurate definition see~\cite[def 3.3]{RLWE}.
     to determine $s(x)$.
 \end{definition}
 
-\section{The BGV Encryption Scheme}
+
+
+\section{Essential Cryptographic Constructions}
+
+
+\subsection{Collision-Resistant Hashing}
+A collision resistant hashing scheme $\mathcal{H}$ consists of an ensemble of hash functions ${\mathcal{H}}n\in\mathbb{N}$ where each $\mathcal{H}_n$
+consists of a collection of functions that map $n$ bits to $m<n$bits. So, each hash function $h$ compresses its
+input, and by pigeonhole principle, it has collisions. That is, inputs $x\neq y$ such that $h(x)=h(y)$. Collision-
+resistance requires that every p.p.t. adversary who gets a hash function $h \leftarrow \mathcal{H}_n$ chosen at random fails to find a collision except with negligible probability.
+
+\paragraph{\bf Collision-Resistant Hashing from SIS}
+Here is a hash family ${\mathcal{H}}$ that is secure under $SIS_{(n,q,\beta,m)}$
+where $n \log q >  m \log (\beta +1)$. Each hash function $h_A$ is parameterized by a matrix 
+$A\in \mathbb{Z}^{n\times m}_q$, takes as input $e\in [0,\dots,\beta]^m$ and outputs:
+
+$$ h_A(e) = A\cdot e \mod q$$
+
+\paragraph{\bf why is it secure?}
+Assume we have two different values $x\neq y$ such that $x,y\in [0,\dots,\beta]^m$ and $h_A(x)=Ax=Ay=h_A(y)$, 
+Why this means that $Ax-Ay=A(x-y)=0$ right? We managed to find a vector $z=x-y$ such that $f_A(z)=0 \mod q$, and since $z\in[-\beta,\dots,\beta]$ this is a solution to the SIS problem! (which is in contradiction to the hardness) .
+
+
+%
+%
+% CHAPTER
+%
+%
+\section{Fully Homomorphic Encryption}
+Homomorphic encryption (\emph{HE}) is a form of encryption that allows 
+computations to be performed on encrypted data without first having to decrypt it.
+More formally:
+\begin{definition}[HE]
+ Let there be an encryption scheme $\pi = (KeyGen,Enc, Dec)$
+ We say that $\pi$ is an homomorphic encryption scheme if
+ given $f:\text{PTX-SPACE}\to \text{PTX-SPACE}$ then there
+ exists $F:\text{CTX-SPACE} \to \text{CTX-SPACE}$ such that
+ given two encrypted messages $c_1=Enc(m_1)$ $c_2=Enc(m_2)$ the following
+ applies
+   $Dec(F(c_1,c_2))=f(m_1,m_2)$
+\end{definition}
+
+That is, we can compute some wanted function $f$.
+
+We have multiple encryption schemes. Some are \emph{partially HE},
+like ElGamal, where only multiplication is possible.
+\begin{theorem}
+ We call the encryption scheme $\pi$ \emph{fully homomorphic encryption} (FHE) if it 
+ can support addition, negation and multiplication.
+\end{theorem}
+
+As of the year 2025, most of the FHEs are heavy and slow,
+or called leveled-FHE, where one must first define their parameters, 
+and then it has a limited amount of operations to perform (many additions and a 
+handful of multiplications.)
+
+In the following sections, I'll talk about a specific scheme called BGV \cite{BGV},
+this is a (leveled)-FHE scheme, which is easy to work with, and relatively efficient.
+
+\subsection{Usages}
+\red{TODO: describe PIR, private machine learning (for finance and medicals), 
+private set intersection see 
+\href{https://bit-ml.github.io/blog/post/bgv-fully-homomorphic-encryption-scheme-in-python/}{bgv repo}}
+
+\subsection{The BGV Encryption Scheme}
 
 While there are more encryption schemes than BGV (for instance BFV which is very similar,
  CKKS for floating point numbers and TFHE which I haven't encountered at all),
-I have most of my experience with BGV, and it is very nice scheme, 
+I have most of my experience with BGV, and it is a very nice scheme, 
 where addition and multiplication associativity commutativity and more desired attributes 
 hold.  Thus, we will focus on it.
 
 
 BGV relies on the following parameters
 \begin{itemize}
-    \item $n$ (a power of 2), the degree of $X^n+1$.
+    \item $n$ (a power of 2), (the degree of $X^n+1$ from the RLWE problem).
     \item $q$ the ciphertext modulus.
-    \item $t$ the plaintext modulus
+    \item $t$ the plaintext modulus (usually plaintexts are "lifted" into the $R_q$ space)
     \item $\mathcal{X}$ the noise distribution, a discrete Gaussian.
 \end{itemize}
 
@@ -199,7 +303,7 @@ This ring has polynomials with degree at most $n$ and integer coefficients in $(
     \end{itemize}
 \end{remark}
 
-\subsection{Plaintext and Ciphertext Spaces}
+\paragraph{Plaintext and Ciphertext Spaces}
 The plaintext and ciphertext spaces in BGV are defined over two distinct
 polynomial rings. the plaintext space is denoted by the polynomial
 ring $\mathcal{P}=R_{t}= Z_{t}\left[x\right]/\left(x^{n}+1\right)$,
@@ -214,7 +318,7 @@ $t$.
 
 the ciphertext space: $\mathcal{C}=R_q \times R_q$. 
 
-\subsection{Algorithms}
+\subsubsection{Algorithms}
 In the following algorithms, $params$ is essentially the chosen security parameters. 
 \paragraph{$sk,pk \leftarrow KeyGen(params)$}
 The secret key $sk$ should be sampled from a distribution that outputs "small" elements 
@@ -278,7 +382,7 @@ In our ciphertext notions:
 $p*c=(p\cdot c_0, p\cdot c_1)$,
 $c*c'=(c_0\cdot c_0', c_0\cdot c_1' + c_1\cdot c_0', c_1\cdot c_1')$ and you can complete addition by yourself.
 
-\subsection{Advanced Algorithms}
+\subsubsection{Advanced Algorithms}
 \paragraph{relianization}
 The issue with multiplications is that they increase the noise very fast, and it means we'll need to work harder 
 for decryption. That is, we increase the "degree" of our ciphertext every time we multiply it
@@ -297,7 +401,7 @@ more multiplications. \red{TODO}.
 
 \paragraph{rotations}
 \red{TODO}
-\subsection{bootstrapping}
+\subsubsection{bootstrapping}
 Read \href{https://www.zama.ai/post/what-is-bootstrapping-homomorphic-encryption}{bootstrapping for dummies} by Nigel Smart.
 
 % \section{security of the scheme}
