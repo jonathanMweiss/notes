@@ -1,4 +1,96 @@
+\chapter{Lattices}
+The following chapters are chosen parts from Peikert's Survey, and the notes from the MIT course Advanced Topics in Cryptography: From Lattices to Program Obfuscation.
 
+\section{Basic definition}
+
+Latices are n-dimensional subsets of $\mathbb{R}^n$. 
+A lattice $\mathcal{L}$ is both 
+\begin{itemize}
+    \item an \emph{addative} subgroup: $0\in \mathcal{L}$, and for every $x,y\in \mathcal{L}$ so are $-x, x+y\in \mathcal{L}$.
+    \item \emph{discrete}: every $x\in \mathbb{L}$ has a ball/ neighbourhood in $\mathbb{R}^n$, where $x$ is the only lattice point. 
+\end{itemize}
+
+for instance $\mathbb{Z}^n$ is a lattice, or just the even numbers is a lattice. In addition, given a lattice $\mathcal{L}$, for any $c\in \mathbb{R}$, $c\cdot\mathcal{L}$ is also a lattice.
+
+Every lattice has a base (since it is a vector space).
+
+Every lattice has a dual: $\mathcal{L}^*=\{w : <w,\mathcal{L}>\subseteq \mathbb{Z}\}$
+
+
+\begin{definition}
+    The minimum distance of a lattice $\mathcal{L}$ is the length of a shortest nonzero lattice vector:
+    $$ 
+    \lambda_1(\mathcal{L}) := \min_{v\in \mathcal{L} \setminus \{0\}}{||v||} 
+    $$
+\end{definition}
+\subsection{Problems Over Lattices}
+Apperently it is not easy to solve things over lattices. 
+
+\begin{definition}[Shortest Vector Problem (SVP)]
+    Given an arbitrary basis $B$ of some lattice $mathcal{L}= mathcal{L}(B)$ ($mathcal{L}$ is defined via the basis $B$),
+find a shortest nonzero lattice vector, i.e., a $v \in mathcal{L}$ for which $||v|| = \lambda_1(\mathcal{L})$.
+\end{definition}
+Think about this one, like given a random basis of lattice vectors. It is hard to find all the vectors around the origin. 
+Treat it like other problems that once they are discrete become hard (linear programming for instance).
+
+
+There are many other problems, but i won't write about them.
+
+\subsection{(Discrete) Gaussians and Subgaussians}
+Discrete gaussian samples for  lattice are a cornerstone in many of 
+lattice-based cryptographic primitives. But i won't write about it just yet.
+treat it like a black box.
+
+
+
+\section{Modern Foundations}
+In this chapter we survey the main foundational works that directly underlie most modern lattice-based
+cryptographic schemes. These include the two main average-case problems SIS and LWE, their analogues
+over rings, and analytical techniques involving (discrete) Gaussian probability distributions
+\subsection{Short Integer Solution (SIS)}
+The short integer solution (SIS) problem was first introduced in the seminal work of Ajtai,and has
+served as the foundation for one-way and collision-resistant hash functions, identification schemes, digital
+signatures, and other "minicrypt" primitives (but not public-key encryption).
+
+Here we define the SIS problem,
+survey its connection to worst-case lattice problems, and explore some of its basic properties and immediate
+cryptographic implications. (Further applications are described in~\cite[Chapters 5 and 6]{latticebook})
+
+
+\begin{definition} [Short Integer Solution (${SIS}_{n,q,\beta,m}$)]
+    Given $m$ uniformly random vectors $a_i\in \mathbb{Z}_q^n$ form-
+ing the columns of a matrix $A\in \mathbb{Z}_q^{n\times m}$, find \emph{nonzero}
+integer vector $z\in \mathbb{Z}^m$ of norm $||z|| \le \beta$ such that
+
+$f_A(z):=Az=\sum_{i}{a_i \cdot z_i}=0\in \mathbb{Z}_q^n$
+\end{definition}
+
+
+We now highlight several simple but useful observations about the SIS problem:
+\begin{itemize}
+    \item without the norm constraints over $z$it is easy to find a solution via Gaussian elimination. Similarly, we
+must take $\beta < q$, otherwise $z=(q,0,0,0,0,0...)\in \mathbb{Z}^m$ would be a legitimate (but trivial) solution.
+\item any solution for $A$ can easily be extended to $A|A'$, by attaching zeros to $z$ (the norm remains the same). In other
+words, we can ignore columns $a_i$ as desired, so the SIS problem can only become easier as $m$ increases. Similarly, it can only become harder as $n$ increases.
+\item The norm should be large enough to guarantee a solution, which happens when $\beta  \ge \sqrt{\bar{m}}$ for $m\ge\bar{m}$ the smallest integer greater than $n\log q$. Why? Chris explains in chapter 4.
+\item Additional point stating it is collision resistant.
+\end{itemize}
+
+
+\emph{SIS} is NP-Total. it has a solution, and easy to verify but hard to find a solution.
+% TODO: fix following
+% \subsection{Learning With Errors}
+% A very important work of Regev \todo{cite! On lattices, learning with errors, random linear codes} from 2005 introduced the average-case learning with errors (LWE)
+% problem, which is the “encryption-enabling” analogue of the SIS problem.
+
+% The two problems are
+% syntactically very similar, and can meaningfully be seen as duals of each other
+
+%
+%
+% CHAPTER
+%
+%
 \chapter{Fully Homomorphic Encryption}
 Homomorphic encryption (\emph{HE}) is a form of encryption that allows 
 computations to be performed on encrypted data without first having to decrypt it.
