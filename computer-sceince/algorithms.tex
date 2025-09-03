@@ -643,8 +643,12 @@ computed in $O(M(k))$ time (i.e., $M(k)$ describe the cost of multiplication. us
 
 In other words, the newtwon iteration, which we describe next demands the polynomial has a constant, invertible, nonzero constant. Otherwise, it doesn't converge (don't ask me why)!
 
-\paragraph{Series inversion via Newton iteration.}
-Given $C(x)$ with nonzero constant term, its inverse series modulo $x^k$ can be
+\subsection{Series inversion via Newton iteration.}
+Newton iteration is a technique to find roots of polynomials (similar to gradient descent). Given some good starting point, each iteration approaches the root (if exists), up to some precision $k$.
+In our case, we modify technique to find a polynomial $T(X)$ to serve as the inverse of our input. That is, we are looking for the root of $F(T)=1-C(X)*T(X)$ over the ring $\mathbb{F}/(x^k)$.
+The formula of the technique follows $x_{i+1}=x_i - \frac{f(x_i)}{f'(x_i)}$.
+In terms of $T(X)$, the derivative of $F(T)$ would be $-C(x)$.
+Thus, Given $C(x)$ wih nonztero constant term, its inverse series modulo $x^k$ can be
 computed by Newton iteration:
 \[
 T_{1}(x) = c_0^{-1}, \qquad
@@ -653,7 +657,6 @@ T_{2\ell}(x) = T_\ell(x) \,\bigl(2 - C(x)T_\ell(x)\bigr) \bmod x^{2\ell}.
 This converges doubly in the precision, so after $O(\log k)$ iterations we obtain
 $C(x)^{-1} \bmod x^k$.
 It is important to notice, this function uses polynomial multiplication, but the overall work remains in $O(M(n))$.
-
 
 \begin{lstlisting}[language=Python,
   caption={Newton iteration for polynomial series inverse},
@@ -689,6 +692,12 @@ def series_inverse(C, k):
 \end{lstlisting}
 
 
+\paragraph{Why Newton Iteration Applies.}
+In polynomial division we know in advance the degree bound of the quotient:
+if $\deg(A)=n$ and $\deg(B)=m$, then $\deg(Q)=n-m$. Hence we only require
+the inverse of $\operatorname{rev}_{m+1}(B)(x)$ modulo $x^k$, where
+$k = n-m+1$. This gives Newton iteration a natural stopping criterion:
+compute the inverse series only up to precision $x^k$.
 
 
 
