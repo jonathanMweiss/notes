@@ -645,9 +645,18 @@ In other words, the newtwon iteration, which we describe next demands the polyno
 
 \subsection{Series inversion via Newton iteration.}
 Newton iteration is a technique to find roots of polynomials (similar to gradient descent). Given some good starting point, each iteration approaches the root (if exists), up to some precision $k$.
-In our case, we modify technique to find a polynomial $T(X)$ to serve as the inverse of our input. That is, we are looking for the root of $F(T)=1-C(X)*T(X)$ over the ring $\mathbb{F}/(x^k)$.
-The formula of the technique follows $x_{i+1}=x_i - \frac{f(x_i)}{f'(x_i)}$.
-In terms of $T(X)$, the derivative of $F(T)$ would be $-C(x)$.
+In our case, we modify technique to find a polynomial $T(X)$ to serve as the inverse of our input. That is, we are looking for the root of $F(T)=T(X)^{-1}-C(X)$ over the ring $\mathbb{F}/(x^k)$, that is, if we find $T(X)^{-1}$ that can serve as a root, we 
+know that $T(X)^-1=C(X)$, or in other words $T(X)$ is the inverse of $C(X)$. 
+\begin{bclogo}[logo=\bcinfo,noborder=true]{Explanation}
+    a more straightforward $F(T)$ would be $F(T)=1-T(x)C(X)$, but this leads to 
+    an issue with the iteration. Try to apply this to the iteration after you understand how it works, and you'll get stuck.
+\end{bclogo}
+
+So we begin with $x_1= T_1(X)=c_0^{-1}$, then compute each step using 
+the formula of the technique:
+$T_{i+1}= T_i - \frac{F(T_i)}{F'(T_i)}= T_i - \frac{1/T_i(X)-C(x)}{-1/T_i(X)^2}$
+So the computation in each step is $T_{i+1}= 2T_i(x)-C(X) \cdot T_i(X)^2$
+
 Thus, Given $C(x)$ wih nonztero constant term, its inverse series modulo $x^k$ can be
 computed by Newton iteration:
 \[
