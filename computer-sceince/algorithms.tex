@@ -1,6 +1,6 @@
 
 
-\chapter{Finite Fields}\label{finite-fields}
+\chapter{Finite Fields and Rings}\label{finite-fields}
 \section{GCD and Extended Euclidean Algorithm}
 
 \subsection{GCD}
@@ -65,6 +65,7 @@ def extended_euclidean(a, b):
 \end{lstlisting}
 
 
+
 \todo{ensure the algorithmis okay. taken form chatgpt.+ write intuition}
 
 \section{Chinese Remainder Theorem}
@@ -72,8 +73,6 @@ def extended_euclidean(a, b):
 \section{Generator}
 
 \section{Roots of Unity}
-
-
 
 \chapter{Polynomial Algorithms}\label{chapter:polynomial-algorithms}
 
@@ -144,8 +143,6 @@ Now that we know that this representation is unique, I'll claim without proof th
 there is a mapping that is both injective and surjective (bijective) from both representations.
 Thus these both know representations are isomorphic.
 
-\section{Polynomial Modulo}
-\todo{TODO}
 \section{Polynomial Identity Testing (SZ)}\label{schawtz-zippel}
 In this section, we talk about identity testing, 
 and some issues involving this subject.
@@ -613,6 +610,101 @@ This exploitation allows us to perform $NTT$ without expanding to $2n$ parameter
 meaning we can send less bandwidth over the network, and perform fewer computations too. 
 This trick can be seen in \cite{SEAL}.
 
+\section{Fast Polynomial Division via Reversal and Newton Iteration}
+\red{Notice that this section is a somewhat explanation for section 9.1 of Modern Computer Algebra}
+Let $A(x), B(x) \in \mathbb{F}[x]$ with $\deg(A)=n$, $\deg(B)=m$, and assume
+the leading coefficient of $B(x)$ is invertible in $\mathbb{F}$. We want to compute
+the quotient $Q(x)$ and remainder $R(x)$ such that
+\[
+A(x) = Q(x) B(x) + R(x), \quad \deg(R) < m.
+\]
+
+\paragraph{Reversal.}
+Define the \emph{reversal} of a polynomial $f(x)=f_0 + f_1 x + \dots + f_d x^d$ of degree $d$
+by
+\[
+\operatorname{rev}_L(f)(x) \;=\; x^{L-1} f\!\left(x^{-1}\right) \bmod x^L,
+\]
+which essentially reverses the coefficients up to length $L$.
+
+If $Q(x)$ has degree $k-1$ with $k=n-m+1$, then
+\[
+\operatorname{rev}_k(Q)(x) \;=\; \operatorname{rev}_{n+1}(A)(x) \cdot
+   \bigl( \operatorname{rev}_{m+1}(B)(x) \bigr)^{-1} \bmod x^k.
+\]
+
+(Since $Q(x) = A(x)\cdot B(x)^{-1}$.)
+This reversal operation will later be used to \emph{convert the problem of dividing
+high-degree polynomials into the problem of inverting a series with a nonzero
+constant term}, which can be solved efficiently by Newton iteration(see next). In other words,
+reversal ensures that the divisor's leading coefficient becomes the constant term
+of $\operatorname{rev}_{m+1}(B)$, so its inverse exists modulo $x^k$ and can be
+computed in $O(M(k))$ time (i.e., $M(k)$ describe the cost of multiplication. using NTT it is $k\cdot \log k$).
+
+In other words, the newtwon iteration, which we describe next demands the polynomial has a constant, invertible, nonzero constant. Otherwise, it doesn't converge (don't ask me why)!
+
+\paragraph{Series inversion via Newton iteration.}
+Given $C(x)$ with nonzero constant term, its inverse series modulo $x^k$ can be
+computed by Newton iteration:
+\[
+T_{1}(x) = c_0^{-1}, \qquad
+T_{2\ell}(x) = T_\ell(x) \,\bigl(2 - C(x)T_\ell(x)\bigr) \bmod x^{2\ell}.
+\]
+This converges doubly in the precision, so after $O(\log k)$ iterations we obtain
+$C(x)^{-1} \bmod x^k$.
+It is important to notice, this function uses polynomial multiplication, but the overall work remains in $O(M(n))$.
+
+
+\begin{lstlisting}[language=Python,
+  caption={Newton iteration for polynomial series inverse},
+]
+
+def series_inverse(C, k):
+    """
+    Input: polynomial $C(x)$ with C[0] != 0
+           integer k = target precision
+    Output: polynomial $T(x)$ such that $C(x)*T(x) = 1 mod x^k$
+    """
+    # initial inverse modulo x
+    T = [ inverse(C[0]) ]  
+    ell = 1
+
+    while ell < k:
+        m = min(2*ell, k)
+
+        # U = C*T mod x^m
+        U = multiply(C, T, m)
+
+        # U = 2 - U mod x^m
+        U[0] = 2 - U[0]
+        for i in range(1, m):
+            U[i] = -U[i]
+
+        # T = T*U mod x^m
+        T = multiply(T, U, m)
+
+        ell = m
+
+    return T
+\end{lstlisting}
+
+
+
+
+
+\paragraph{Division Algorithm.}
+\begin{enumerate}
+  \item Compute $A^*(x) = \operatorname{rev}_k(A)(x)$ and $B^*(x) = \operatorname{rev}_{m+1}(B)(x)$.
+  \item Compute $T(x) = (B^*(x))^{-1} \bmod x^k$ using Newton iteration.
+  \item Compute $Q^*(x) = A^*(x)\,T(x) \bmod x^k$.
+  \item Recover the quotient by reversal: $Q(x) = \operatorname{rev}_k(Q^*)(x)$.
+  \item Finally, compute the remainder as $R(x) = A(x) - Q(x)B(x)$.
+\end{enumerate}
+
+\paragraph{Complexity.}
+If polynomial multiplication of degree-$n$ polynomials costs $M(n)$ operations,
+then this division runs in $O(M(n))$ time. Using FFT/NTT-based multiplication,
+this yields quasi-linear complexity in $n$.
 
 \section{Lagrange's Interpolation}
 Given a set of points $(x_0,y_0),\dots,(x_n,y_n)$, 

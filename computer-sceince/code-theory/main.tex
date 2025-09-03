@@ -205,28 +205,38 @@ constructions. However, they are quite useful when we study codes
 \end{bclogo}
 
 
+% \chapter{Robust Interpolation}
 \section{Reed-Solomon codes}
+Reed-Solomon codes were invented in 1960, defining a new class 
+of codes. These codes were well suited for erasures and were used in
+many applications, such as QR codes, CDs, and storage devices (RAID 6).
 
-Encode your data $m=(m_0, m_1 ,\dots m_{k-1})$ into a polynomial:
-$$ p(x)=m_0 +m_1 \cdot x + \dots  m_{k-1}\cdot ^{k-1}$$
+The key idea behind Reed-Solomon codes is to encode a message $m$ of length $k$
+into a polynomial of degree $k-1$ over a finite field $F_q$. Then, use regular interpolation 
+to reconstruct the polynomial.
 
-Then, instead of sending $m$, we evaluate the polynomial 
-over $|\{\alpha_1,\alpha_2,\dots,\alpha_n\}=n\ge k-1$ 
-points and send codewords instead
-$$c=(c_1,c_2,\dots c_n) =(p(\alpha_1), p(\alpha_2)\dots p(\alpha_n))$$.
+More precisely, if the sender wants to send a message $m=(m_0, m_1 ,\dots m_{k-1})$,
+it first encodes the data $m=(m_0, m_1 ,\dots m_{k-1})$ as the following polynomial
+$ p(x)=m_0 +m_1 \cdot x + \dots m_{k-1}x ^{k-1}$.
+Once the data is encoded, instead of sending $m$, the sender would 
+evaluate the polynomial $p(x)$ at $n$ different points $\alpha_1,\alpha_2,\dots,\alpha_n$,
+and send the codeword $c=(c_1,c_2,\dots c_n) =(p(\alpha_1), p(\alpha_2),\dots p(\alpha_n))$.
 
-If there are missing points (i.e., \emph{erasures}),
-we can still still decode the message by interpolating 
-from any $k$ points we have.
+Since every polynomial of degree $k-1$ is uniquely defined by $k$ points,
+the receiver can reconstruct the polynomial $p(x)$ from any $k$ points it receives.
+That is, if some of the points are lost along the way, the receiver can still
+use interpolation to reconstruct the polynomial $p(x)$, and thus recover the message $m$.
+
+This elegant solution solves the problem of erasures, and was optimised throughout the 
+years. Though we won't delve into the details of the optimisations, since they 
+are not relevant to robust interpolation.
 
 
 \paragraph{Voting and Corruptions}
-    The original Reed-Solomon codes worked quite well for erasures,
-    but some times, there is no way to know what is a valid 
-    value, and what isn't (commonly known as \emph{corruptions}).
-
-    Sometimes, corruptions can't be detected, and 
-    interpolating the codewords isn't enough. 
+    In most cases, solving the problem of erasures and relying on a hash 
+    function to detect corruptions is sufficient. However, there are instances 
+    where it's impossible to determine what constitutes a valid value 
+    and what doesn't (commonly referred to as \emph{corruptions}).
 
     The original Reed-Solomon codes suggested a theoretical solution
     to this problem, by interpolating the $\binom{n}{k}$ polynomials
@@ -234,13 +244,11 @@ from any $k$ points we have.
     Making this algortihm not practical.
 
     The following section discusses the Berlekamp-Welch algorithm,
-    which came 27 years after, and finally put an end to this problem.
-\section{Berlekamp-Welch Algorithm}
-In this section we discuss the Berlekamp-Welch algorithm, 
-which is used to correct corruptions in Reed-Solomon codes.
+    which emerged 23 years later and finally resolved this problem.
 
-The algortihm expects a set number of points and attempts to reconstruct 
-a polynomial that passes through these points, given a finite number of errors.
+\section{Berlekamp-Welch Algorithm}
+The Berlekamp-Welch (BW) algorithm is a robust interpolation algorithm that
+can be used as a decoder for Reed-Solomon codes and solves the following problem:
 
 \begin{bclogo}[logo=\bcattention,noborder=true]{Problem: Decode 
     $RS_q(\bar{\alpha},n,k)$ from $e\le \lfloor\frac{n-k}{2}\rfloor$}
@@ -252,17 +260,20 @@ find a polynomial $f(x)\in F_q[x]$ such that
 \end{itemize}
 
 \end{bclogo}
+That is, BW can decode a word of size $k$ from a corrupted reeds-solomon 
+codeword $w$ of length $n$, containing at most $e$ errors. Otherwise, it returns $\bot$.
 
-The key idea, is assuming we can create some special polynomial $E(x)$ called
- the \emph{Error Locator Polynomial}.
+BW key idea is assuming we can create some special polynomial $E(x)$ called
+the \emph{Error Locator Polynomial}. 
 This polynomial has roots at each $\alpha_i$ where $w_i\ne f(\alpha_i)$. That is, 
 for each $\alpha_i$  that we have an error: $w_i\ne f(\alpha_i)$, we have a root in $E(x)$.
 So, we define $ E(x) = \prod_{i:w_i\ne f(\alpha_i)}^{n} (x-\alpha_i)$.
 Notice that if we plug the $\alpha_i$, such that $w_i\ne f(\alpha_i)$,
  we get $E(\alpha_i)=0$.
-This polynomial exists, but unfortunately, we don't know it. 
+This polynomial exists, but unfortunately, we don't know it (yet). 
 
-Now that defined $E(x)$, notice that for all $i$:
+Now that we have defined $E(x)$, we describe a specific 
+equation that is correct, and will let us later find $E(x)$:
 $$ w_i\cdot E(\alpha_i) = f(\alpha_i)\cdot E(\alpha_i)= Q(\alpha)$$
 
 
@@ -273,21 +284,19 @@ $$ w_i\cdot E(\alpha_i) = f(\alpha_i)\cdot E(\alpha_i)= Q(\alpha)$$
      $w_i\cdot E(\alpha_i) = f(\alpha_i)\cdot E(\alpha_i)$, which is also true.
 \end{bclogo}
 
-The goal of the algorithm is finding $Q(x)$ and $E(x)$,
- then $f(x)$ can be found by $f(x)=\frac{Q(x)}{E(x)}$.
+If we knew $E(x)$, we could find $f(x)$ by dividing $Q(x)$ by $E(x)$:
+$f(x)=\frac{Q(x)}{E(x)}$.
 
-\paragraph{High Level Idea}
+\paragraph{High Level Algorithm}
 \begin{enumerate}
     \item Find a monic (see \autoref{def:monic}) degree $e$ polynomial $E(x)$.
     \item Find a polynomial $Q(x)$ of degree $\le e+k-1$ such 
     that $w_i\cdot E(\alpha_i)=Q(\alpha_i)$, for all $i$.
 
     If there isn't, then return $\bot$.
-    \item Set $\tilde{f}(x)=\frac{Q(x)}{E(x)}$. and check hamming distance 
-    (see \autoref{def:hamming-distance}) $\Delta(\tilde{f}(\alpha_i),w)$ 
-    between $\tilde{f(\alpha_i)}$ and $w_i$.\todo{We don't use hamming distance, 
-    all errors in a word are counted as 1, even if it is more than 1 bit}
-    if the distance is greater than $e$, return $\bot$.
+    \item Set $\tilde{f}(x)=\frac{Q(x)}{E(x)}$. Count the number of different 
+    evaluations between $\tilde{f(\alpha_i)}$ and $w_i$ ($\Delta(\tilde{f}(\alpha_i),w)$).  
+    If  $\Delta(\tilde{f}(\alpha_i),w)$ is greater than $e$, return $\bot$.
     \item Return $\tilde{f}(x)$.
 \end{enumerate}
 
@@ -382,44 +391,44 @@ So we just need to solve the system of linear equations.
     &\vdots\\
     w_n\cdot E(\alpha_n) &= Q(\alpha_n)\\
 \end{align*}
-which is translated to matrix form as:
+% which is translated to matrix form as:
 
-\[
-    \left(\begin{array}{ccc|lcc}
-        w_{1}\cdot\alpha_{1}^{e} & w_{1}\cdot\alpha_{1}^{e-1}\dots w_{1}\alpha_{1} & w_{1} & -\alpha_{1}^{e+k-1} & \dots-\alpha_{1} & -1\\
-        w_{2}\cdot\alpha_{2}^{e} & w_{2}\cdot\alpha_{2}^{e-1}\dots w_{2}\alpha_{2} & w_{2} & -\alpha_{2}^{e+k-1} & \dots-\alpha_{2} & -1\\
-         &  & \vdots
-        \end{array}\right)=\left(\begin{array}{c}
-        1\\
-        a_{e-1}\\
-        \vdots\\
-        a_{1}\\
-        a_{0}\\
-        \hline b_{e+k-1}\\
-        b_{e+k-2}\\
-        \vdots\\
-        b_{1}\\
-        b_{0}
-        \end{array}\right)
-\]
+% \[
+%     \left(\begin{array}{ccc|lcc}
+%         w_{1}\cdot\alpha_{1}^{e} & w_{1}\cdot\alpha_{1}^{e-1}\dots w_{1}\alpha_{1} & w_{1} & -\alpha_{1}^{e+k-1} & \dots-\alpha_{1} & -1\\
+%         w_{2}\cdot\alpha_{2}^{e} & w_{2}\cdot\alpha_{2}^{e-1}\dots w_{2}\alpha_{2} & w_{2} & -\alpha_{2}^{e+k-1} & \dots-\alpha_{2} & -1\\
+%          &  & \vdots
+%         \end{array}\right)=\left(\begin{array}{c}
+%         1\\
+%         a_{e-1}\\
+%         \vdots\\
+%         a_{1}\\
+%         a_{0}\\
+%         \hline b_{e+k-1}\\
+%         b_{e+k-2}\\
+%         \vdots\\
+%         b_{1}\\
+%         b_{0}
+%         \end{array}\right)
+% \]
 
 Solving the linear equations is done by using Gaussian elimination,
 which is a standard algorithm for solving systems of linear equations.
-Thus, although the berlekamp-welch algorithm is infinetly faster than try to find agreement 
+Thus, although the berlekamp-welch algorithm is immensly faster than try to find agreement 
 between $f(x)$ and $w$ by brute force, it still takes $O(n^3)$ time. 
 
 % Dividing these two polynomials can be done via NTT (Number Theoretic Transform) or FFT (Fast Fourier Transform).
 
-\paragraph{Speeding up the algorithm using NTT}
-We won't get better in this algorithm than $O(n^3)$, but we can reduce the constant.
-For instance, filling the matrix above takes $O(n^2)$ time, where each matrix entry 
-is a set of exponents over the field. This is quite costly. 
-If we know the polynomial is evaluated using roots of unity, we can 
-create a look-up-table (LUT) and evaluate $\omega$'s $e+k-1$ powers. 
-Then, whenever we need to evaluate $\omega_i^j$, we look for it in entry $i\cdot j \mod n$ 
-in the LUT.
-In addition, this specific matrix can be built ahead of time, then multiply the entries in 
-the matrix by the corresponding $w_i$. 
+% \paragraph{Speeding up the algorithm using NTT}
+% We won't get better in this algorithm than $O(n^3)$, but we can reduce the constant.
+% For instance, filling the matrix above takes $O(n^2)$ time, where each matrix entry 
+% is a set of exponents over the field. This is quite costly. 
+% If we know the polynomial is evaluated using roots of unity, we can 
+% create a look-up-table (LUT) and evaluate $\omega$'s $e+k-1$ powers. 
+% Then, whenever we need to evaluate $\omega_i^j$, we look for it in entry $i\cdot j \mod n$ 
+% in the LUT.
+% In addition, this specific matrix can be built ahead of time, then multiply the entries in 
+% the matrix by the corresponding $w_i$. 
 
 
 \section{Gao's decoder}
@@ -588,4 +597,3 @@ I describe in this section things of interest that I haven't solved yet.
 
     \item Why can we always stop the partial GCD at the same point?
 \end{itemize}
-
