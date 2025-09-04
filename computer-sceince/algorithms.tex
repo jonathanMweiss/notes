@@ -700,6 +700,8 @@ def series_inverse(C, k):
     return T
 \end{lstlisting}
 
+proof of correctness is via induction. (See Modern Computer Algebra book, section 9.1, theorm 9.2).
+and runtime is around $4M(n)$, so if we use NTT, it should be aroud four times the cost of regular NTT multiplication.
 
 \paragraph{Why Newton Iteration Applies.}
 In polynomial division we know in advance the degree bound of the quotient:
