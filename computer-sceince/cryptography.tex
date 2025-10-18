@@ -16,6 +16,37 @@
  \todo{Write how to use this construction!}
 
 \chapter{Basics}
+\section{Perfect Security}
+One time pad is used to create perfect secrecy. That is, there is no way to 
+To distinguish between ciphers.  One time pad works as follows:
+XORing a message $m$ with some random string $r$ will hide it completely. 
+To decrypt it, one needs to XOR it again with $r$.
+
+\section{symmetric Key}
+\paragraph{Block Ciphers}
+a block cipher is a  deterministic cipher $\varepsilon=(E,D)$ whose message space and
+ciphertext space are the same (finite) set $\mathcal{X}$. If the key space of $\varepsilon$ is $\mathcal{K}$ we say that $\varepsilon$ is a block cipher defined over
+$(\mathcal{X},\mathcal{K})$.
+
+For every fixed key $k \in\mathcal{K}$, we can define the function $f_k := E(k,\cdot)$
+that is $f_k: \mathcal{X} \to \mathcal{X}$. 
+The usual correctness requirement for any cipher implies that for every
+fixed key $k$, the function $f_k$ is a. one-to-one mapping (bijection). That is, $f_k$ is a permutation function. Thus, the decryption function $D$ is the inversion function $f_k^{-1}$.
+
+
+AES is a Block Cipher. They usually use 128-bit strings as keys. The data blocks that AES128 handles is 128-bit as well.
+
+a secure block cipher should be \emph{computationally indistinguishable} from a random permutation.
+
+
+
+\paragraph{Modes of operation}
+refers to different methods for applying cryptographic algorithms, like block ciphers, to encrypt or decrypt data in a way that handles multiple blocks of information.
+Common examples include Electronic Codebook (ECB), Cipher Block Chaining (CBC), and Counter (CTR) mode, each with its own security properties and use cases.
+
+
+ECB, for instance, is just using the block cipher (AES128, for instance) on chunks of 128 bits repeatedly. This isn't secure.
+
 \section{Diffie-Helman}
 Diffie-Helman relies on the following assumption.
 
