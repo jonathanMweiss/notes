@@ -342,3 +342,42 @@ KZG commitments are fundamental to constructions like:
     \item \textbf{Data Availability Sampling (DAS)}: Used in sharding solutions (e.g., Ethereum's Danksharding) to ensure data availability without requiring all nodes to download all shard data.
     \item \textbf{Verifiable Delay Functions (VDFs)}: Used in some consensus mechanisms.
 \end{itemize}
+
+
+\section{Verkle Trees}
+TODO: Verify.
+% Verkle Trees are a new type of cryptographic accumulator that use polynomial commitments (specifically, KZG commitments) to achieve a significant reduction in proof size compared to Merkle trees. This makes them particularly attractive for blockchain applications where state size and proof efficiency are critical, such as Ethereum's scaling roadmap.
+
+% \subsection{Structure and Concept}
+% A Verkle tree can be thought of as a tree where each node commits to its children's values (or their commitments) using a polynomial commitment scheme. Instead of hashing, a polynomial is formed from the children's values, and the commitment to this polynomial becomes the parent's commitment.
+
+% \begin{itemize}
+%     \item \textbf{Nodes as Polynomials}: Each internal node in a Verkle tree represents a polynomial whose evaluations at specific points correspond to the commitments of its children.
+%     \item \textbf{KZG Commitments for Nodes}: KZG commitments are used to commit to these polynomials. A single KZG commitment (an elliptic curve point) serves as the "hash" for an entire node.
+%     \item \textbf{Branching Factor}: Unlike binary Merkle trees, Verkle trees can have a very high branching factor (e.g., 256 or more). This means a single parent can directly commit to many children, leading to shallower trees.
+% \end{itemize}
+
+% \subsection{Proof Generation and Verification}
+% To prove the existence and value of a leaf in a Verkle tree, one needs to provide:
+% \begin{itemize}
+%     \item The value of the leaf itself.
+%     \item A path from the root to the leaf, where each step consists of a KZG opening proof for the relevant polynomial at that node.
+% \end{itemize}
+% The beauty of KZG commitments is that these opening proofs are very small (a single elliptic curve point), regardless of the number of children a node has. This leads to extremely compact proofs for Verkle trees.
+
+% \subsection{Advantages over Merkle Trees}
+% \begin{itemize}
+%     \item \textbf{Smaller Proof Sizes}: The primary advantage. Merkle proofs require providing all sibling hashes along the path to the root. In a Verkle tree, due to KZG commitments, the proof for a branch is logarithmic in the depth of the tree, but critically, independent of the branching factor, leading to much smaller proof sizes for high-degree trees.
+%     \item \textbf{Efficient Updates}: While not as straightforward as Merkle trees, updates can be efficiently handled by recomputing polynomial commitments along the path from the modified leaf to the root.
+%     \item \textbf{Larger State Capacity}: The high branching factor allows for a significantly larger state to be represented in a tree of a given depth.
+% \end{itemize}
+
+% \subsection{Applications in Blockchains}
+% Verkle trees are being considered for:
+% \begin{itemize}
+%     \item \textbf{Ethereum State Management}: A potential upgrade to Ethereum's state tree (currently a Merkle Patricia tree) to reduce the witness size needed for state proofs, which is crucial for stateless clients and sharding. This would allow nodes to verify transactions without storing the entire blockchain state, greatly reducing hardware requirements for running a node.
+%     \item \textbf{Scalability Solutions}: By enabling smaller proofs, Verkle trees can enhance the efficiency and scalability of various blockchain protocols and layer-2 solutions.
+% \end{itemize}
+
+% \subsection{Relation to KZG Commitments}
+% Verkle trees directly leverage KZG polynomial commitments as their fundamental building block. The efficiency of Verkle tree proofs stems directly from the succinctness of KZG opening proofs. Without KZG (or similar polynomial commitment schemes), Verkle trees would not offer their significant advantages over Merkle trees.
