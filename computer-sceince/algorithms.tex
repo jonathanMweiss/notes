@@ -35,14 +35,27 @@ value is $0$.
 \label{sec:finite-field:extended-euclidean}
 The Extended Euclidean Algorithm is an important algorithm in any number theory course.
 This algorithm is used to find the inverse of an element in a finite field.
+\paragraph{Bezout's identity}
+Bézout's identity states that for any two integers $a$ and $b$ (not both zero), there exist integers $x$ and $y$ such that:
+$$ ax + by = \gcd(a, b) $$
+These integers $x$ and $y$ are called Bézout coefficients for $(a, b)$. Furthermore, $\gcd(a, b)$ is the smallest positive integer that can be expressed in the form $ax + by$.
 
-The algorithm is based on Bezout's identity, which states
-that for any two integers $a$ and $b$, there exist integers $x$ and $y$ such that
-$ax+by=GCD(a,b)$. As a result of this identity, we can find the inverse of an element
-in a finite field $GF(q)$. How can we use this to find the inverse?
-Welp, in a finite field $q$ is a prime right? so $GCD(a,q)=1$ for every $a\in GF(q)$.
+The following proof is an iteration of the above explanation.
+\begin{proof}
+    Let $S = \{ax + by \mid x, y \in \mathbb{Z}, ax + by > 0\}$. By the Well-Ordering Principle, $S$ has a smallest element $d$.
+    We claim $d = \gcd(a, b)$.
+    First, $d$ must divide $a$. If not, $a = qd + r$ with $0 < r < d$.
+    But $r = a - qd$ is a linear combination of $a$ and $b$ smaller than $d$, contradicting minimality. Thus $d \mid a$ and similarly $d \mid b$.
+    Since $d$ is a common divisor, $d \le \gcd(a, b)$. Also, $\gcd(a, b)$ divides any linear combination of $a$ and $b$, so $\gcd(a, b) \mid d$, implying $\gcd(a, b) \le d$.
+    Therefore, $d = \gcd(a, b)$.
+\end{proof}
+
+\paragraph{Using Bezout to Find Inverse}
+As a result of Bezout's identity, we can find the inverse of an element in a finite field $GF(q)$. 
+in short, in a finite field $q$ is a prime right? so $GCD(a,q)=1$ for every $a\in GF(q)$.
 As a result, we have $ax+qy=ax+0=GCD(a,q)=1$ (where $qy=0$ since we are in $GF(q)$), and thus $ax=1 \mod q$. and luckily, the 
-extended Euclidean algorithm can find this $x$ and this $y$ (we toss the $y$).
+extended Euclidean algorithm can find this $x$ and this $y$ (we toss the $y$ when we just want the inverse of $a$ in $GF(q)$).
+
 
 
 The algorithm is basically applying the GCD algorithm, but keeping track of the coefficients
@@ -65,8 +78,19 @@ def extended_euclidean(a, b):
 \end{lstlisting}
 
 
-
-\todo{ensure the algorithmis okay. taken form chatgpt.+ write intuition}
+\paragraph{Matrix Intuition}
+To understand the coefficients update, we can view the Euclidean algorithm steps as matrix transformations.
+We start with the identity relations:
+\[
+\begin{pmatrix} a \\ b \end{pmatrix} = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} \begin{pmatrix} a \\ b \end{pmatrix}
+\]
+In each step of the Euclidean algorithm, we perform the division $a = q \cdot b + r$, which implies $r = a - q \cdot b$.
+If we want to transition from the state $(a, b)$ to $(b, r)$, we can apply the following transformation matrix:
+\[
+\begin{pmatrix} b \\ r \end{pmatrix} = \begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix} \begin{pmatrix} a \\ b \end{pmatrix}
+\]
+By maintaining the product of these transformation matrices, we effectively track the linear combination coefficients $x$ and $y$ such that $r_i = x \cdot \text{original\_}a + y \cdot \text{original\_}b$.
+The code above implements exactly this logic, updating the coefficients $(x_0, x_1)$ and $(y_0, y_1)$ according to the transformation matrix $\begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix}$ at each step.
 
 \section{Chinese Remainder Theorem}
 
