@@ -92,6 +92,35 @@ If we want to transition from the state $(a, b)$ to $(b, r)$, we can apply the f
 By maintaining the product of these transformation matrices, we effectively track the linear combination coefficients $x$ and $y$ such that $r_i = x \cdot \text{original\_}a + y \cdot \text{original\_}b$.
 The code above implements exactly this logic, updating the coefficients $(x_0, x_1)$ and $(y_0, y_1)$ according to the transformation matrix $\begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix}$ at each step.
 
+\paragraph{Invariant Explanation}
+To make it even clearer, let's denote the initial inputs as $A$ and $B$.
+The variables $x_0, y_0$ track the coefficients for the current value of variable \texttt{a}, and $x_1, y_1$ track the coefficients for the current value of variable \texttt{b}.
+Throughout the execution of the loop, the following invariant holds:
+\[
+\begin{pmatrix} \texttt{a} \\ \texttt{b} \end{pmatrix} = \begin{pmatrix} x_0 & y_0 \\ x_1 & y_1 \end{pmatrix} \begin{pmatrix} A \\ B \end{pmatrix}
+\]
+This means that at any step:
+\[
+\texttt{a} = x_0 \cdot A + y_0 \cdot B \quad \text{and} \quad \texttt{b} = x_1 \cdot A + y_1 \cdot B
+\]
+When the loop terminates ($\texttt{b}=0$), the variable \texttt{a} holds the GCD, and the invariant tells us that $\text{GCD}(A, B) = x_0 \cdot A + y_0 \cdot B$.
+Thus, the returned $x_0$ and $y_0$ are the Bézout coefficients.
+
+\paragraph{Deriving the Update Rules}
+The code updates \texttt{x0, x1} and \texttt{y0, y1} by performing a matrix multiplication.
+Let $M = \begin{pmatrix} x_0 & y_0 \\ x_1 & y_1 \end{pmatrix}$ be the matrix storing the current coefficients.
+In each step of the loop, we apply the transformation $T = \begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix}$.
+The new coefficient matrix $M_{new}$ is the product $T \times M$:
+\[
+M_{new} = \begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix} \begin{pmatrix} x_0 & y_0 \\ x_1 & y_1 \end{pmatrix} 
+= \begin{pmatrix} x_1 & y_1 \\ x_0 - q \cdot x_1 & y_0 - q \cdot y_1 \end{pmatrix}
+\]
+This matrix multiplication exactly matches the Python tuple assignment:
+\begin{itemize}
+    \item The first row of $M_{new}$ becomes the new $(x_0, y_0)$, which takes values from the old second row $(x_1, y_1)$.
+    \item The second row of $M_{new}$ becomes the new $(x_1, y_1)$, calculated as $(x_0 - q x_1, y_0 - q y_1)$.
+\end{itemize}
+
 \section{Chinese Remainder Theorem}
 
 \section{Generator}
