@@ -77,6 +77,7 @@ def extended_euclidean(a, b):
 
 \end{lstlisting}
 
+\red{below paragraphs are generated via gemini3, i've read through them though.}
 
 \paragraph{Matrix Intuition}
 To understand the coefficients update, we can view the Euclidean algorithm steps as matrix transformations.
@@ -104,7 +105,7 @@ This means that at any step:
 \texttt{a} = x_0 \cdot A + y_0 \cdot B \quad \text{and} \quad \texttt{b} = x_1 \cdot A + y_1 \cdot B
 \]
 When the loop terminates ($\texttt{b}=0$), the variable \texttt{a} holds the GCD, and the invariant tells us that $\text{GCD}(A, B) = x_0 \cdot A + y_0 \cdot B$.
-Thus, the returned $x_0$ and $y_0$ are the Bézout coefficients.
+Thus, the returned $x_0$ and $y_0$ are the Bezout coefficients.
 
 \paragraph{Deriving the Update Rules}
 The code updates \texttt{x0, x1} and \texttt{y0, y1} by performing a matrix multiplication.
@@ -778,6 +779,136 @@ compute the inverse series only up to precision $x^k$.
 If polynomial multiplication of degree-$n$ polynomials costs $M(n)$ operations,
 then this division runs in $O(M(n))$ time. Using FFT/NTT-based multiplication,
 this yields quasi-linear complexity in $n$.
+\section{Half-GCD}
+\red{this section was written with codex 5.3, needs to be reviewed further when I am not so tired.}
+Half-GCD is a divide-and-conquer version of Euclid's algorithm.
+The usual Euclidean algorithm removes one quotient at a time:
+\[
+(a,b) \mapsto (b, a - qb).
+\]
+Half-GCD keeps the same mathematics, but tries to process \emph{many} Euclid steps at once,
+using only the high half of the inputs to predict those quotients.
+
+\paragraph{Why this helps.}
+When $a$ and $b$ are large (big integers, or high-degree polynomials),
+the expensive part is repeatedly dividing large objects.
+If we can reduce the size by about half in one recursive call,
+we get a much faster algorithm asymptotically.
+For polynomials over a field, this leads to roughly
+\[
+O(M(n)\log n)
+\]
+for GCD (and extended GCD), where $M(n)$ is multiplication cost.
+
+\paragraph{Core viewpoint: Euclid as matrix updates.}
+Each Euclid step with quotient $q$ can be written as
+\[
+\begin{pmatrix}a'\\ b'\end{pmatrix}
+=
+\begin{pmatrix}0 & 1\\ 1 & -q\end{pmatrix}
+\begin{pmatrix}a\\ b\end{pmatrix}.
+\]
+So a block of Euclid steps is just multiplication by one $2\times 2$ matrix.
+Half-GCD computes such a matrix from the \emph{most significant half}
+of the input, then applies it to the full input.
+This usually drops the size dramatically while preserving the same gcd.
+
+\paragraph{Intuition for correctness (without proof).}
+There are two simple facts:
+\begin{itemize}
+  \item Every Euclid step preserves the gcd.
+  \item A product of Euclid-step matrices is still a valid gcd-preserving transform.
+\end{itemize}
+Half-GCD only groups these valid steps into larger chunks.
+Even if a guessed chunk from the high half is imperfect,
+we can safely correct with one ordinary Euclid step and continue.
+So correctness comes from doing exactly the same legal transformations as Euclid,
+just in larger batches.
+
+\paragraph{How to think about one recursive level.}
+Suppose inputs have size $n$ (bit-length for integers, degree for polynomials).
+\begin{enumerate}
+  \item Keep only the high $\approx n/2$ part of each input.
+  \item Run Euclid on this reduced pair to get a short transformation matrix $M$.
+  \item Apply $M$ to the \emph{full} inputs.
+  \item If needed, do one exact Euclid correction step.
+  \item Recurse on the now smaller pair.
+\end{enumerate}
+That is the entire idea: \emph{predict with high parts, apply exactly on full parts, recurse}.
+
+\paragraph{Relation to the polynomial case.}
+The same structure works for polynomials:
+replace bit-length by degree, integer division by polynomial division,
+and ``high bits'' by ``high-degree terms''.
+This is why Half-GCD is a standard building block in fast polynomial
+extended GCD, inversion modulo a polynomial, and related algorithms.
+
+\begin{lstlisting}[language=Python,
+  caption={Pedagogical Half-GCD (integer version, matrix-batched Euclid)}
+]
+def _mat_mul(A, B):
+  return (
+    (A[0][0] * B[0][0] + A[0][1] * B[1][0],
+     A[0][0] * B[0][1] + A[0][1] * B[1][1]),
+    (A[1][0] * B[0][0] + A[1][1] * B[1][0],
+     A[1][0] * B[0][1] + A[1][1] * B[1][1]),
+  )
+
+
+def _apply_mat(M, a, b):
+  c = M[0][0] * a + M[0][1] * b
+  d = M[1][0] * a + M[1][1] * b
+  return c, d
+
+
+def _hgcd_step(a, b):
+  """One half-gcd reduction step using top halves only."""
+  n = max(a.bit_length(), b.bit_length())
+  m = n // 2
+  ah, bh = a >> m, b >> m
+
+  M = ((1, 0), (0, 1))
+  while bh and bh.bit_length() > m:
+    q = ah // bh
+    ah, bh = bh, ah - q * bh
+    T = ((0, 1), (1, -q))
+    M = _mat_mul(T, M)
+
+  return _apply_mat(M, a, b)
+
+
+def half_gcd(a, b):
+  """Returns gcd(a,b). Correct, compact, and easy to read."""
+  a, b = abs(a), abs(b)
+  if b == 0:
+    return a
+
+  while b:
+    if b.bit_length() < 64:
+      while b:
+        a, b = b, a % b
+      return a
+
+    c, d = _hgcd_step(a, b)
+
+    if d == 0:
+      return abs(c)
+
+    # Safety fallback: if no progress, do one exact Euclid step.
+    if abs(d) >= abs(b):
+      a, b = b, a % b
+    else:
+      a, b = abs(c), abs(d)
+
+  return a
+\end{lstlisting}
+
+\paragraph{Reading the code.}
+The function \texttt{\_hgcd\_step} computes one ``batched Euclid'' move from high bits.
+Then \texttt{half\_gcd} repeatedly applies such moves.
+The fallback line keeps the implementation robust and easy to trust:
+if a batched move does not shrink enough, do one ordinary Euclid step.
+So this stays correct while still benefiting from larger jumps.
 
 \section{Lagrange's Interpolation}
 Given a set of points $(x_0,y_0),\dots,(x_n,y_n)$, 
