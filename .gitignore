@@ -306,3 +306,5 @@ TSWLatexianTemp*
 *.synctex.gz
 *.fls
 *.log
+*.bbl*
+*.bcf*
