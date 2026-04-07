@@ -54,8 +54,24 @@
 \newtheorem{example}[theorem]{Example}
 \newtheorem{xca}{Exercise}[section]
 \newtheorem{sol}[xca]{Exercise}
+\newtheorem{claim}[thm]{\protect\claimname}
+\newtheorem*{claim*}{\protect\claimname}
 
 
+\global\long\def\ball#1{B_{\left|\left|\cdot\right|\right|_{#1}}}%
+\global\long\def\C{\mathbb{C}}%
+\global\long\def\bin#1#2{\binom{#1}{#2}}%
+\global\long\def\p#1{\Pr\left[#1\right]}%
+\global\long\def\limn#1{\lim\limits _{n\to\infty}\left(#1\right)}%
+\global\long\def\one{\mathbbm{1}}%
+\global\long\def\cov#1#2{COV\left[#1,#2\right]}%
+\global\long\def\E#1{\mathbb{E}\left[#1\right]}%
+\global\long\def\var#1{var\left[#1\right]}%
+\global\long\def\R{\mathbb{R}}%
+\global\long\def\N{\mathbb{N}}%
+\global\long\def\then{\Rightarrow}%
+\global\long\def\norm#1{\left\Vert #1\right\Vert }%
+\global\long\def\Z{\mathbb{Z}}%
 
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 
@@ -88,6 +104,14 @@
 \usepackage[tikz]{bclogo}
 \usepackage{bbm}
 \newcommand{\todo}[1]{\textbf{\textcolor{red}{[TODO: #1]}}}
+
+% Missing theorem environments (from LyX export)
+\newtheorem{fact}[theorem]{Fact}
+\providecommand{\claimname}{Claim}
+
+% LyX-specific environments
+\newenvironment{casenv}{\begin{enumerate}}{\end{enumerate}}
+\newenvironment{lyxgreyedout}{\color{gray}}{\ignorespacesafterend}
 
 
 \global\long\def\ball#1{B_{\left|\left|\cdot\right|\right|_{#1}}}%
