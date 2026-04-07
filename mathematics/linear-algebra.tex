@@ -1,3 +1,1952 @@
-
 \chapter{Linear Algebra}
+
+\subsection{recap}
+\begin{definition}
+A vector space over field $\mathbb{F}$ is a set $V$ with two operations:
+Vector addition and scalar multiplication.
+\end{definition}
+
+\begin{definition}
+$T:V\to W$ ($W,V$ are linear spaces) is a linear map ``if it respects''
+the space's linear structure. That is $T\left(u+v\right)=T\left(u\right)+t\left(v\right)$
+and $\forall\alpha$, $T\left(\alpha u\right)=\alpha T\left(u\right)$.
+\end{definition}
+
+\begin{definition}
+Let $V$ be a f.d (finite dimension) vector space $\Rightarrow$ there
+are $v_{1}\dots v_{d}\in V$ s.t. $\forall v\in V\exists\alpha_{1}\dots\alpha_{d}$
+s.t. $v=\sum\alpha_{i}v_{i}$. The smallest such $d$ is called $dim\left(V\right)$,
+and a set $v_{1}\dots v_{d}$ -- a basis.
+\end{definition}
+
+\begin{claim}
+Let us fix a basis. Then every $v\in V$ is uniquely determined by
+the scalars $\alpha_{1}\dots\alpha_{d}$ 
+\begin{align*}
+v & \leftrightarrow\left(\alpha_{1},\dots\alpha_{n}\right)\\
+v_{1} & \leftrightarrow\left(1,0,\dots0\right)
+\end{align*}
+\end{claim}
+
+\begin{claim}
+Every linear mapping $T:V\to W$ ($W$ has a standard basis) is represented
+by a matrix $A_{k\times d}$ ($dim\left(W\right)=k$.
+\end{claim}
+
+\[
+T\left(v\right)=T\left(\alpha_{1},\dots,\alpha_{n}\right)=A\alpha
+\]
+ %
+\begin{insight}
+what? $A\alpha$?
+
+What are infinite dim vector spaces? Consider the space of all continuous
+functions $\left[a,b\right]\to\R$.%
+\end{insight}
+
+\begin{definition}
+A vector $v$ is an \textbf{eigenvector} of linear map $T$ with \textbf{eigenvalue}
+$\lambda$ of $T$ if $T\left(v\right)=\lambda\cdot v$.
+\end{definition}
+
+
+\subsubsection{\textquotedblleft Rough statements\textquotedblright{} }
+\begin{itemize}
+\item Linear maps are comprised of rotations and stretching.
+\item ``Size of a vector'': The most important example: $L_{2}$ norm.
+The size of the vector $\left|\left|\left(x_{1},\dots x_{n}\right)\right|\right|_{2}=\sqrt{\sum x_{i}^{2}}$
+.
+\item Rotation: a linear map that preserves the $L_{2}$ norm, $\forall v,\left|\left|T\left(v\right)\right|\right|_{2}=\left|\left|v\right|\right|_{2}$.
+\item When do we say that $T$ stretches the vector $v$ by $\lambda$?
+$T\left(v\right)=\lambda v$. The more standard term is: $v$ is an
+eigenvector of $T$ with eigenvalue of $\lambda$.
+\end{itemize}
+Let's make things more concrete.
+
+\section{Metric spaces}
+\begin{definition}
+A metric space is a pair $\left(X,d\right)$ where $X$ is a set and
+$d$ is a distance function $d:X\times X\to\R$ such that:
+\begin{enumerate}
+\item $d\left(x,y\right)=d\left(y,x\right)$
+\item $\forall x,y\in X$ $d\left(x,y\right)\ge0$ and equality to zero
+iff $x=y$. 
+\item triangle inequality -- $\forall x,y,z\in X$ , $d\left(x,y\right)+d\left(y,z\right)\ge d\left(x,z\right)$
+\end{enumerate}
+\end{definition}
+
+
+\section{normed spaces}
+
+``From size to distance'' (in linear spaces) $\left|\left|u\right|\right|$
+``the size of the vector'' we can define as $d\left(u,v\right):=\left|\left|u-v\right|\right|$%
+\begin{insight}
+like in real numbers, the size is it's abs value, and the distance
+is the subtract of two numberss inside abs value%
+\end{insight}
+.
+\begin{definition}
+Let $V$ be a real linear space, $\left|\left|\cdot\right|\right|:V\to R$
+is a norm if for every $u,v\in V$ and $\alpha\in\R$ it has the following
+properties:
+\begin{enumerate}
+\item $\forall v\in V,\left|\left|v\right|\right|\ge0,\left|\left|v\right|\right|=0\iff v=0$
+\item $\forall\alpha\in\R,v\in V,$ $\left|\left|\alpha v\right|\right|=\left|\alpha\right|\cdot\left|\left|v\right|\right|$
+\item triangle inequality -- $\forall u,v\in V,\left|\left|u+v\right|\right|\le\left|\left|u\right|\right|+\left|\left|v\right|\right|$
+\end{enumerate}
+\end{definition}
+
+
+\subsection{Important examples of norms:}
+
+$L_{p}$ norms, where $1\le p\le\infty$ are defined as follows: $\left|\left|\left(x_{1},\dots,x_{n}\right)\right|\right|_{p}:=\left(\sum\left|x_{i}\right|^{p}\right)^{\frac{1}{p}}$
+
+The most important norms are for $p=1,2,\infty$
+\begin{enumerate}
+\item $\left|\left|\left(x_{1},\dots,x_{n}\right)\right|\right|_{\infty}:=\max\left\{ \left|x_{i}\right|\right\} $
+\item $\left|\left|\left(x_{1},\dots,x_{n}\right)\right|\right|_{1}:=\sum\left|x_{i}\right|$
+(Manhattan distance)
+\item $\left|\left|\left(x_{1},\dots,x_{n}\right)\right|\right|_{2}:=\left(\sum\left|x_{2}\right|^{2}\right)^{\frac{1}{2}}$
+\end{enumerate}
+The fact that $L_{p}$ is a norm is not trivial. (The triangle inequality
+requires proof)
+
+\subsection{Balls}
+
+Associated with every norm $\left|\left|\cdot\right|\right|$ is its
+\uline{unit ball} on a space $V$: $B_{\left|\left|\cdot\right|\right|}:=\left\{ x\in V:\left|\left|x\right|\right|\le1\right\} $.
+\begin{itemize}
+\item The unit ball of $L_{2}$ is a round ball. 
+\item The unit ball for $L_{\infty}$ is a cube: $\left|\left|\left(x_{1},\dots x_{n}\right)\right|\right|_{\infty}\le1\iff\forall i,-1\le x_{i}\le1$.
+\item The unit ball of $L_{1}$ in 3 dims is an octahedron ($\left|x\right|+\left|y\right|+\left|z\right|\le1$
+in $\R^{3}$ ).
+\end{itemize}
+
+\subsubsection{inequalities}
+
+how many vertices, edges and inequalities do we have?
+\begin{itemize}
+\item cube: 
+\begin{align*}
+-1 & \le x_{1}\le1\\
+-1 & \le x_{2}\le1\\
+ & \vdots\\
+-1 & \le x_{n}\le1
+\end{align*}
+ So we have $2^{n}$ vertices.
+\item Cross polytope: (the $L_{1}$): $\pm e_{1},\pm e_{2},\dots$ In $\R^{3}$:
+\begin{align*}
+x+y+z & \le1\\
+-x+y+z & \le1\\
+x-y+z & \le1\\
+ & \vdots
+\end{align*}
+ we have 8 inequalities in $\R^{3}$ and thus $8$ facets.
+\end{itemize}
+\begin{fact}
+$\forall$ norm $\left|\left|\cdot\right|\right|$, its unit ball
+$\ball{}$ is :
+\begin{enumerate}
+\item centrally symmetric. ($x\in B\Rightarrow-x\in B$ $\left|\left|-x\right|\right|=\left|-1\right|\cdot\left|\left|x\right|\right|\le1$
+)
+\item convex %
+\begin{insight}
+if $x_{1}$ and $x_{2}$ are in $B$ then the interval defined by
+$\left\{ \lambda x_{1}+\left(1-\lambda\right)x_{2}:\lambda\in\left[0,1\right]\right\} \subseteq B$.%
+\end{insight}
+\item full dimensional set in $\R^{n}$ %
+\begin{insight}
+That is if $x\in B$ then $-x\in B$.%
+\end{insight}
+\end{enumerate}
+\end{fact}
+
+\begin{proposition}
+if $B\subseteq\R^{n}$ and $B$ has the properties: 
+\begin{enumerate}
+\item centrally symmetric. ($x\in B\Rightarrow-x\in B$ $\left|\left|-x\right|\right|=\left|-1\right|\cdot\left|\left|x\right|\right|\le1$
+)
+\item convex %
+\begin{insight}
+if $x_{1}$ and $x_{2}$ are in $B$ then the interval defined by
+$\left\{ \lambda x_{1}+\left(1-\lambda\right)x_{2}:\lambda\in\left[0,1\right]\right\} \subseteq B$.%
+\end{insight}
+\item full dimensional set in $\R^{n}$ %
+\begin{insight}
+That is if $x\in B$ then $-x\in B$.%
+\end{insight}
+{} 
+\end{enumerate}
+then $\exists\left|\left|\cdot\right|\right|$ s.t $B=B_{\left|\left|\cdot\right|\right|}$.
+
+\end{proposition}
+
+\begin{definition}[isometry]
+ Let $\left(X,\left|\left|\cdot\right|\right|\right)$ be a normed
+space, a map $T:X\to X$ is an isometry if $\forall x\left|\left|Tx\right|\right|=\left|\left|x\right|\right|$
+.
+\end{definition}
+
+Another key property of $L_{2}$ is that this norm is derived from
+an \uline{inner product}. $\left\langle x,y\right\rangle =\sum x_{i}y_{i}$.
+and $\left|\left|x\right|\right|=$$\left\langle x,x\right\rangle ^{\frac{1}{2}}$.
+
+We associate with every $x\in\R^{n}$ the map $y\to\left\langle x,y\right\rangle $
+. the map: $\left\langle x,\cdot\right\rangle \left(y\right)$
+\begin{definition}[dual norm]
+ Let $\left|\left|\cdot\right|\right|$ be a norm on $\R^{n}$, it's
+dual norm is $\left|\left|x\right|\right|^{*}=\sup\limits _{y\in\R^{n}}\frac{\left|\left\langle x,y\right\rangle \right|}{\left|\left|y\right|\right|}=\sup\limits _{\left|\left|y\right|\right|=1}\left|\left\langle x,y\right\rangle \right|$%
+\begin{insight}
+We can write $\max$ instead of $\sup$%
+\end{insight}
+{} %
+\begin{insight}
+it's equal because $y\cdot\alpha$ in$\frac{\left|\left\langle x,\alpha y\right\rangle \right|}{\left|\left|\alpha y\right|\right|}=\frac{\left|\left\langle x,y\right\rangle \right|}{\left|\left|y\right|\right|}$
+so the expression doesn\'{t} change for any $\alpha$ so we can multiplie
+any $y$ by some number to get $\left|\left|y\right|\right|=1$ and
+the norm stays the same%
+\end{insight}
+.
+\end{definition}
+
+\begin{xca}
+What is the dual norm of $L_{\infty}$?
+\begin{sol}
+$x\in\R^{n}$ ,
+\[
+\left|\left|x\right|\right|_{\infty}^{*}=\max_{\left|\left|y\right|\right|_{\infty}=1}\left|\left\langle x,y\right\rangle \right|=\left|\left|x\right|\right|_{1}
+\]
+
+\begin{insight}
+to start it up lets use some real vector to get a hunch : $x=\left(7,-3,5,9\right)$
+so we want $y$ with these signs to the coordinates. $y=\left(+,-,+,+\right)$
+so the best $y$ is such that $\left|\left|y\right|\right|_{\infty}=1$
+is $y=\left(1,-1,1,1\right)$. %
+\begin{insight}
+$L_{1}$ and $L_{\infty}$ are the dual norms of each other.%
+\end{insight}
+\end{insight}
+
+\end{sol}
+
+\end{xca}
+
+\begin{example}
+What is the dual norm of $L_{2}$? $x\in\R^{n}$. what is $\left|\left|x\right|\right|_{2}^{*}$?
+\[
+\left|\left|x\right|\right|_{2}^{*}=\max_{\left|\left|y\right|\right|_{2}=1}\left|\left\langle x,y\right\rangle \right|
+\]
+ By Cauchy Schwartz the best choice is $y=\frac{x}{\left|\left|x\right|\right|_{2}}$
+\begin{insight}
+$\left\langle x,y\right\rangle =\left|\left|x\right|\right|\cdot\left|\left|y\right|\right|\cdot cos\left(\alpha\right)$
+where $\alpha$ is the angle between the two, thus we want $\cos\alpha=1$
+when $x=y$ else this is smaller then it.%
+\end{insight}
+\[
+\left|\left|x\right|\right|_{2}^{*}=\max_{\left|\left|y\right|\right|_{2}=1}\left|\left\langle x,y\right\rangle \right|=\left\langle x,\frac{x}{\left|\left|x\right|\right|_{2}}\right\rangle =\frac{\left(\left|\left|x\right|\right|_{2}\right)^{2}}{\left|\left|x\right|\right|_{2}}=\left|\left|x\right|\right|_{2}
+\]
+\end{example}
+
+\begin{claim}
+If $1\le p,q\le\infty$, $\frac{1}{q}+\frac{1}{p}=1\Rightarrow\left|\left|x\right|\right|_{p}^{*}=\left|\left|x\right|\right|_{q}$.
+\end{claim}
+
+\begin{insight}
+Find $x$ such that $Ax\thickapprox b$. no such $x$ (too many constraints)
+Find $x$ such that $\left|\left|Ax-b\right|\right|$ is minimized%
+\end{insight}
+
+\begin{insight}
+
+\subsection{some reminders from previous class(?)}
+
+Norm on real vector space $V$ is a map $\left|\left|\cdot\right|\right|:V\to\R$
+if
+\begin{enumerate}
+\item $\forall x\in V$ $\left|\left|x\right|\right|\ge0$ and there\textquoteright s
+equality if and only if $x=0$
+\item Linearity: $\forall v\in V$$\lambda\in\R,\left|\left|\lambda v\right|\right|=\left|\lambda\right|\cdot\left|\left|v\right|\right|$
+\item triangle inequality: $\left|\left|x+y\right|\right|\le\left|\left|x\right|\right|+\left|\left|y\right|\right|$
+\end{enumerate}
+%
+
+\subsubsection{The geometric perspective:}
+
+corresponding to $\left|\left|\cdot\right|\right|$ is it's unit ball
+$B_{\left|\left|\cdot\right|\right|}=\left\{ x\in V|\left|\left|x\right|\right|\le1\right\} $
+\begin{fact}
+B is
+\begin{enumerate}
+\item convex %
+\begin{insight}
+(coming from traingle inequallity in norms)%
+\end{insight}
+\item centrally symmetric
+\item full dimensional subset of $V$. Means ``it contains a Euclidean''
+\begin{insight}
+any vector who is not zero has positive norm%
+\end{insight}
+\end{enumerate}
+\end{fact}
+
+on the other hand: every set $B\subseteq V$ with propeties $\left(1\right),\left(2\right),\left(3\right)$
+is the unit ball of some norm.
+\begin{example}
+Very important examples for norms are: $l_{p}$%
+\begin{insight}
+\"{s}mall $l_{p}$ is when we work with vectors (for sequnce spaces)
+and $L_{p}$ is for function spaces%
+\end{insight}
+{} norm on $\R^{n}$ $\left|\left|x\right|\right|_{p}:=\left(\sum\left|x_{i}\right|^{p}\right)^{\frac{1}{p}}$
+in perticular $p=1,2,3,\dots\infty$
+\end{example}
+
+\end{insight}
+
+\begin{claim}
+For $\infty\ge p\ge1$, $l_{p}$ is a norm.
+
+We prove only the triangle inequality because the other values are
+obvious. We need to show: $x,y\in\R^{n}$ $\left|\left|x+y\right|\right|_{p}\le\left|\left|x\right|\right|_{p}+\left|\left|y\right|\right|_{p}$.
+We start with Young's inequality
+\begin{proposition}
+Let $p,q>0,\frac{1}{p}+\frac{1}{q}=1$ , $a,b>0$ then $a\cdot b\le\frac{1}{p}a^{p}+\frac{1}{q}b^{q}$.
+\begin{proof}
+recall that ``$log$'' is a concave function. %
+\begin{insight}
+take any two points $x,y$ on the curve of the function, they are
+below the curve of the log ($\forall x,y$ $1\ge\lambda\ge0$, $\lambda\log\left(x\right)+\left(1-\lambda\right)\log y\le\log\left(\lambda x+\left(1-\lambda\right)y\right)$)%
+\end{insight}
+{} then 
+\begin{align*}
+\log ab & =\log\left(a\right)+\log b=\frac{1}{p}\cdot p\log\left(a\right)+\frac{1}{q}\cdot q\log b\\
+ & =\frac{1}{p}\log\left(a^{p}\right)+\frac{1}{q}\log\left(b^{q}\right)\le\text{\ensuremath{\log\left(\frac{1}{p}a^{p}+\frac{1}{q}b^{q}\right)}}
+\end{align*}
+\end{proof}
+\begin{proposition}[Holder's inequality]
+$\forall x,y\in\R^{n}$ $\left|\left\langle x,y\right\rangle \right|\le\left|\left|x\right|\right|_{p}\left|\left|y\right|\right|_{q}$
+if $\frac{1}{p}+\frac{1}{q}=1$ $p,q>0$.
+\begin{proof}
+WLOG (without loss of generality) $x,y\ge0$. $\sum x_{j}y_{j}\overset{?}{\le}\left(\sum\left|x_{i}\right|^{p}\right)^{\frac{1}{p}}\cdot\left(\sum\left|x_{i}\right|^{q}\right)^{\frac{1}{q}}$.
+\begin{align*}
+\frac{\left\langle x,y\right\rangle }{\left|\left|x\right|\right|_{p}\left|\left|y\right|\right|_{q}} & =\sum\limits _{j}\frac{x_{j}}{\left|\left|x\right|\right|_{p}}\frac{y_{j}}{\left|\left|x\right|\right|_{q}}\le\sum\left[\frac{1}{p}\left(\frac{x_{j}}{\left|\left|x\right|\right|_{p}}\right)^{p}+\frac{1}{q}\left(\frac{y_{j}}{\left|\left|y\right|\right|_{y}}\right)^{q}\right]=\\
+ & =\frac{1}{p}\frac{\sum x_{j}^{p}}{\left|\left|x\right|\right|_{p}^{p}}+\frac{1}{q}\frac{\sum y_{j}^{q}}{\left|\left|y\right|\right|_{q}^{q}}=\frac{1}{p}+\frac{1}{q}=1
+\end{align*}
+ we can multiply the denominator and get what we wanted.
+\end{proof}
+\end{proposition}
+
+\end{proposition}
+
+\begin{proof}
+What we want to show $\forall x,y\in\R^{n}$ $\left(\sum\left|x_{j}+y_{j}\right|^{p}\right)^{\frac{1}{p}}\le\left(\sum\left|x_{j}\right|^{p}\right)^{\frac{1}{p}}+\left(\sum\left|y_{j}\right|^{p}\right)^{\frac{1}{p}}$.
+$l_{p}$ is a norm: again WLOG $x,y\ge0$ then 
+\begin{align*}
+\left|\left|x+y\right|\right|_{p}^{p} & =\sum_{j}\left(x_{j}+y_{j}\right)^{p}=\sum\left(x_{j}+y_{j}\right)\left(x_{j}+y_{j}\right)^{p-1}=\\
+ & =\sum x_{j}\left(x_{j}+y_{j}\right)^{p-1}+y_{j}\left(x_{j}+y_{j}\right)^{p-1}=\\
+ & =\left[\sum x_{j}\underbrace{\left(x_{j}+y_{j}\right)^{p-1}}_{v_{j}}\right]+\left[\sum y_{j}\underbrace{\left(x_{j}+y_{j}\right)^{p-1}}_{vj}\right]
+\end{align*}
+ (we will talk about $v_{j}$ in a moment) so %
+\begin{insight}
+we use holder inequallity with $\left|\left\langle u,v\right\rangle \right|\le\left|\left|u\right|\right|_{p}\left|\left|v\right|\right|_{q}$%
+\end{insight}
+{} with holders: 
+\begin{align*}
+ & \le\left|\left|x\right|\right|_{p}\left|\left|x+y\right|\right|_{p}^{p-1}+\left|\left|y\right|\right|_{p}\cdot\left|\left|x+y\right|\right|_{p}^{p-1}=\\
+ & \left|\left|x+y\right|\right|_{p}^{p-1}\left(\left|\left|x\right|\right|_{p}+\left|\left|y\right|\right|_{p}\right)
+\end{align*}
+divide by $\left|\left|x+y\right|\right|_{p}^{p-1}$ and we get what
+we wanted.\\
+Lets get back to the missing part: If $v_{j}=\left(x_{j}+y_{j}\right)^{p-1}\Rightarrow\left|\left|v\right|\right|_{q}=\left|\left|x+y\right|\right|_{p}^{p-1}$
+explanation: $\frac{1}{q}+\frac{1}{p}=1\iff q=\frac{p}{p-1}$ 
+\begin{align*}
+\left|\left|v\right|\right|_{q} & =\left(\sum v_{j}^{q}\right)^{\frac{1}{q}}=\left(\sum\left(x_{j}+y_{j}\right)^{q\left(p-1\right)}\right)^{\frac{1}{q}}=\left(\sum\left(x_{j}+y_{j}\right)^{p}\right)^{\frac{1}{q}}=\\
+ & =\left(\sum\left(x_{j}+y_{j}\right)^{p}\right)^{\frac{p-1}{p}}=\left(\left(\sum\left(x_{j}+y_{j}\right)^{p}\right)^{\frac{1}{p}}\right)^{p-1}=\left|\left|x+y\right|\right|_{p}^{p-1}
+\end{align*}
+ Now using this $v_{j}$ we can simply use holder's inequality to
+get $\le\left|\left|x\right|\right|_{p}\left|\left|x+y\right|\right|_{p}^{p-1}+\left|\left|y\right|\right|_{p}\cdot\left|\left|x+y\right|\right|_{p}^{p-1}=$
+and finish our proof.
+\end{proof}
+\end{claim}
+
+\begin{definition}[operator norm]
+ $\left(U,\left|\left|\cdot\right|\right|_{U}\right)\overset{\psi}{\to}\left(V,\left|\left|\cdot\right|\right|_{v}\right)$
+. 
+\[
+\left|\left|\psi\right|\right|:=\sup_{u\in U}\frac{\left|\left|\psi u\right|\right|_{V}}{\left|\left|u\right|\right|_{U}}
+\]
+ If $\psi$ is linear then 
+\[
+\left|\left|\psi\right|\right|:=\sup_{u\in U}\frac{\left|\left|\psi u\right|\right|_{V}}{\left|\left|u\right|\right|_{U}}=\sup_{\begin{array}{c}
+u\in U\\
+\left|\left|u\right|\right|_{U}=1
+\end{array}}\left|\left|\psi u\right|\right|_{V}
+\]
+ 
+\end{definition}
+
+an important special case: $V=\R,\left|\left|\cdot\right|\right|_{V}=\left|\cdot\right|$.
+to every $x\in\R^{n}$ corresponds a linear map $\R^{n}\to\R,y\in\R^{n}\to\left\langle x,y\right\rangle $,
+``We think of x as a linear functional''. So the norm of the operator
+$\left\langle x,\cdot\right\rangle $: $\left|\left|x\right|\right|^{*}:=\max\limits _{\left|\left|y\right|\right|=1}\left|\left\langle x,y\right\rangle \right|$.%
+\begin{insight}
+Therefore if $\left|\left|\cdot\right|\right|$ is a norm on $\R^{n}$
+this induces a new norm called the dual of $\left|\left|\cdot\right|\right|$
+denoted $\left|\left|x\right|\right|^{*}:=\max\limits _{\left|\left|y\right|\right|=1}\left|\left\langle x,y\right\rangle \right|$.%
+\end{insight}
+\begin{insight}
+to understand the notations: $\left|\left|x\right|\right|^{*}:\left|\left|\left\langle x,\cdot\right\rangle \right|\right|\max\limits _{\left|\left|y\right|\right|=1}\left|\left\langle x,y\right\rangle \right|$%
+\end{insight}
+{} 
+\begin{definition}
+The unit ball $B^{*}$ of the dual norm is called the polar body of
+$B$ and is defined as follows:
+
+\[
+B^{*}=\left\{ y\in\R^{n}|\forall x\in B\left\langle x,y\right\rangle \le1\right\} 
+\]
+\end{definition}
+
+\begin{example}
+Question: Let $B$ be the unit ball of some norm $\left|\left|\cdot\right|\right|$.
+What can we say about the unit ball of the dual norm?
+\begin{itemize}
+\item $l_{\infty}$ Ball is $\left[-1,1\right]^{n}$ $2^{n}$ vertices $2n$
+facets.
+\item $l_{1}$ Ball is the cross polytope $\sum\left|x_{i}\right|\le1$.
+Has $2n$ vertices (the standard basis $\pm e_{i}$), and $2^{n}$
+facets $\epsilon\in\left\{ -1,1\right\} ^{n}$ $\sum\epsilon_{i}\cdot x_{i}\le1$.
+\end{itemize}
+What is the polar $B^{*}$ of the unit cube $B=\left[-1,1\right]^{n}$?
+\[
+B^{*}=\left\{ y\in\R^{n}|\begin{array}{c}
+-1\le x_{1}\le1,-1\le x_{2}\le1\dots\\
+\sum x_{i}y_{i}\le1
+\end{array}\right\} 
+\]
+ So given $y$ the ``most difficult'' $x$ to satisfy %
+\begin{insight}
+$x$ that maximizes this expression%
+\end{insight}
+. $x_{i}=\text{sign}\left(y_{i}\right)$ in which case $\sum x_{i}y_{i}=\sum\left|y_{i}\right|$.
+\end{example}
+
+
+\section{\textquotedblleft What do linear maps do\textquotedblright ?}
+
+$A$ is a matrix
+
+\subsection{Stretch}
+
+If $Av=\lambda v$ holds we say that $v$ is an eigenvector of $A$
+with eigenvalue $\lambda$. \\
+$\left(A-\lambda I\right)v=0$ i.e. $v$ is in the kernel of $\left(A-\lambda I\right)$.
+In particular $\left(A-\lambda I\right)$ is \textbf{singular}, hence
+$\det\left(A-\lambda I\right)=0$, and because $\det\left(A-\lambda I\right)$
+is polynomial in $\lambda$. ``The characteristic polynomial $p_{A}$
+of $A$'' $\Rightarrow$ Every eigenvalue is a root of $p_{A}$.
+\begin{proposition}
+If A is a real $n\times n$ matrix and if $u_{1}\dots u_{n}$ are
+eigenvectors with \uline{distinct} eigenvalues then $u_{1}\dots u_{n}$
+are linearly independent.
+
+\begin{insight}
+This is useful in case $u_{i}$ forms a basis. $x=\sum\alpha_{i}u_{i}$
+then $Ax=\sum\alpha_{i}\lambda_{i}u_{i}$ then we are in a good situation.
+``We have good understanding of the linear operator''%
+\end{insight}
+\begin{proof}
+Assume to the contrary that they are linearly dependent and let $k$
+be the smallest size of a linearly dependent subset. 
+\[
+\sum\limits _{i=1}^{k}b_{i}u_{i}=0\Rightarrow A\left(\sum_{i=1}^{k}b_{i}u_{i}\right)=\left(\sum_{i=1}^{k}b_{i}\lambda_{i}u_{i}\right)=0
+\]
+furthermore we know that $\sum_{i=1}^{k}\left(b_{i}u_{i}\right)=0$
+(from our assumption) so
+\[
+0=\sum_{i=1}^{k}\left(b_{i}u_{i}\right)=\lambda_{k}\sum_{i=1}^{k}\left(b_{i}u_{i}\right)=\sum_{i=1}^{k}\left(b_{i}\lambda_{k}u_{i}\right)
+\]
+ Let us subtract the first from the second:
+\begin{align*}
+0 & =\sum_{i=1}^{k}b_{i}\left(\lambda_{i}-\lambda_{k}\right)u_{i}=\\
+ & =b_{1}\left(\lambda_{1}-\lambda_{k}\right)u_{1}+\dots+b_{k-1}\left(\lambda_{k-1}-\lambda_{k}\right)u_{k-1}+b_{k}\left(\lambda_{k}-\lambda_{k}\right)u_{k}=\\
+ & =b_{1}\left(\lambda_{1}-\lambda_{k}\right)u_{1}+\dots+b_{k-1}\left(\lambda_{k-1}-\lambda_{k}\right)u_{k-1}+0=\\
+ & =\sum_{i=1}^{k-1}b_{i}\left(\lambda_{i}-\lambda_{k}\right)u_{i}
+\end{align*}
+ We found a shorter non trivial linear dependency, which is a contradiction. 
+\end{proof}
+How should we deal with general linear transformation? we should find
+eigenvectors and if they are a basis we can use it to understand the
+matrix. but what do we do when this isn't the case? What can go wrong? 
+\end{proposition}
+
+\begin{example}
+example of a matrix where the eigenvectors do not form a basis:
+\end{example}
+
+\[
+A=\left(\begin{array}{cccc}
+0 & 1 & \dots & 0\\
+0 & \ddots & \ddots & \vdots\\
+\vdots & \ddots & \ddots & 1\\
+0 & \dots & 0 & 0
+\end{array}\right)
+\]
+ 
+\[
+\det\left(\lambda I-A\right)=\left|\begin{array}{cccc}
+\lambda & -1 & \dots & 0\\
+0 & \ddots & \ddots & \vdots\\
+\vdots & \ddots & \ddots & -1\\
+0 & \dots & 0 & \lambda
+\end{array}\right|=\lambda^{n}=0
+\]
+$\lambda=0$ is the only eigenvalue.
+\[
+A\left(\begin{array}{c}
+x_{1}\\
+\vdots\\
+x_{n-1}\\
+x_{n}
+\end{array}\right)=\left(\begin{array}{c}
+x_{2}\\
+\vdots\\
+x_{n}\\
+0
+\end{array}\right)=0\cdot x
+\]
+ $x_{2}=x_{3}=\dots=x_{n}=0$ the set of eigenvectors corresponding
+to $\lambda=0$ is $\left\langle e_{1}\right\rangle $. $A^{n}=0$
+(When we reapply $A$ it maps to zero after enough times) How to deal
+with it, at least in practical situations?
+\begin{definition}
+Say that a matrix $B$ $n\times n$ is ``problem free'' if it has
+distinct eigenvalues.
+\end{definition}
+
+\begin{fact}
+``Most'' matrices are problem free. %
+\begin{insight}
+thats why we don\'{t} need to deal with the ones that don't%
+\end{insight}
+\end{fact}
+
+
+\subsection{Rotations}
+
+Linear maps which are isometries. It suffices that $l_{2}$ norms
+are preserved $\left|\left|x-y\right|\right|_{2}^{2}=\left|\left|x\right|\right|_{2}^{2}+\left|\left|y\right|\right|_{2}^{2}-2\left\langle x,y\right\rangle $
+\begin{insight}
+the only norm for which such things exist is $l_{2}$.%
+\end{insight}
+
+\begin{definition}
+A real matrix $A$ is called orthogonal if $A^{T}A=I$.
+
+\begin{insight}
+(This means that they are inverses too)%
+\end{insight}
+
+\end{definition}
+
+\begin{definition}
+A complex matrix $U$ is called unitary if $UU^{*}=I$ %
+\begin{insight}
+where $U^{*}=\overline{U^{T}}$?%
+\end{insight}
+\end{definition}
+
+\begin{claim}
+$\left\langle x,Ay\right\rangle =\left\langle A^{T}x,y\right\rangle $
+\begin{proof}
+in general $\left\langle u,v\right\rangle =\sum u_{i}v_{i}$, so
+\begin{align*}
+\left\langle x,Ay\right\rangle  & =\sum x_{i}\left(Ay\right)_{i}=\sum_{i}x_{i}\sum_{j}a_{ij}y_{j}=\sum_{i,j}a_{ij}x_{i}y_{j}=\\
+\end{align*}
+ The $a_{ij}$ of $A^{T}$.
+\[
+=\sum_{i,j}a_{ji}^{T}x_{i}y_{j}=\sum_{j}y_{j}\sum_{i}a_{ji}^{T}x_{i}=\left\langle A^{T}x,y\right\rangle 
+\]
+\begin{insight}
+$a_{ji}^{T}$ is like take the original matrix\c{ }transpose it and
+then look at $a_{ji}$%
+\end{insight}
+\end{proof}
+\end{claim}
+
+\begin{thm}
+The linear map $\R^{n}\to\R^{n}$ corresponding to a matrix $A$ is
+an isometry if and only if $A$ is orthogonal.
+\begin{proof}
+Suppose that $A$ is orthogonal. We want to show that $\forall x$
+$\left|\left|Ax\right|\right|_{2}=\left|\left|x\right|\right|_{2}$.
+need to show :
+\[
+\left\langle Ax,Ax\right\rangle \overset{?}{=}\left\langle x,x\right\rangle 
+\]
+we know that $\left\langle Ax,By\right\rangle =\left\langle B^{\top}Ax,y\right\rangle $
+so
+
+\[
+\left\langle Ax,Ax\right\rangle =\left\langle A^{\top}Ax,x\right\rangle =\left\langle Ix,x\right\rangle =\left\langle x,x\right\rangle 
+\]
+ as wanted.
+\end{proof}
+\end{thm}
+
+\begin{claim}
+An orthogonal matrix $A$ is one that satisfies $AA^{T}=I$($\iff A^{T}A=I$)
+\begin{proof}
+the proof is for $AA^{T}=I\iff A^{T}A=I$: $A$ has a right inverse,
+(namely $A^{T}$) $\Rightarrow$ it has a left inverse, say $B$ $BA=I$
+\[
+A^{T}=IA^{T}=BAA^{T}=BI=B
+\]
+ and we have what we wanted.
+\end{proof}
+\end{claim}
+
+.What does $\left(HH^{T}\right)_{i,j}$ equals to? $\left(HH^{T}\right)_{i,j}=$
+the inner product of the $i$th row of $H$ and it's $j$th row. $H^{T}H=$
+the inner product of the $i$th column of $H$ and the $j$th column.
+\begin{proposition}
+A real square matrix $A$ is orthogonal iff $x\to Ax$ is an isometry,
+i.e. $\forall x\left|\left|Ax\right|\right|_{2}=\left|\left|x\right|\right|$.
+\begin{proof}
+If $A$ is orthogonal: $\left|\left|Ax\right|\right|^{2}=\left\langle Ax,Ax\right\rangle =\left\langle A^{T}Ax,x\right\rangle =\left|\left|x\right|\right|^{2}$.
+The other side ($A$ is an isometry)
+\[
+\left|\left|x+y\right|\right|^{2}=\left|\left|x\right|\right|^{2}+\left|\left|y\right|\right|^{2}+2\left\langle x,y\right\rangle 
+\]
+ we also know that $\left|\left|x+y\right|\right|^{2}=\left|\left|A\left(x+y\right)\right|\right|^{2}=\left|\left|Ax+Ay\right|\right|^{2}=\left|\left|Ax\right|\right|^{2}+\left|\left|Ay\right|\right|^{2}+2\left\langle Ax,Ay\right\rangle $
+we know that $\left|\left|Ax\right|\right|^{2}=\left|\left|x\right|\right|^{2},\left|\left|Ay\right|\right|^{2}=\left|\left|y\right|\right|^{2}$.
+So 
+\begin{align*}
+\left|\left|Ax\right|\right|^{2}+\left|\left|Ay\right|\right|^{2}+2\left\langle Ax,Ay\right\rangle  & =\left|\left|x+y\right|\right|^{2}=\left|\left|x\right|\right|^{2}+\left|\left|y\right|\right|^{2}+2\left\langle x,y\right\rangle \\
+2\left\langle Ax,Ay\right\rangle  & =2\left\langle x,y\right\rangle \\
+\left\langle Ax,Ay\right\rangle  & =\left\langle x,y\right\rangle 
+\end{align*}
+\end{proof}
+We saw: if $A$ is an isometry $\forall x,y$. $\left\langle Ax,Ay\right\rangle =\left\langle x,y\right\rangle $
+\[
+\left\langle A^{T}Ax,y\right\rangle =\left\langle x,y\right\rangle 
+\]
+$fix$ x $\forall y$ $\left\langle A^{T}Ax-x,y\right\rangle =0\Rightarrow$$A^{T}A=I$.%
+\begin{insight}
+because for all $y$ it happens that $A^{T}Ax=x$ which is $\left\langle A^{T}Ax-x,y\right\rangle =\left\langle x-x,y\right\rangle =0$
+this wasn\'{t} the case if $A^{T}Ax\ne x$.%
+\end{insight}
+
+\end{proposition}
+
+
+\section{Singular value decomposition}
+
+\begin{insight}
+spectral: overall name that speaks on eigenvalues and eigenvectors%
+\end{insight}
+
+\begin{thm}[The spectral theorem for real symmetric matrices]
+ Every real symmetry matrix $A$ can be expressed as: $A=UDU^{T}$
+where $U$ is orthogonal, $D$ is diagonal on $D's$ diagonal are
+the eigenvalues of $A$. (Without proof) %
+\begin{insight}
+Note that $U^{T}AU=D$%
+\end{insight}
+\end{thm}
+
+let us remember again the operator norm:
+\begin{definition}
+\begin{insight}
+Again (note that you defined it back there\.{)}%
+\end{insight}
+{} Let there be a real matrix $A$ (not necessarily square), it's operator
+norm is $\left|\left|A\right|\right|_{op}=\max\limits _{x}\frac{\left|\left|Ax\right|\right|}{\norm x}=\max\limits _{\left|\left|x\right|\right|=1}\left|\left|Ax\right|\right|$.
+\end{definition}
+
+\begin{thm}[SVD -- Singular Value Decomposition]
+ Every real matrix $A_{m\times n}$ can be expressed as 
+\[
+A_{m\times n}=U_{m\times m}D_{m\times n}V_{n\times n}^{T}
+\]
+ where $U$ and $V$ are orthogonal, and $D$ is ``diagonal''. 
+\[
+D=\left(\begin{matrix}\sigma_{1} & \dots & 0 & 0\\
+0 & \sigma_{2} & \dots & 0\\
+\vdots &  & \ddots & \vdots\\
+0 & \dots &  & \sigma_{n}\\
+0 & 0 & \dots & 0\\
+\vdots &  &  & \vdots\\
+0 & 0 & \dots & 0
+\end{matrix}\right),m\ge n
+\]
+where $\sigma_{1}\ge\sigma_{2}\ge\dots\ge0$ $'A'$s singular values.
+\end{thm}
+
+Note that for $n\ge m$ $D=\left(\begin{matrix}\sigma_{1} & \dots & 0 & 0 & 0 & \dots & 0\\
+0 & \sigma_{2} & \dots & 0 & 0 &  & 0\\
+\vdots &  & \ddots & \vdots & 0 &  & 0\\
+0 & \dots &  & \sigma_{n} & 0 & \dots & 0
+\end{matrix}\right),m\ge n$
+
+\begin{proof}
+The proof is by induction on $m+n$. %
+\begin{insight}
+Base: $m=n=1$ thus $A$ is a $1\times1$ matrix. so let us use 
+\[
+I_{1}AI_{1}
+\]
+ $A$ is diagonal and it's eigenvalue is it's own value. Step%
+\end{insight}
+\begin{insight}
+We use induction on $m+n$. Main idea: We want $U^{T}AV=D$, we will
+do it in stages, not all at once. First stage : We seek orthogonal
+matrices $U_{1},V_{1}$ such that 
+\[
+U_{1}^{T}AV_{1}=\left(\begin{array}{c|ccc}
+\text{real number} & 0 & \dots & 0\\
+\hline 0\\
+\vdots &  & B\\
+0
+\end{array}\right)
+\]
+We want to apply induction to repeat this process and then the process
+should do it for us.. We take the decomposition of the orthogonal
+to those that take the key roles of $SVD$ in $B$. and by induction
+we are done. $\tilde{U}B\tilde{V}^{T}=\tilde{D}$. so we take 
+\[
+\left(\begin{array}{c|ccc}
+1 & 0 & \dots & 0\\
+\hline 0\\
+\vdots &  & \tilde{U}\\
+0
+\end{array}\right)
+\]
+ to get the wanted $U_{2}$ and $V_{2}$.%
+\end{insight}
+
+We will find $U_{1},V_{1}$ orthogonal s.t. 
+\[
+U_{1}^{T}AV_{1}=\left(\begin{array}{c|ccc}
+\left|\left|A\right|\right|_{op} & 0 & \dots & 0\\
+\hline 0\\
+\vdots &  & B\\
+0
+\end{array}\right)
+\]
+First lets figure out where $\left|\left|A\right|\right|_{op}$ comes
+from. $\exists v_{1},u_{1}$ , $\left|\left|v_{1}\right|\right|=\left|\left|u_{1}\right|\right|=1$
+s.t. $Av_{1}=\underbrace{\left|\left|A\right|\right|_{op}}_{\sigma_{1}}u_{1}$
+(From the definition of the operator norm%
+\begin{insight}
+Actually Nati didn'\'{t} show this, 
+\[
+u_{1}=\frac{Ax}{\left|\left|Ax\right|\right|},v_{1}=x
+\]
+ and $x$ is the vector that gains $\left|\left|A\right|\right|_{op}$
+so $\left|\left|v_{1}\right|\right|=1\iff v=\frac{x}{\left|\left|x\right|\right|}$
+and we get $u_{1},v_{1}$ as wanted.%
+\end{insight}
+). $V_{1}=\left(v_{1}|V_{2}\right)$ (we extend $v_{1}$ into an orthogonal
+matrix)%
+\begin{insight}
+(meaning that $\left(v_{1}|V_{2}\right)$ is an orthogonal matrix
+where it's first row is $v_{1}$)%
+\end{insight}
+{} and $U_{1}=\left(u_{1}|U_{2}\right)$. So 
+\begin{align*}
+U_{1}^{T}AV_{1} & =\left(\begin{array}{c}
+u_{1}^{T}\\
+\hline U_{2}^{T}
+\end{array}\right)A\left(\begin{array}{c|c}
+v_{1} & V_{2}\end{array}\right)=\\
+ & =\left(\begin{array}{c}
+u_{1}^{T}\\
+\hline U_{2}^{T}
+\end{array}\right)\left(A\begin{array}{c|c}
+v_{1} & AV_{2}\end{array}\right)=\\
+ & =\left(\begin{array}{c|c}
+u_{1}^{T}Av_{1} & u_{1}^{T}AV_{2}\\
+\hline U_{2}^{T}Av_{1} & U_{2}^{T}AV_{2}
+\end{array}\right)
+\end{align*}
+ so $u_{1}^{T}Av_{1}=\left|\left|A\right|\right|_{op}$, $U_{2}^{T}Av_{1}=0$
+because $U_{2}^{T}\cdot\left(\left|\left|A\right|\right|_{op}u_{1}\right)=0$
+because $U_{2}$ is orthogonal %
+\begin{insight}
+$u_{1}$ is some basis vector from the orthogonal matrix which means
+that $\left\langle u_{1},u_{i}\right\rangle =0$%
+\end{insight}
+. Currently: we found orthogonal matrices $U_{1},V_{1}$ s.t 
+\[
+U_{1}^{T}AV=\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & w_{1}\\
+\hline  & 0 & \\
+ & \vdots &  & B\\
+ & 0 & 
+\end{array}\right)
+\]
+ and we want to show that $w_{1}=0$. The plan: Show that if $w_{1}\ne0$
+then we can find a vector that $A$ extends by a vector $>\sigma_{1}$
+\begin{insight}
+(in contradiction)%
+\end{insight}
+. Observe that if a matrix is multiplied by an orthogonal matrix either
+from left or from the right, the operator norm does not change.
+\[
+\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & w_{1}\\
+\hline  & 0 & \\
+ & \vdots &  & B\\
+ & 0 & 
+\end{array}\right)\cdot\left(\begin{array}{c}
+\sigma_{1}\\
+\hline \\
+w_{1}^{^{T}}\\
+\\
+\end{array}\right)=\left(\begin{array}{c}
+\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}\\
+\\
+\vdots\\
+\\
+\end{array}\right)
+\]
+ This extends by a factor $\ge\sqrt{\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}}\ge\sigma_{1}$.
+What we conclude from that: 
+\[
+\sigma_{1}=\left|\left|A\right|\right|_{op}=\left|\left|U_{1}^{T}AV_{1}\right|\right|_{op}\ge\frac{\left|\left|\left(\begin{array}{c}
+\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}\\
+\\
+\vdots\\
+\\
+\end{array}\right)\right|\right|}{\sqrt{\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}}}\ge\sqrt{\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}}\underbrace{>}_{\text{*}}\sigma_{1}
+\]
+\end{proof}
+\begin{itemize}
+\item From the assumption that $w_{1}\ne0$ so we got a contradiction.
+\end{itemize}
+Hence $w_{1}=0$ and we got what we wanted. now we can apply this
+idea using induction. Finishing by induction: We found $U_{1},V_{1}$
+orthogonal s.t 
+\[
+U_{1}^{T}AV_{1}=\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & B\\
+ & 0 & 
+\end{array}\right)
+\]
+ and $B=\tilde{U}\tilde{D}\tilde{V}^{T}$. So 
+\begin{align*}
+A & =U_{1}\left(\begin{array}{ccc|ccc}
+ & 1 &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & \tilde{U}\\
+ & 0 & 
+\end{array}\right)\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & \tilde{D}\\
+ & 0 & 
+\end{array}\right)\left(\begin{array}{ccc|ccc}
+ & 1 &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & \tilde{V}\\
+ & 0 & 
+\end{array}\right)V_{1}^{T}\\
+U_{1}^{T}AV & =\left(\begin{array}{ccc|ccc}
+ & 1 &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & \tilde{U}\\
+ & 0 & 
+\end{array}\right)\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & \tilde{D}\\
+ & 0 & 
+\end{array}\right)\left(\begin{array}{ccc|ccc}
+ & 1 &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & \tilde{V}\\
+ & 0 & 
+\end{array}\right)
+\end{align*}
+\begin{insight}
+That we get in this process 
+\[
+\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & w_{1}\\
+\hline  & 0 & \\
+ & \vdots &  & B\\
+ & 0 & 
+\end{array}\right)\to\left(\begin{array}{ccc|c|cc}
+ & \sigma_{1} &  & w_{1}\\
+\hline  & 0 &  & \sigma_{2}\\
+\hline  & \vdots &  &  & C\\
+ & 0 &  & 
+\end{array}\right)
+\]
+and $\sigma_{1}\ne\sigma_{2}$ because in the next step we find $\left|\left|B\right|\right|_{op}$
+and not $\left|\left|A\right|\right|_{op}$ again. So we get $\left|\left|A\right|\right|_{op},\left|\left|B\right|\right|_{op},\left|\left|C\right|\right|_{op}\dots$%
+\end{insight}
+
+Suppose that indeed $A=UDV^{T}$ as in the theorem, how to interpret
+the numbers $\sigma_{1}\ge\sigma_{2}\ge\dots\ge0$? 
+\begin{align*}
+AA^{T} & =UD\underbrace{V^{T}V}_{I}D^{T}U^{T}=\\
+ & =UDD^{T}U^{T}
+\end{align*}
+\[
+DD^{T}=\left(\begin{matrix}\sigma_{1}^{2} & \dots & 0 & 0\\
+0 & \sigma_{2}^{2} & \dots & 0\\
+\vdots &  & \ddots & \vdots\\
+0 & \dots &  & \sigma_{n}^{2}
+\end{matrix}\right)_{m\times m}
+\]
+ Based on the spectral theorem for real symmetric matrices (and note
+that $AA^{T}$ is r.s%
+\begin{insight}
+real symmetric%
+\end{insight}
+) we conclude that $\sigma_{1}^{2},\dots,\sigma_{n}^{2},\underbrace{0,\dots,0}_{m-n}$
+are the eigenvalues of the (Positive semi-definite) real matrix $AA^{T}$.
+
+We take another look at the proof of the SVD theorem to make sure
+it is understood by everyone.
+\begin{thm}[SVD]
+ Every real $m\times n$ matrix $A$ can be expressed as $A=UDV^{T}$
+where $U_{m\times m}$ is an orthogonal matrix, $V_{n\times n}$ is
+orthogonal and $D$ is ``diagonal'' and on the diagonal of $D$
+$\sigma_{1}\ge\dots\ge\sigma_{\min\left\{ m,n\right\} }\ge0$
+\end{thm}
+
+When we look at $U^{T}AV$ we get a ``diagonal'' matrix.
+
+When we prove this statement we want to find $U_{1}AV_{1}^{T}$ such
+that they give us 
+\[
+U_{1}^{T}AV_{1}=\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & B\\
+ & 0 & 
+\end{array}\right)
+\]
+ and by induction we can get for $B$ orthogonal matrices that get
+as what we need. so how do we do it? first we find$u_{1},v_{1}$ such
+that $Av_{1}=\sigma u_{1}$and $\left|\left|v_{1}\right|\right|=1=\left|\left|u_{1}\right|\right|$.
+Now if $U_{1}$ and $V_{1}$ are defined as in the proof we get
+\[
+U_{1}^{T}AV_{1}=\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  &  & w\\
+\hline  & 0 & \\
+ & \vdots &  &  & B\\
+ & 0 & 
+\end{array}\right)
+\]
+How large can we make $\sigma$? it can be as large as $\left|\left|A\right|\right|_{op}$
+- the biggest such $\sigma$. and we get 
+\[
+U_{1}^{T}AV_{1}=\left(\begin{array}{ccc|ccc}
+ & \left|\left|A\right|\right|_{op} &  &  & w\\
+\hline  & 0 & \\
+ & \vdots &  &  & B\\
+ & 0 & 
+\end{array}\right)
+\]
+ our claim is that for $\sigma=\left|\left|A\right|\right|_{op}$
+then $w$ is 0. else we get $\left|\left|A\right|\right|_{op}>\sigma$
+which is impossible. So we lets choose some specific vector to get
+a contradiction 
+\[
+\left(\begin{array}{c}
+\left|\left|A\right|\right|_{op}\\
+\hline w^{T}
+\end{array}\right)
+\]
+Which leads to:
+\[
+\sigma_{1}=\left|\left|A\right|\right|_{op}=\left|\left|U_{1}^{T}AV_{1}\right|\right|_{op}\ge\frac{\left|\left|\left(\begin{array}{c}
+\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}\\
+\\
+\vdots\\
+\\
+\end{array}\right)\right|\right|}{\sqrt{\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}}}\ge\sqrt{\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}}\underbrace{>}_{\text{*}}\sigma_{1}
+\]
+ so $w=0$. and we're done.
+
+Question: Why does the sub matrix $B$ has a smaller operator norm?Working
+with $B$ is the same as working with matrix $A$ but with a row filled
+with zeros, thus it has a smaller or equal operator norm.
+
+Note $A=UDV^{T}\iff A=\sum\limits _{i=1}^{\min\left\{ m,n\right\} }\sigma_{i}u_{i}\otimes v_{i}$
+meaning the outer product of $u_{i}$and $v_{i}$ where $u_{i}$ is
+the ith column of $U$ and $v_{i}$ is the ith column %
+\begin{insight}
+column because we have there $V^{T}$%
+\end{insight}
+of $V$. 
+\[
+UDV^{T}=\left(\begin{matrix}| &  & |\\
+u_{1} & \dots & u_{m}\\
+| &  & |
+\end{matrix}\right)D\left(\begin{matrix}- & v_{1} & -\\
+ & \vdots\\
+- & v_{n} & -
+\end{matrix}\right)
+\]
+
+
+\subsection{another operator norm}
+\begin{xca}
+How to evaluate how ``close'' is matrix $B$ to matrix $A$?
+\begin{sol}
+two answers:
+\begin{enumerate}
+\item $\left|\left|A-B\right|\right|_{op}$
+\item $\left|\left|A-B\right|\right|_{2}=\left|\left|A-b\right|\right|_{\text{Frobenius}}=\sqrt{\sum\left(a_{ij}-b_{ij}\right)^{2}}$
+\end{enumerate}
+\end{sol}
+
+\end{xca}
+
+$\left|\left|A\right|\right|_{frobenius}=\sqrt{\sum a_{ij}^{2}}$
+note that $\left|\left|A\right|\right|_{fr}^{2}=trace\left(AA^{T}\right)$.
+because:
+\begin{align*}
+\left|\left|A\right|\right|_{fr}^{2} & =trace\left(AA^{T}\right)=\sum_{i}\left(AA^{T}\right)_{ii}\\
+\end{align*}
+ 
+\[
+\left(AA^{T}\right)_{ii}=\left|\left|a_{i}\right|\right|^{2}
+\]
+ where $a_{i}$ is the ith row of $A$ so 
+\[
+\left|\left|a_{i}\right|\right|^{2}=\sum_{j}a_{ij}^{2}
+\]
+ %
+\begin{insight}
+\[
+trace\left(AA^{T}\right)=\sum_{i,j}a_{ij}^{2}
+\]
+\end{insight}
+
+\begin{claim}
+Let $A$ be a real matrix, $U$ an orthogonal matrix, note that 
+\[
+\left|\left|A\right|\right|_{fr}=\left|\left|AU\right|\right|_{fr}
+\]
+\begin{proof}
+$ $ 
+\[
+\left|\left|AU\right|\right|_{fr}^{2}=tr\left(\left(AU\right)\left(AU\right)^{T}\right)=tr\left(AUU^{T}A^{T}\right)=tr\left(AIA^{T}\right)=tr\left(AA^{T}\right)=\left|\left|A\right|\right|_{fr}^{2}
+\]
+\end{proof}
+\end{claim}
+
+\begin{thm}
+Let $A_{m\times n}$ be a real matrix and let $k<m,n$. For every
+$B_{m\times n}$ matrix of rank $\le k$ there holds $\left|\left|A-B\right|\right|_{op}\ge\sigma_{k+1}$
+where $\sigma_{1}\ge\dots\ge0$ are the singular values of $A$. Equality
+holds for$B=UD^{\left(k\right)}V^{T}$, where $A=UDV^{T}$ and 
+\[
+D^{\left(k\right)}=\left(\begin{array}{cccccc}
+\sigma_{1} & 0 & \dots &  & \dots & 0\\
+0 & \ddots &  &  &  & \vdots\\
+\vdots &  & \sigma_{k}\\
+ &  &  & 0\\
+ &  &  &  & \ddots & \vdots\\
+\vdots &  &  &  &  & 0\\
+0 &  &  &  &  & 0
+\end{array}\right)
+\]
+ 
+\[
+B=\sum_{i=1}^{k}\sigma_{i}u_{i}\otimes v_{i}
+\]
+(We can\'{t} do better then than $\left|\left|A-B\right|\right|_{op}\ge\sigma_{k+1}$)
+\end{thm}
+
+Note this: $A-B_{k}=U\left(\begin{array}{ccccc}
+0\\
+ & \ddots\\
+ &  & 0\\
+ &  &  & \sigma_{k+1}\\
+ &  &  &  & \ddots
+\end{array}\right)V^{T}\Rightarrow$$\left|\left|A-B\right|\right|_{op}=\sigma_{k+1}$
+\begin{proof}
+\begin{insight}
+all Lecture page 31%
+\end{insight}
+{} What do we need to show? for $C$ matrix such that $\text{rank}\left(C\right)\le k\Rightarrow\left|\left|A-C\right|\right|_{op}\ge\sigma_{k+1}$.
+\begin{insight}
+to show this we need to show some vector $z$ such that $\left|\left|\left(A-C\right)z\right|\right|\ge\sigma_{k+1}$%
+\end{insight}
+Lets start: $\exists z,\left|\left|\left(A-C\right)z\right|\right|_{2}\ge\sigma_{k+1}$
+where $\left|\left|z\right|\right|_{2}=1$. How can we find such a
+vector? Plan: We will select $z$ in such a way that $Cz=0$ and then
+$\left|\left|\left(A-C\right)z\right|\right|=\left|\left|Az-Cz\right|\right|=\left|\left|Az\right|\right|$
+- lets do just that: Since $\text{rank}\left(C\right)\le k$ the kernel
+of $C$ intersects (not in $\bar{0}$) every linear subspace $W$
+of $\dim W\ge k+1$. Let $W=span\left\{ v_{1}\dots v_{k+1}\right\} $
+(the columns of $V$).
+\[
+z=\sum_{i=1}^{k+1}\alpha_{i}v_{i};Cz=0;\left|\left|z\right|\right|_{2}=1
+\]
+ 
+\begin{align*}
+\left(A-C\right)z & =Az-Cz=Az=\sum_{i}\sigma_{i}\left(u_{i}\otimes v_{i}\right)z=\\
+ & =\sum\sigma_{i}u_{i}\left\langle v_{i},z\right\rangle =\sum^{m}\sigma_{i}u_{i}\left\langle v_{i},z\right\rangle \\
+\left(1\right) & =\sum_{i=1}^{k+1}\sigma_{i}u_{i}\left\langle v_{i},z\right\rangle =\sum_{i=1}^{k+1}\sigma_{i}\left\langle v_{i},z\right\rangle u_{i}=
+\end{align*}
+\begin{enumerate}
+\item everything beyond $k+1$ equals zero. because $v_{1}\dots v_{m}$are
+orthonormal then $\left\langle v_{i},z\right\rangle =\left\langle v_{i},\sum_{j}^{k}\alpha_{j}v_{j}\right\rangle $
+equals 0 for every $j\ne i$.
+\end{enumerate}
+Because the $u_{i}$'s are orthogonal:
+\begin{align*}
+\left|\left|\left(A-C\right)z\right|\right|^{2} & =\sum_{i=1}^{k+1}\sigma^{2}\left\langle v_{i},z\right\rangle ^{2}\ge\sigma_{k+1}^{2}\underbrace{\sum\limits _{i=1}^{k+1}\left\langle v_{i},z\right\rangle ^{2}}_{(*)}\\
+ & =\sigma_{k+1}^{2}\cdot1
+\end{align*}
+
+\begin{itemize}
+\item because it's an orthogonal basis.%
+\begin{insight}
+To my understanding because it\'{s} an orthonormal basis%
+\end{insight}
+\end{itemize}
+\end{proof}
+%
+\begin{definition}
+A Real symmetric matrix is said to be positive semi-definite (PSD)
+if all it's eigenvalues are non negative.
+\end{definition}
+
+\begin{definition}
+A Real symmetric matrix is said to be positive definite (PD) if all
+it's eigenvalues are positive.
+\end{definition}
+
+\begin{thm}
+The following are equivalent (TFAE) regarding a real symmetric matrix
+$A$
+\begin{enumerate}
+\item $A$ is PSD.
+\item $A=MM^{T}$ for some real $M$.
+\item $\forall x,xAx^{T}\ge0$
+\end{enumerate}
+\end{thm}
+
+\begin{proof}
+$ $
+\end{proof}
+\begin{itemize}
+\item[$1\Rightarrow2$:]  recall the spectral theorem for real symmetric matrices: it is possible
+to express $A=U\Lambda U^{T}$ where $U$ is orthogonal $\Lambda$
+is diagonal, the diagonal terms in $\Lambda$ are $A$'s eigenvalues
+and the row of $U$ are the corresponding eigenvectors. Let $M=U\sqrt{\Lambda}$
+($\sqrt{\Lambda}$ = The diagonal matrix whose $i$ths entry is $\sqrt{\lambda_{i}}$.)
+$MM^{T}=U\sqrt{\Lambda}\sqrt{\Lambda}U^{T}=U\Lambda U^{T}=A$. As
+wanted.
+\item[$2\Rightarrow3$:]  Since $A=MM^{T}$ $xAx^{T}=xMM^{T}x=\left|\left|xM\right|\right|_{2}^{2}\ge0$,
+As wanted.
+\item[$3\Rightarrow1$:]  Let $v$ be an eigenvector with eigenvalue $\lambda$. We know that
+$vAv^{T}\ge0$ but on the other hand 
+\[
+0\le vAv^{T}=\lambda\left\langle v,v\right\rangle =\lambda\left|\left|v\right|\right|_{2}^{2}
+\]
+\begin{insight}
+Notice that the rows are revresed: (full explanation for the equation)
+\[
+0\le vAv^{T}=v\left(\lambda v^{T}\right)=\lambda\left\langle v,v\right\rangle =\lambda\left|\left|v\right|\right|_{2}^{2}
+\]
+\end{insight}
+{} so $\lambda\ge0$ because $\left|\left|v\right|\right|_{2}^{2}\ge0$.
+\end{itemize}
+\begin{corollary}
+The collection of all $n\times n$ PSD matrices form a \textbf{cone}
+$PSD_{n}$. Namely if $A,B\in PSD_{n}\Rightarrow A+B\in PSD_{n}$
+and if $t>0\Rightarrow tA\in PSD_{n}$.%
+\begin{insight}
+We can use the 3 property we proved to show that.%
+\end{insight}
+\end{corollary}
+
+
+\subsection{The variational definition of eigenvalues of real symmetric matrices}
+\begin{thm}[Rayleigh-Ritz]
+ Let $A$ be real symmetric matrix and let $\lambda_{1}\ge\lambda_{2}\ge\dots\ge\lambda_{n}$
+be it's eigenvalues. Then 
+\[
+\lambda_{1}=\max\frac{xAx^{T}}{\left|\left|x\right|\right|_{2}^{2}}=\max\limits _{\left|\left|x\right|\right|_{2}=1}\left(xAx^{T}\right)
+\]
+$\lambda_{2}=\max\limits _{x\perp x_{1}}\frac{xAx^{T}}{\left|\left|x\right|\right|_{2}^{2}}$,
+$\lambda_{3}=\max\limits _{x\perp x_{1}\perp x_{2}}\frac{xAx^{T}}{\left|\left|x\right|\right|_{2}^{2}}$,
+and so on. 
+\end{thm}
+
+To prove that we will use some analysis:
+\begin{remark}
+Recall that $\left(\frac{f}{g}\right)^{'}=0\iff fg'=f'g$ we'll have
+$f=\left(xAx^{T}\right)$ and $g=\left|\left|x\right|\right|^{2}$
+and we want to get the maximum of that.
+\end{remark}
+
+\begin{remark}
+$\left(xA\right)_{\nu}=\sum\limits _{s}a_{s\nu}x_{s}$ and $xAx^{T}=\sum_{\alpha,\beta}x_{\alpha}a_{\alpha,\beta}x_{\beta}$.
+\end{remark}
+
+We will show that if $x$ maximizes $\frac{xAx^{T}}{\left|\left|x\right|\right|_{2}^{2}}$
+then $x$ is an eigenvector. First lets derive $\left|\left|x\right|\right|_{2}^{2}$:
+$\frac{\partial}{\partial x_{i}}\left|\left|x\right|\right|_{2}^{2}=2x_{i}$.
+Now from the previous remark:
+\[
+\frac{\partial}{\partial x_{i}}xAx^{T}=\frac{\partial}{\partial x_{i}}\left(\sum\limits _{\alpha,\beta}a_{\alpha,\beta}x_{\alpha}x_{\beta}\right)=2\left(Ax\right)_{i}
+\]
+ twice is because the row can either come from $a_{ij}x_{i}x_{j}$
+or from $a_{si}x_{s}x_{i}$. for $x$ to maximize the Rayleigh quotient
+$\frac{xAx^{T}}{\left|\left|x\right|\right|^{2}}$ a necessary condition
+is that $\forall i$ $\underbrace{\left(Ax\right)_{i}}_{f'}\cdot\underbrace{\left|\left|x\right|\right|^{2}}_{g}=\underbrace{\left(xAx^{t}\right)}_{f}\underbrace{x_{i}}_{g'}$
+notice that $\left|\left|x\right|\right|^{2},\left(xAx^{T}\right)$
+are numbers, and 
+\[
+\underbrace{\left(Ax\right)_{i}}_{f'}\cdot\underbrace{\left|\left|x\right|\right|^{2}}_{g}=\underbrace{\left(xAx^{t}\right)}_{f}\underbrace{x_{i}}_{g'}\iff\left(Ax\right)\left|\left|x\right|\right|^{2}=\left(xAx^{T}\right)x
+\]
+so we've seen that $\left(Ax\right)\underbrace{\left|\left|x\right|\right|^{2}}_{number}=\underbrace{\left(xAx^{T}\right)}_{number}x$.
+We've seen that if $x$ maximizes $\frac{xAx^{T}}{\left|\left|x\right|\right|_{2}^{2}}$
+then $x$ is an eigenvector.
+
+\begin{proof}[proof of Rayleigh - Ritz:]
+ (We prove only for $\lambda_{1}$, the next steps ($\lambda_{2}\dots$)
+need to use Lagrange multipliers. %
+\begin{insight}
+The concept is that he shows here that if x maxsimizes this (f is
+the nominator and $g$ is the denominator of what we want) so if $x$
+maximises it then it is an eigenvalue!! So if we maximise this thing
+we should find the biggest lambda! (maximal x is always eigenvector
+so we use maximal eigenvalue to get the maximum of $\frac{xAx^{T}}{\left|\left|x\right|\right|_{2}^{2}}$)%
+\end{insight}
+) Using the spectral theorem: $A=V\Lambda V^{T}\Rightarrow$$xAx^{T}=xV\Lambda V^{T}x^{T}$
+We think of it as $y\Lambda y^{T}=\sum\lambda_{i}y_{i}^{2}$ where
+$y=xV^{T}$ So 
+\[
+=\underbrace{\sum\lambda_{i}\left(Vx\right)_{i}^{2}}_{\text{positive items}}\le\left(\max\lambda_{i}\right)\cdot\sum\left(Vx\right)_{i}^{2}=\lambda_{1}\sum\left(Vx\right)_{i}^{2}=\lambda_{1}\left|\left|Vx\right|\right|^{2}=\lambda_{1}\left|\left|x\right|\right|^{2}
+\]
+ if $Ax=\lambda_{1}x$ then $\frac{xAx^{T}}{\left|\left|x\right|\right|^{2}}=\lambda_{1}$%
+\begin{insight}
+for $\lambda_{2}$: The same thing but if $x$ is orthogonal to the
+previous $x$ then the equations zeros out.%
+\end{insight}
+\end{proof}
+%
+\begin{thm}[Rayliegh-Ritz 2]
+ Let $A$ be a real symmetric matrix with eigenvalues $\lambda_{1}\ge\lambda_{2}\ge\dots\ge\lambda_{n}$
+. Then$\lambda_{n}=\min\frac{xAx^{T}}{\left|\left|x\right|\right|^{2}};$$\lambda_{n-1}=\min\limits _{x\perp x_{n}}\frac{xAx^{T}}{\left|\left|x\right|\right|^{2}}$.
+(With no proof)
+\end{thm}
+
+How do we derive the second theorem from the first? we look at the
+minus of the same thing.
+\begin{thm}[Courant-Fischer]
+ $A_{n\times n}$ real symmetric, with eigenvalues $\lambda_{1}\ge\lambda_{2}\ge\dots\ge\lambda_{n}$.
+Then $\forall i$ 
+\[
+\lambda_{i+1}=\min_{\begin{array}{c}
+F\\
+\dim F=i
+\end{array}}\max_{x\perp F}\left\{ \frac{xAx^{T}}{\left|\left|x\right|\right|^{2}}\right\} 
+\]
+ and $\max\limits _{\dim F=j}\min\limits _{x\perp F}\frac{xAx^{T}}{\left|\left|x\right|\right|^{2}}=\lambda_{n-j}$.
+\begin{insight}
+Why is there an optimum for all these subspaces? (There's infinite
+amount of subspaces) Because of compactness.%
+\end{insight}
+\end{thm}
+
+\begin{thm}[The Interlacing theorem]
+Let $A$ be a real symmetric matrix with eigenvalues $\lambda_{1}\ge\dots\ge\lambda_{n}$.
+Let $B$ be the matrix that results by erasing the i-th row and the
+i-th column of $A$. %
+\begin{insight}
+B is real symmetric too. and has $n-1$ eigenvalues.%
+\end{insight}
+{} Let $\mu_{1}\ge\dots\ge\mu_{n-1}$ be the eigenvalues of $B$. So
+$\lambda_{1}\ge\mu_{1}\ge\lambda_{2}\ge\mu_{2}\ge\dots\ge\lambda_{n-1}\ge\mu_{n-1}\ge\lambda_{n}$.
+\begin{insight}
+This is derived from Rayleigh -- Ritz. We need to connect $A$ to
+$B$. so the way to think about this is that we can pretendt that
+$B$ was never born and we keep working with $A$. we insist that
+the $i'th$ coordinate of $x$ is 0. Doing so we get what we get $B$.%
+\end{insight}
+\end{thm}
+
+
+\section{Perron -- Frobenius Theorems}
+\begin{thm}[Perron]
+ Let $A$ be a square positive matrix %
+\begin{insight}
+positive means its real.%
+\end{insight}
+(i.e $\forall i,j$ $a_{i,j}>0$) Then $A$ has a positive eigenvalue
+$\rho>0$ s.t. for every other eigenvalue $\mu$ (in general complex)
+$\rho>\left|\mu\right|$. The eigenvector corresponding to $\rho$
+is positive, no other eigenvector is positive.
+\end{thm}
+
+The proof's stages:
+\begin{enumerate}
+\item $\rho>0$ corresponding eigenvector $>0$.
+\item $\forall\mu\ne\rho,\,\,\rho>\left|\mu\right|$.
+\item $\rho$ is a simple eigenvalue. (Has an algebraic multiplicity 1 --
+Note that we don't actually show algebraic multiplicity 1) 
+\item no other positive eigenvector (We don't prove this)
+\end{enumerate}
+\begin{insight}
+we want a theorem for non negative matrices, rather then strictly
+positive matrix. to show that $A^{k}$ is positive we switch every
+non zero number to 1. it still holds that if this new matrix is positive
+so is $A^{k}$. now that $A$ is zeros or 1s we know that $A$ is
+a the adjacency matrix of a directed graph. $Au=\lambda u$ then $A^{k}u=\lambda^{k}u$.
+If we knew persons theorem and we know that $A^{k}>0$ we can derive
+the same conclusions for Perron's Theorem to a non negative matrix.
+$A^{k}\ge0$.%
+\end{insight}
+
+\begin{proof}[proof of Perron's Theorem]
+\begin{insight}
+We want to think about it as an optimization problem.%
+\end{insight}
+Let us observe: if $v\ge0,v\ne0\Rightarrow Av>0$. Let $S\subseteq\mathbb{R}^{n}$
+be defined as: 
+\[
+S=\left\{ u\in\R^{n}:\left|\left|u\right|\right|_{2}=1,u\ge0\right\} 
+\]
+\begin{insight}
+this is a compact set%
+\end{insight}
+
+We define $\forall u\in S$, 
+\[
+L\left(u\right):=\max\left\{ b>0:\begin{array}{c}
+\left(Au\right)_{i}\ge bu_{i},\\
+\forall i\,\,u_{i}\ne0
+\end{array}\right\} =\min_{\begin{array}{c}
+i\\
+u_{i}\ne0
+\end{array}}\frac{\left(Au\right)_{i}}{u_{i}}
+\]
+ %
+\begin{insight}
+The coordinate that holds be to become bigger is the $i$ that makes
+this$\frac{\left(Au\right)_{i}}{u_{i}}$ the minimum%
+\end{insight}
+
+It can be shown that $L\left(u\right)$ is compact%
+\begin{insight}
+The edge of a set is a point that contains around it points in the
+set and points outside of the set.
+
+A close set is a set such it contains it's edge.
+
+Compact set:
+\begin{enumerate}
+\item Let there be a metric space $X$. A compact set $Y\subseteq X$ is
+called compact if for any series $y_{n}\in Y$ There is a converging
+sub series of $y_{n}$ such that it converge into a point in $Y$.
+\item Every closed set $Z\subseteq Y$ is compact.
+\item a compact set is bound.
+\item The image of a compact set by a function on that set is also compact.
+\item Any non empty compact set contains a maximum and a minimum.
+\item A close and bound set in $\R^{n}$ is compact.
+\end{enumerate}
+\end{insight}
+, hence $\rho:=\max\limits _{u\in S}L\left(u\right)$. Let $v\in S$
+be a vector realizing $Av\ge\rho v$%
+\begin{insight}
+from the L$\left(u\right)$ statement%
+\end{insight}
+. %
+\begin{insight}
+we want to show that this is an eigenvalue. but we saw that we can
+get a bigger value by contradiction.%
+\end{insight}
+We want to show $Av=\rho v$, if it is -- were done, else we assume
+by contradiction that $Av-\rho v>0$, it follows that %
+\begin{insight}
+non negative and non zero vector multiplied by a positive matrix is
+positive.%
+\end{insight}
+$A\left(Av-\rho v\right)>0$. Because that is a positive vector $\exists\epsilon>0$
+s.t. $A\left(Av-\rho v\right)>\epsilon Av$, Let $c>0$ s.t. $cAv$
+is a unit vector, actually $cAv\in S$ so%
+\begin{insight}
+from this: $Av-\rho v>0$ we expand the term:
+\begin{align*}
+AAv-Apv & >\epsilon Av\\
+cAAv-Acpv & >\epsilon cAv\\
+AcAv & >\epsilon cAv+Acpv\\
+A\left(cAv\right) & >\left(p+\epsilon\right)cAv
+\end{align*}
+ Notice that $cAv$ is a vector in $S$ for which we defined $\rho=\max\limits _{u\in S}L\left(u\right)$
+which will lead us to a contradiction. HELL YES!%
+\end{insight}
+\[
+A\left(cAv\right)>\left(\rho+\epsilon\right)cAv
+\]
+{} This is contrary to the maximality of $\rho$.
+\begin{claim}
+If $\mu\ne\rho$ is an eigenvalue of $A$ then $\rho>\left|\mu\right|$. 
+\begin{proof}
+Let $Ay=\mu y\iff\forall i\,\,\underbrace{\left(Ay\right)_{i}}_{=\sum\limits _{j}a_{i,j}y_{j}}=\mu y_{i}$
+So $\left|\sum\limits _{j}a_{ij}y_{j}\right|=\left|\mu\right|\left|y_{i}\right|$
+then from triangle inequality 
+\[
+\left|\mu\right|\cdot\left|y_{i}\right|=\left|\sum a_{ij}y_{j}\right|\le\sum\left|a_{i,j}\right|\left|y_{j}\right|=\sum a_{i,j}\left|y_{j}\right|
+\]
+. Denote $z_{i}=\left|y_{i}\right|$ so $\sum a_{i,j}z_{i}\ge\left|\mu\right|\cdot z_{i}$
+meaning:
+\[
+Az\ge\left|\mu\right|z
+\]
+ From this it follows that $\rho\ge\left|\mu\right|$. %
+\begin{insight}
+$\rho$ is defined as the largest number such that $Av\ge\rho v$
+so $\mu$ cannot be bigger then $\rho$.%
+\end{insight}
+\begin{insight}
+z should be normalized and then $z\in S$ and as a result $\rho$
+is the maximal eigenvalue.%
+\end{insight}
+\end{proof}
+\end{claim}
+
+\begin{claim}
+$\rho$ has a geometric multiplicity i.e. the linear space of eigenvectors
+with eigenvalue $\rho$ is $1-dimensional$
+\begin{proof}
+suppose that $Au=\rho u$. We can write $u=\phi+i\psi$ and each part
+will be an eigenvector separately. This means we can just assume that
+$u$ is a real vector. Generally $u$ may be complex, but then the
+vectors $Re\left(u\right),Im\left(u\right)$ are also eigenvectors
+with eigenvalue $\rho$. WLOG $u$ is real.%
+\begin{insight}
+We should apply this for both vectors - to the imaginary vector too
+and we get the same contradiction.%
+\end{insight}
+
+Let us assume by contradiction that $Av=\rho v,Au=\rho u$. $\exists\epsilon$
+(might be negative too) s.t. $v+\epsilon u\ge0$ with at least one
+zero coordinate. because $v,u$ are eigenvectors of $\rho$: $A\left(v+\epsilon u\right)=\rho\left(v+\epsilon u\right)$.
+(This is a contradiction because $A\left(v+\epsilon u\right)$ can't
+have an entry that is zero because a positive matrix multiplied by
+a non negative vector creates a positive vector -- can't have a cell
+with zero in it like the vector $\rho\left(v+\epsilon u\right)$ and
+from this we conclude that there can't be another vector $u$ such
+that $Au=\rho u$.)
+
+(To my understanding we did not show in this proof that the algebraic
+multiplicity is 1)%
+\begin{insight}
+There cant be an entry with zero and thus the equation is a contradiction
+- not sure whats going on. not sure what happened here%
+\end{insight}
+
+\end{proof}
+\end{claim}
+
+ Additional item in Perron\'{s} Theorem: $A$ positive square matrix
+with $\rho$ as before...
+\[
+\limn{\frac{A}{\rho}}^{n}=\frac{x_{r}\otimes x_{\ell}}{\left\langle x_{r},x_{\ell}\right\rangle }
+\]
+ ($\otimes$ means outer-product) Where $x_{r},x_{\ell}$, are the
+right and left eigenvectors of $A$ corresponding to $\rho$.%
+\begin{insight}
+We divide each eigenvalue by $\rho^{n}$%
+\end{insight}
+
+\end{proof}
+%
+To pass from Perron to Frobenius: if $A^{^{k}}>0$ for some $k\in\N$
+then $A$ satisfies the conclusions of Persons theorem.
+
+Questions: Given $A\ge0$ when does $\exists k$ s.t. $A^{k}>0$ ?
+$\iff$ Given a directed graph $G$ under what conditions does $\exists k\in\N$
+s.t. $\forall x,y\in V$ $\exists$ directed $x\to y$ of length $k$
+.
+\begin{thm}
+(\textcolor{red}{This wasn't stated in class explicitly}): (Perron
+- Frobenius) If $A$ is non negative and there exists a $k\in\N$
+such that $A^{k}>0$ then Perron's statement holds for this matrix
+too.
+\end{thm}
+
+\begin{definition}
+We say that directed graph $G=\left(V,E\right)$ has period $p$ if
+it is possible to split $V=V_{1}\cup V_{2}\dots\cup V_{p}$ s.t if
+$x\to y\in E$ iff $\exists i$ such that $x\in V_{i},y\in V_{i+1\mod p}$.
+\end{definition}
+
+\begin{claim}
+This is the case provided
+\begin{enumerate}
+\item $G$ is strongly connected.
+\item Aperiodic. %
+\begin{insight}
+If it's periodic we know that $k$ moves us to some group.%
+\end{insight}
+\end{enumerate}
+\end{claim}
+
+
+\section{finite Markov chains}
+
+This is a system ($M$) that can reside in any one of $n$ states.
+It moves at every time step from state to state, and if it in presently
+resides in state $i$ then with probability $p_{i,j}$ it will be
+in state $j$ at the next time unit. $P=\left(p_{i,j}\right)$ is
+called the transition matrix of the chain. $P$ is a stochastic matrix,
+i.e. $\forall i,j$ $p_{i,j}\ge0$ each row sums to one ($\forall i\,\,\sum_{j}p_{ij}=1$).
+\begin{definition}
+We say that Markov chain is ergodic if the directed graph is strongly
+connected and aperiodic.
+\end{definition}
+
+
+\subsubsection{informal chatter}
+
+$P_{i,j}^{t}=$ probability that starting from state $i$ we will
+be at state $j$ after $t$ units of time.
+
+Let us restrict ourselves to deal with ergodic Markov chains.
+
+Since the underlying directed graph of $M$ (markov chain) is strongly
+connected and aperiodic the Perron -- Frobenius theorem applies.
+(This matrix contains one positive eigenvector, other eigenvalues
+are strictly smaller then the corresponding eigenvalue) $P\cdot\one=\one\Rightarrow\one$
+is an eigenvector corresponding to eigenvalue $1$. By $P.F$ (Perron
+-- Frobenius) $\one$ and the eigenvalue $1$ are the eigenvector
+and eigenvalue pair given by the theorem $\Rightarrow$ all other
+eigenvalues $\lambda$ of $p$ satisfies $\left|\lambda\right|<1$.
+
+Let $u$ be the probability vector(where $u_{i}$ = is the probability
+that the system starts at state $i$, and$u\ge0$,$\sum u_{i}=1$):
+so 
+\[
+uP\one=u\one=\left\langle u,\one\right\rangle =1
+\]
+$\left(uP\right)_{\alpha}=\sum_{i}u_{i}p_{i\alpha}=$probability that
+the chain is in state $\alpha$ at the next time unit.
+
+$\left(uP^{2}\right)_{\beta}=\left(\left(uP\right)\cdot P\right)_{\beta}=$
+prob that the chain will be in state $\beta$ in two units from now.
+
+What do we want to know using Markov chains?
+\begin{enumerate}
+\item what is the long-run behavior of the chain.
+\item How soon does it get there.
+\end{enumerate}
+%
+From $P.F$ we know that there is a positive \uline{left} eigenvector
+$\pi$ corresponding to eigenvalue $1$, $\pi P=\pi$. Let us normalize
+$\pi$ so that $\left\langle \pi,\one\right\rangle =1$.
+\begin{thm}[from Perron -- frobenious]
+ $\limn{\left(\frac{A}{p}\right)^{n}}=\frac{x_{r}\otimes x_{\ell}}{\left\langle x_{r},x_{\ell}\right\rangle }$
+where $\rho$ is the eigenvalue from perron--frobenious.$x_{r},x_{\ell}$
+are the right and left eigenvectors of $\rho$.
+\end{thm}
+
+\begin{proof}
+in the case of Markov Chains $A=P,\rho=1$. $x_{r}=\one,x_{\ell}=\pi$$\Rightarrow$
+$\limn{\frac{P^{n}}{\rho^{n}}}=\one\otimes\pi=\begin{pmatrix}- & \pi & -\\
+- & \pi & -\\
+ & \vdots\\
+- & \pi & -
+\end{pmatrix}$. If $\limn{P^{n}}$ exists let us denote it by $Q$, thus $QP=Q$
+$\Rightarrow$ Every row of $Q$ is a left eigenvector of $P$ with
+eigenvalue $1$. %
+\begin{insight}
+(This gives us the matrix above)%
+\end{insight}
+. Why does the limit exist? The set of all $m\times n$ stochastic
+matrices is compact %
+\begin{insight}
+This a simplex closed and bounded%
+\end{insight}
+$\Rightarrow$ every infinite sequence of stochastic matrices has
+a convergent sub-sequence. As we saw only $Q$ can be a limit point
+of matrices in the sequence. %
+\begin{insight}
+All stochastic matrices is a compact set and we have a sequence so
+it has a convergent sequence. Every stochastic matrix will converge
+and as a result we know that $Q$ is the only limit? something like
+that.%
+\end{insight}
+\end{proof}
+%
+
+\subsection{Random Walks on Graphs}
+
+$G=\left(V,E\right)$ an undirected graph. $States=V$. Transitions
+matrix defined is normalized in row $i$ by $\frac{1}{\deg\left(v_{i}\right)}$.
+\begin{proposition}
+If $G$ is a connected non-bipartite undirected graph, then the limit
+distribution of the random walk on $G$ is $\left(\cdots\frac{d\left(x\right)}{2\left|E\right|}\cdots\right)=\pi$.
+$\pi P\overset{}{=}\pi$.
+\end{proposition}
+
+
+\subsubsection{Expander graphs}
+
+Expander graphs walks on them, etc.
+
+(informal definition) These are graphs with no bottlenecks. $G=\left(V,E\right)$
+d-regular graph. $h\left(G\right):=\min\limits _{\begin{array}{c}
+\emptyset\ne S\subseteq V\\
+\left|S\right|\le\frac{\left|V\right|}{2}
+\end{array}}\frac{e\left(S,\bar{S}\right)}{\left|S\right|}$ %
+\begin{insight}
+i think the function $e$ counts the number of edges between two sets
+of nodes.
+
+Why do we normalize by the size of $S$?%
+\end{insight}
+
+We want $d-regular$ graph with a large edge expansion.
+\begin{definition}
+(TAKEN FROM A PREVIOUS YEAR) Let $\delta\ge0$, a graph $G=\left(V,E\right)$
+is $\delta$-edge expanding if for every $S$ of size at most $\frac{\left|V\right|}{2}$
+it holds that $e\left(S,\overline{S}\right)\ge\delta\cdot\left|S\right|$.
+\end{definition}
+
+\begin{definition}
+The edge expansion of a graph $h\left(G\right)$ is the minimal expansion
+of a vertices set. I.e. $h\left(G\right)=\min\limits _{\begin{array}{c}
+\emptyset\ne S\subset V\\
+\left|S\right|\le\frac{\left|V\right|}{2}
+\end{array}}\frac{e\left(S,\overline{S}\right)}{\left|S\right|}$
+\end{definition}
+
+\uline{Question:} Given $d\ge3$ does there exists $\delta>0$
+and infinitely many $d-reg$ graphs $G=G_{n}$ %
+\begin{insight}
+familiy of $G_{n}$ for $n=d+1\to\infty$%
+\end{insight}
+with $h\left(G_{n}\right)\ge\delta$?
+
+\begin{insight}
+G=Gn - a family for the rest of these claims%
+\end{insight}
+
+\begin{thm}
+\begin{insight}
+\end{insight}
+Yes, actually \uline{most} $d-reg$ graphs %
+\begin{insight}
+family%
+\end{insight}
+{} have this property.
+\end{thm}
+
+For your personal information: To decide whether $h\left(G\right)>\alpha$
+is a $co-NP-HARD$ problem.
+\begin{thm}
+Let $G$ %
+\begin{insight}
+take a graph - not a family%
+\end{insight}
+{} be a $d-regular$ graph and let $d=\lambda_{1}\ge\lambda_{2}\ge\dots\ge\lambda_{n}$
+be the eigenvalue of adjacency matrix. so %
+\begin{insight}
+$\Lambda=\max\lambda_{2},-\lambda_{n}$. This is what he wrote then
+erased from the board.%
+\end{insight}
+{} %
+\begin{insight}
+Note that there must be a negative eigenvalues because the trace of
+a graph's matrix is $0$ (on the diagonal is zeros)%
+\end{insight}
+{} $\frac{d-\lambda_{2}}{2}\le h\left(G\right)\le\sqrt{d^{2}-\lambda_{2}^{2}}$.
+\end{thm}
+
+Constructing expander graphs is qualitatively equivalent to constructing
+$d-regular$ graphs with $\lambda_{2}$ bounded away from $d$. %
+\begin{insight}
+building this kind of graph familiy such that $h\left(G_{n}\right)$
+is far from zero. equivalent to build a familty of $d-reg$ graphs
+where $\lambda_{2}$ is bounded away from $d$. where bounded away
+means that there is some small area around $d$ where lambda cannot
+reach.%
+\end{insight}
+
+\begin{definition}
+If $\sigma,\tau$ are two prob distributions on a finite set $S$,
+we define their distance 
+\[
+d_{TV}\left(\sigma,\tau\right)=\sum_{x\in S}\left|\sigma\left(x\right)-\tau\left(x\right)\right|
+\]
+
+Please Note that in the recitation we defined it as follows:
+\[
+d_{TV}\left(\sigma,\tau\right)=\frac{1}{2}\sum_{x\in S}\left|\sigma\left(x\right)-\tau\left(x\right)\right|=\frac{1}{2}\norm{\sigma-\tau}_{1}
+\]
+\end{definition}
+
+Let $G$ be a regular graph, Let $\sigma_{0}=\left(1,0,\dots,0\right)$,
+$\sigma_{t}=$ distribution of the random walker at time $t$.
+
+$Q:$ given $\epsilon>0$, for which time $t$ does it hold that $d_{TV}\left(\sigma_{t},uniform\right)<\epsilon$?
+Let $\mathcal{G}=\left(G_{n}\right)$ be a family of $d-regular$
+graphs, then the following are equivalent
+\begin{enumerate}
+\item $h\left(G_{n}\right)$ is bounded away from zero
+\item $d-\lambda_{2}$ is bounded away from zero.
+\item mixing time is $O\left(\log n\right)$
+\end{enumerate}
+Let $A$ be a positive matrix $\rho=$ spectral radius of $A$. $\limn{\frac{A}{\rho}}^{n}=\frac{x_{R}\otimes x_{L}}{\left\langle X_{R},X_{L}\right\rangle }$
+where $x_{R},x_{L}$ are the right and left eigenvectors of $\rho$.
+We will prove the case of $A$ a stochastic matrix.
+\begin{proof}
+$ $
+\begin{lemma}
+Let $G$ be a strongly connected aperiodic directed graph and let
+$A$ be it's adjacency matrix. Then $\exists k$ s.t $A^{k}>0$. (Without
+proof).
+\end{lemma}
+
+We will prove the case of a positive stochastic matrix $\then$ same
+for the stochastic ergodic case.
+
+Let $A$ be a positive stochastic matrix and let $\alpha>0$ be the
+smallest entry in $A$. Let $v$ be a probability vector $v\ge0$,
+$\left\langle v,\one\right\rangle =1$. Let $M,m$ be the largest
+and smallest coordinates of $v$. Let $M',m'$ be the max/min of $Av$.
+\begin{align*}
+M' & \le\alpha m+\left(1-\alpha\right)M\\
+m' & \ge\alpha M+\left(1-\alpha\right)m
+\end{align*}
+\begin{insight}
+We are multiplying a row in $A$ by a vector. We engineer a vector
+that sums to one and gets the biggest number. what do we do? alpha
+will do the least damage when it is multiplied by $m$, now after
+we do $\alpha m$ we add $\left(1-\alpha\right)M$ and we ignore all
+other values, %
+\end{insight}
+{} so 
+\[
+M'-m'\le\left(1-2\alpha\right)\left(M-m\right)
+\]
+and $A^{n}v=A^{n-1}\left(Av\right)=A^{n-2}A\left(Av\right)$ $\then$
+$M'^{\left(n\right)}-m'^{\left(n\right)}\le\left(1-2\alpha\right)^{n}\left(M-m\right)$
+\[
+\limn{M'^{\left(n\right)}-m'^{\left(n\right)}}=0
+\]
+ then 
+\[
+\limn{A^{n}v}=c\cdot\one
+\]
+ for some $c>0$. $v=e_{i}\then$ The col of $\limn{A^{n}}$ is a
+constant vector. Therefore $\limn{A^{n}}=\begin{pmatrix}- & u & -\\
+- & u & -\\
+ & \vdots\\
+- & u & -
+\end{pmatrix}$ and we've seen that if there such limit it equals to $=\begin{pmatrix}- & \pi & -\\
+- & \pi & -\\
+ & \vdots\\
+- & \pi & -
+\end{pmatrix}$ %
+\begin{insight}
+(from 106)%
+\end{insight}
+. $c=\left\langle u,v\right\rangle =\left\langle \pi,v\right\rangle $
+for each $e_{i}$, $c$ is different.
+\end{proof}
+%
+Edge extension of $G$: $h\left(G\right):=\min\limits _{\begin{array}{c}
+\emptyset\ne S\subseteq V\\
+\left|S\right|\le\frac{\left|V\right|}{2}
+\end{array}}\frac{e\left(S,\overline{S}\right)}{\left|S\right|}$. $G$ is $d-regular$ with eigenvalues $d=\lambda_{1}\ge\lambda_{2}\ge\dots\ge\lambda_{n}$.
+\begin{insight}
+The graph is connected iff $\lambda_{1}>\lambda_{2}$%
+\end{insight}
+
+\begin{thm}
+\begin{insight}
+page 42 in ``AllLectures''%
+\end{insight}
+Let $G$ be a $d-regular$ connected non-bipartite graph with eigenvalues
+$d=\lambda_{1}\ge\lambda_{2}\ge\dots\ge\lambda_{n}$ then $\frac{d-\lambda_{2}}{2}\le h\left(G\right)\le\sqrt{d^{2}-\lambda_{2}}$.
+\begin{proof}
+we are only proving the bottom bound: $\lambda_{2}=\max\limits _{x\perp\one}\frac{xAx^{T}}{\norm x^{2}}$
+\begin{insight}
+$x\perp\one$ is beause the first eigenvector is $\one$ . and we
+use the Rayleigh rits where $\lambda_{2}=\max\limits _{x\perp x_{1}}\frac{xAx^{T}}{\norm x^{2}}$%
+\end{insight}
+.We look at some partition of $V$: $S,\overline{S}$. What do we
+know about the problem that we can use? We know that the graph is
+$d-reg$ and we know the partition $S,\overline{S}$. So we will define
+$x$ as follows:
+\[
+x_{i}=\begin{cases}
+\left|\overline{S}\right| & i\in S\\
+-\left|S\right| & i\in\overline{S}
+\end{cases}
+\]
+this vector $x$ holds that $x\perp\one$ ($\left\langle x,\one\right\rangle =\sum x_{i}\cdot1=\left|\overline{S}\right|\cdot\left(-\left|S\right|\right)+\left|S\right|\cdot\left|\overline{S}\right|=0$)%
+\begin{insight}
+This is because we have $\left|\overline{S}\right|$ times $\left(-\left|S\right|\right)$
+in entries in $x$ and $\left|S\right|$ times $\left|\overline{S}\right|$
+entries in x.%
+\end{insight}
+. Now we need to calculate $\max\limits _{x\perp\one}\frac{xAx^{T}}{\norm x^{2}}$.
+First: 
+\begin{align*}
+\norm x^{2} & =\sum_{i=1}^{n}x_{i}^{2}=\\
+ & =\left|S\right|\left|\overline{S}\right|^{2}+\left|S\right|^{2}\left|\overline{S}\right|=\left|S\right|\left|\overline{S}\right|\left(\left|\overline{S}\right|+\left|S\right|\right)=n\left|S\right|\left|\overline{S}\right|
+\end{align*}
+ 
+\begin{align*}
+xAx^{T} & =\sum a_{ij}x_{i}x_{j}=
+\end{align*}
+ this is like summing where $a_{ij}=1$ (where $i$ is a neighbour
+of $j$) so 
+\[
+=\sum\limits _{i\sim j}x_{i}x_{j}=\underbrace{2\cdot e\left(S\right)\cdot\left|\overline{S}\right|^{2}}_{\left(1\right)}+\underbrace{2\cdot e\left(\overline{S}\right)\cdot\left|S\right|^{2}}_{\left(2\right)}-\underbrace{2e\left(S,\overline{S}\right)\left|S\right|\left|\overline{S}\right|}_{\left(3\right)}
+\]
+\end{proof}
+\begin{enumerate}
+\item $i,j$ both are vertices in $S$ hence $x_{i}\cdot x_{j}=\left|\overline{S}\right|\cdot\left|\overline{S}\right|$
+and we count them $2\cdot e\left(S\right)$ times. 
+\item same explanation as above but for $i,j$ vertices in $\overline{S}$.
+\item $i\in S$, $j\in\overline{S}$, $x_{i}\cdot x_{j}=\left|\overline{S}\right|\cdot\left(-\left|\overline{S}\right|\right)$.
+and we count them $2\cdot e\left(S,\overline{S}\right)$ times.
+\end{enumerate}
+Another important observation is $d\cdot\left|S\right|=2\cdot e\left(S\right)+e\left(S,\overline{S}\right)$
+because this is a d-regular graph - we count for each vertex the number
+of times it is touched by the the edges in $S$ plus the edges that
+connect to$S$ from $\overline{S}$. (from the other side $d\left|\overline{S}\right|=2e\left(\overline{S}\right)+e\left(S,\overline{S}\right)$)
+So %
+\begin{insight}
+\begin{align*}
+xAx^{T} & =2\cdot e\left(S\right)\cdot\left|\overline{S}\right|^{2}+2\cdot e\left(\overline{S}\right)\cdot\left|S\right|^{2}-2e\left(S,\overline{S}\right)\left|S\right|\left|\overline{S}\right|=\\
+* & =2\left(\frac{1}{2}\left(d\left|S\right|-e\left(S,\overline{S}\right)\right)\left|\overline{S}\right|^{2}+\frac{1}{2}\left(d\left|\overline{S}\right|-e\left(S,\overline{S}\right)\right)\left|S\right|-e\left(S,\overline{S}\right)\left|\overline{S}\right|\cdot\left|S\right|\right)=\\
+* & =d\left|S\right|\left|\overline{S}\right|\left(\left|\overline{S}\right|+\left|S\right|\right)-e\left(S,\overline{S}\right)\left(\left|\overline{S}\right|^{2}+2\left|\overline{S}\right|\left|S\right|+\left|S\right|^{2}\right)=\\
+ & =d\left|S\right|\left|\overline{S}\right|n-e\left(S,\overline{S}\right)n^{2}
+\end{align*}
+( {*} )were taken from allLectures.%
+\end{insight}
+{} 
+\[
+xAx^{T}=\dots=d\left|S\right|\left|\overline{S}\right|n-e\left(S,\overline{S}\right)n^{2}
+\]
+
+so $\lambda_{2}\ge\frac{xAx^{T}}{\norm x^{2}}$ lets assign what we
+calculated: $\lambda_{2}\ge\frac{d\left|S\right|\left|\overline{S}\right|n-e\left(S,\overline{S}\right)n^{2}}{n\cdot\left|S\right|\left|\overline{S}\right|}$
+since $\left|\overline{S}\right|\ge\frac{1}{2}n$ 
+\[
+\lambda_{2}\ge\frac{d\left|S\right|\left|\overline{S}\right|n-e\left(S,\overline{S}\right)n^{2}}{n\cdot\left|S\right|\left|\overline{S}\right|}\ge d-2\frac{e\left(S,\overline{S}\right)}{\left|S\right|}
+\]
+organize this a bit more to get: 
+\[
+\frac{e\left(S,\overline{S}\right)}{\left|S\right|}\ge\frac{d-\lambda_{2}}{2}
+\]
+We saw that $\forall S\,\;\left|S\right|\le\frac{n}{2}$ then $\frac{e\left(S,\overline{S}\right)}{\left|S\right|}\ge\frac{d-\lambda_{2}}{2}$.
+This means that this is true for the minimum too $h\left(G\right)=\min\limits _{\begin{array}{c}
+\emptyset\ne S\subseteq V\\
+\left|S\right|\le\frac{\left|V\right|}{2}
+\end{array}}\frac{e\left(S,\overline{S}\right)}{\left|S\right|}\ge\frac{d-\lambda_{2}}{2}$. 
+\end{thm}
+
+\begin{thm}
+Fix $d$, let $G=G_{n}$ be an infinite family of $d-regular$ graphs.
+then the following are equivalent:
+\begin{enumerate}
+\item $h\left(G_{n}\right)$ is bounded away from zero. %
+\begin{insight}
+\begin{lyxlist}{00.00.0000}
+\item [{what}] is the meaning of bounded away from zero?
+\end{lyxlist}
+\end{insight}
+\item The spectral gap $\lambda_{1}-\lambda_{2}$ is bounded away from zero. 
+\item The random walk on $G_{n}$ convergence in logarithmic time.
+\end{enumerate}
+\begin{insight}
+In terms of apllication this is a huge thing. in all things ofenumaration
+- checking different models this means that these things a re practical.
+this means we don't have to wait.%
+\end{insight}
+\begin{proof}
+\textcolor{red}{I Had a big problem taking notes in this part, I'll
+try and fix this proof as soon as possible} ($2\then3$, What was
+mostly intuition and not formal)$A$ is the matrix of the graph (a
+stochastic matrix) so $A=\frac{1}{d}A_{G}$. We know that 
+\[
+\frac{A}{d}^{N}\to\text{\ensuremath{\begin{pmatrix}\\
+ & \frac{1}{n}\\
+\\
+\end{pmatrix}}}
+\]
+Now assume we have some distribution, and we want to understand $\left(\frac{A_{G}}{d}\right)^{N}v\to\frac{1}{n}\one$.
+We know nothing about $v$. We will express $v$ with the basis of
+eigenvectors. $v=c_{1}\cdot\one+\sum c_{i}v_{i}$. where $\frac{A_{G}}{d}v_{i}=\lambda_{i}v_{i}$.
+so what is $c_{1}$? $c_{1}=\left\langle v,\one\right\rangle $ and
+because $v$ is a probability vector $c_{1}=\frac{1}{\sqrt{n}}$ .
+thus $\frac{d}{\sqrt{n}}$ normalizes what happen when we apply $A^{N}$
+to $v$? $A^{N}v=c_{1}\cdot A\one+\sum c_{i}Av_{i}$something that
+goes exponentially fast to zero. And we stopped here.%
+\begin{insight}
+\begin{proof}
+We are proving that $2\then3$.
+\[
+\left(\frac{A}{d}\right)^{n}v\to\frac{1}{n}\one
+\]
+we want to write $v$ as $v=c_{i}\frac{1}{\sqrt{n}}\one+\sum c_{i}v_{i}$.
+where $c_{i}=\left\langle v,v_{i}\right\rangle $. Because $v$ is
+a prob vector $c_{1}=\frac{1}{\sqrt{n}}..$ when $A^{n}v$ we get
+that $\one$ stays the same, and all the other vectors other then
+$\one$ tends to zero.
+\end{proof}
+Question given $d$ how large can the spectral be? $\iff$how small
+can $\lambda_{2}$ be?%
+\end{insight}
+\end{proof}
+\end{thm}
+
+Question: given $d$ how large can the spectral gap be? $\iff$ how
+small can $\lambda_{2}$ be?
+\begin{thm}[Alon Boppana bound]
+ %
+\begin{insight}
+Pg 109 in Ayelet's sum%
+\end{insight}
+$\lambda_{2}\ge2\sqrt{d-1}-o_{n}\left(1\right)$ .
+
+a hint was given but not an actual proof.
+\end{thm}
+
+\begin{thm}
+$\lambda_{2}\ge\sqrt{d}$
+\begin{proof}
+Let $A$ be the adjacency matrix of $G$%
+\begin{insight}
+G is d regular and have eigenvalues and stuff%
+\end{insight}
+. Then $tr\left(A^{2}\right)=\sum\lambda_{i}^{2}$, $\lambda_{1}=d$
+so the first in the sum is $\lambda_{1}^{2}=d^{2}$ so $\sum_{i=1}\lambda_{i}=d^{2}+\sum_{i=2}\lambda_{i}^{2}$
+. We know that $\lambda_{2}\ge\lambda_{3}\ge\lambda_{4}\dots\ge\lambda_{n}$
+thus $\sum_{i=1}\lambda_{i}=d^{2}+\left(n-1\right)\cdot\lambda_{2}^{2}$
+on the other hand 
+\[
+tr\left(A^{2}\right)=n\cdot d
+\]
+because $A^{2}$ in the $i,j$ entry counts how many paths of size
+2 there are between $i$to $j$ ($d$ paths). so there are $n$ times
+$d$ paths. so
+\[
+tr\left(A^{2}\right)=nd\le d^{2}+\left(n-1\right)\lambda_{2}^{2}
+\]
+ we conclude: $d-o\left(d\right)=\frac{nd-d^{2}}{n-1}\le\lambda_{2}^{2}$
+\end{proof}
+\end{thm}
 
