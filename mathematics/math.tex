@@ -3,12 +3,83 @@ This part is a collection of notes on mathematics.
 It includes notes on algebraic structures, number theory, and probability. 
 
 
-\section{Special Techniques}
-In this sections I'll write down few special techniques i've collected.
-
 \input{mathematics/Algebraic-structures.tex}
 
 \input{mathematics/linear-algebra.tex}
 \input{mathematics/probability.tex}
 
 \input{mathematics/Lattice.tex}
+
+\chapter{Advanced}
+\paragraph{Approximations}
+\begin{enumerate}
+    \item $1+x \le e^x$.
+    \item for a small $|x|$: $e^x \le 1+x+x^2$ (from taylor series.)
+    \item $n! \approx \sqrt{2\pi n} \cdot \left( \frac{n}{e}\right)^n$ (Sterling approximation).
+    \item for $1\le k \le \frac{n}{2}$: $\left( \frac{n}{k}\right)^k \le \binom{n}{k}$.
+    \item for $1\le k \le \frac{n}{2}$: $\binom{n}{k}\le\left(\frac{en}{k}\right)^{k}$.
+    \item $e$ has multiple identities:
+        \begin{itemize} 
+          \item $e^{x}=\sum\limits _{i=0}^{\infty}\frac{x^{i}}{x!}$ (taylor.)
+          \item $\left(1+\frac{x}{t}\right)^{t}\approx e^{x}$ (from its limit definition.) 
+          This can also be used as follows: $\left(1+\frac{x}{n}\right)^{m}=\left(\left(1+\frac{x}{n}\right)^{n}\right)^{\frac{m}{n}}=\left(e^{x}\right)^{\frac{m}{n}}=e^{\frac{xm}{n}}$.
+        \end{itemize}
+    \item $\sum_{i=1}^{n}\binom{n}{i}=2^{n}$ (sum of all subgroups.)
+    \item for $H\left(\alpha\right)=-\alpha\log\alpha-\left(1-\alpha\right)\log\left(1-\alpha\right)$: $\binom{n}{\alpha n}=2^{1+o\left(1\right)}\cdot2^{n\cdot H\left(\alpha\right)}$.
+\end{enumerate}
+\section{probability tricks}
+
+
+\paragraph{\bf Complimentary}
+Always think about the complimentary event. It can be much easier to view, prove, and inspect.
+
+
+\paragraph{\bf Non Negative Random variables}
+Let X be a non-negative R.V such that $0<\mathbb{E}[X^2]<\infty$. Then 
+$\Pr[X>0]\ge \frac{E[X^2]}{E[X]}$.
+
+\paragraph{\bf Bounding}
+if we want $X\ge \E{X}$, it is sometimes easier to bound $X-\mathbb{E}[{X}]$:
+
+$$\left(1-f\left(n\right)\right)\mathbb{E}[{X}]\le X-\mathbb{E}[{X}]\le\left(1+f\left(n\right)\right)\mathbb{E}[{X}]$$
+
+Now we can use Chebyshev's inequality (\autoref{probabilty:chebyshev}) for the following.
+$\Pr[\left|X-\mathbb{E}[X]\right|\ge f\left(n\right)\mathbb{E}[{X}]]$
+That is, we treat $f(n)$ as our $c$, and $E[X]$ as our $\sigma$.
+
+Thus 
+
+$$\Pr\left[\left|X-\mathbb{E}[X]\right|\ge f\left(n\right)\mathbb{E}[{X}]\right]\le\frac{Var\left[X\right]}{\left(f\left(n\right)\mathbb{E}[{X}]\right)^{2}}
+$$
+\begin{lyxgreyedout}
+    which is also equivialt to 
+    $$\Pr\left[\left|X-\mathbb{E}[X]\right|\ge f\left(n\right)\mathbb{E}[{X}]\right]\ge 1 - \frac{Var\left[X\right]}{\left(f(n)\mathbb{E}[{X}]\right)^{2}}
+$$
+\end{lyxgreyedout}
+
+
+We might wish to show that $f(n)$ is miniscule. We can define it "recursively" from what we already know (usually we have $\frac{Var\left[X\right]}{\left(\mathbb{E}[{X}]\right)^{2}}\to 0$):
+
+So we can define $f(n)= \frac{Var\left[X\right]}{\left(f(n)\mathbb{E}[{X}]\right)^{2}}$ to solve for $f(n)$.
+
+
+\paragraph{\bf $\Pr{[A\cap B]}\ge ?$.}
+Computing the exact probability of $A\cap B$ can be difficult, but we can often find a lower bound
+by relying on the pidgenhole principle.
+
+To compute it thus, we can write down the whole space, and plot it as a 
+horizontal line starting at $0$ and ending at $1$.
+then we plot a line to represent $A$. Given $A$ which starts from $0$ and ends at $a$,
+we define $B$'s line as starting $1$ and ending at $b$ (see \autoref{probabilty:tricks:intersection}).
+
+\begin{figure}
+    % \centering
+    \includegraphics[scale=0.75]{mathematics/illustrations/AcapB.pdf}
+\end{figure}\label{probabilty:tricks:intersection}
+
+For example, $\Pr[A]=1-\frac{1}{16}, \Pr[B]=\frac{3}{4}$, thus, $A\cap B \ge \frac{3}{4}-\frac{1}{16}$. That is, 
+We take the size of $B$ and remove $1-\Pr[A]$ from it.
+
+
+\paragraph{\bf Chernoff}
+When you have to show something for \bf{all} random variables: attempt to use chrenoff bound.
