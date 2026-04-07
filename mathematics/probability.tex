@@ -3,6 +3,35 @@
 
 \section{Tricks and Techniques}
 
+\paragraph{Non Negative Random variables}
+Let X be a non-negative R.V such that $0<\mathbb{E}[X^2]<\infty$. Then 
+$\Pr[X>0]\ge \frac{E[X^2]}{E[X]}$.
+
+\paragraph{\bf Bounding}
+if we want $X\ge \E{X}$, it is sometimes easier to bound $X-\mathbb{E}[{X}]$:
+
+$$\left(1-f\left(n\right)\right)\mathbb{E}[{X}]\le X-\mathbb{E}[{X}]\le\left(1+f\left(n\right)\right)\mathbb{E}[{X}]$$
+
+Now we can use Chebyshev's inequality (\autoref{probabilty:chebyshev}) for the following.
+$\Pr[\left|X-\mathbb{E}[X]\right|\ge f\left(n\right)\mathbb{E}[{X}]]$
+That is, we treat $f(n)$ as our $c$, and $E[X]$ as our $\sigma$.
+
+Thus 
+
+$$\Pr\left[\left|X-\mathbb{E}[X]\right|\ge f\left(n\right)\mathbb{E}[{X}]\right]\le\frac{Var\left[X\right]}{\left(f\left(n\right)\mathbb{E}[{X}]\right)^{2}}
+$$
+\begin{lyxgreyedout}
+    which is also equivialt to 
+    $$\Pr\left[\left|X-\mathbb{E}[X]\right|\ge f\left(n\right)\mathbb{E}[{X}]\right]\ge 1 - \frac{Var\left[X\right]}{\left(f(n)\mathbb{E}[{X}]\right)^{2}}
+$$
+\end{lyxgreyedout}
+
+
+We might wish to show that $f(n)$ is miniscule. We can define it "recursively" from what we already know (usually we have $\frac{Var\left[X\right]}{\left(\mathbb{E}[{X}]\right)^{2}}\to 0$):
+
+So we can define $f(n)= \frac{Var\left[X\right]}{\left(f(n)\mathbb{E}[{X}]\right)^{2}}$ to solve for $f(n)$.
+
+
 \paragraph{$\Pr{[A\cap B]}\ge ?$.}
 Computing the exact probability of $A\cap B$ can be difficult, but we can often find a lower bound
 by relying on the pidgenhole principle.
@@ -171,7 +200,8 @@ Let as simplify this equation:
  If $X$ is a non-negative R.V and $c>1$ then $p_{r}\left(x\ge c\cdot\mathbb{E}\left[X\right]\right)\le\frac{1}{c}$
 \end{thm}
 
-\begin{thm}[Chebyshev inequality]
+\begin{theorem}[Chebyshev inequality]
+    \label{probabilty:chebyshev}
  If $X$ is a real R.V then $p_{r}\left(\left|X-\mathbb{E}\left[X\right]\right|\ge c\cdot\sigma\right)\le\frac{1}{c^{2}}$
 where $var\left[X\right]=\sigma^{2}$ .
 
@@ -183,7 +213,7 @@ The intuition of proving that claim is to apply Markov's inequality
 over $Y=\left(X-\mathbb{E}\left[X\right]\right)^{2}$ and understanding
 that $p_{r}\left(\left(x-\mathbb{E}\left[X\right]\right)^{2}\ge c^{2}\sigma^{2}\right)=p_{r}\left(\left|X-\mathbb{E}\left[X\right]\right|\ge c\cdot\sigma\right)$.
 
-\end{thm}
+\end{theorem}
 
 \begin{xca}
 If you pick at random a permutation $\pi:\left[n\right]\to\left[n\right]\in S_{n}$
