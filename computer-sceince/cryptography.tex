@@ -1,0 +1,643 @@
+
+\chapter{Things to Know}
+\begin{definition}[$\lambda$-bit strength]
+  Defining the strength of security is complex. NIST decided that $\lambda$-bit security 
+  means that for any kind of known attack, the attacker would need at least $2^{\lambda}$
+  operations to break the scheme.
+
+  Where each operation is defined as a single op over the specified field or ring.
+  For instance, over an elliptic curve, either multiplication or additions are assumed to 
+  take 1 single CPU cycle.
+  
+\end{definition}
+
+
+\section{Merkle-Damgård construction} 
+ \todo{Write how to use this construction!}
+
+\chapter{Basics}
+\section{Perfect Security}
+One time pad is used to create perfect secrecy. That is, there is no way to 
+To distinguish between ciphers.  One time pad works as follows:
+XORing a message $m$ with some random string $r$ will hide it completely. 
+To decrypt it, one needs to XOR it again with $r$.
+
+\section{symmetric Key}
+\paragraph{Block Ciphers}
+a block cipher is a  deterministic cipher $\varepsilon=(E,D)$ whose message space and
+ciphertext space are the same (finite) set $\mathcal{X}$. If the key space of $\varepsilon$ is $\mathcal{K}$ we say that $\varepsilon$ is a block cipher defined over
+$(\mathcal{X},\mathcal{K})$.
+
+For every fixed key $k \in\mathcal{K}$, we can define the function $f_k := E(k,\cdot)$
+that is $f_k: \mathcal{X} \to \mathcal{X}$. 
+The usual correctness requirement for any cipher implies that for every
+fixed key $k$, the function $f_k$ is a. one-to-one mapping (bijection). That is, $f_k$ is a permutation function. Thus, the decryption function $D$ is the inversion function $f_k^{-1}$.
+
+
+AES is a Block Cipher. They usually use 128-bit strings as keys. The data blocks that AES128 handles is 128-bit as well.
+
+a secure block cipher should be \emph{computationally indistinguishable} from a random permutation.
+
+
+
+\paragraph{Modes of operation}
+refers to different methods for applying cryptographic algorithms, like block ciphers, to encrypt or decrypt data in a way that handles multiple blocks of information.
+Common examples include Electronic Codebook (ECB), Cipher Block Chaining (CBC), and Counter (CTR) mode, each with its own security properties and use cases.
+
+
+ECB, for instance, is just using the block cipher (AES128, for instance) on chunks of 128 bits repeatedly. This isn't secure.
+
+\section{Diffie-Helman}
+Diffie-Helman relies on the following assumption.
+
+\begin{definition} [Decisional Diffie-Helman (DDH)]\label{DDH}
+  Consider a (multiplicative) cyclic group $\G$ of order $q$ and with generator $g$. 
+  Given $g^a$ and $g^b$ for $a,b\in_R Z_q$ then $(g^a,g^b,g^{ab})$, $(g^a,g^b,g^{ab})$ are computationally indistinguishable:
+
+  $$ \Pr[A((g^a,g^b,g^{ab}))=1] - \Pr[A(g^a,g^b,g^{c})=1]\le \delta(n)$$
+  for $\delta(n)$ a negligable function in $n$.
+\end{definition}
+
+Given this assumption, which most of the world takes as FACT (until proven otherwise), then
+we can define the key exchange protocol.
+\paragraph{DH key exchange}
+While not safe against man-in-the-middle attacks, DH is an excellent way to create a shared secret.
+The protocol goes as follows.
+Assume we have two players, Alice and Bob, both know the other's public key $g^a$ and $g^b$ respectfully,
+each takes their secret key $a$ or $b$ and raises the other's public key to the power of $a$ (or $b$).
+Both now hold $g^{ab}$, and no one else can compute it since they don't know the secret of either Bob or Alice.
+
+Alice and Bob can use this new number/ or elliptic curve point $g^{ab}$ as a private key for
+a symmetric encryption scheme like AES (e.g., $symKey=Hash(g^{ab})$).
+
+\input{computer-sceince/cryptography/ECC.tex}
+\input{computer-sceince/cryptography/homomorphic.tex}
+
+\chapter{Secret sharing, distributed key generation and threshold cryptography}
+\section{Shamir secret sharing}
+Given a secret $S$, generate random polynomial 
+$p = S + a_0\cdot x + a_1\cdot x^2+a_2\cdot x^3+\dots$ of degree $f+1$.
+create shares $(p(1),p(2),\dots, p(n))$ where $n\ge f+1$ and send it to nodes $(1,2,...n)$.
+The nodes will publish their shares when they want to reconstruct the secret.
+
+
+Once a party in the protocol has a hold of $f+1$ shares, 
+it can recover the secret by creating an equations system,
+and solve for the coefficients using $f+1$ shares as follows:
+\begin{align*}
+  & S +a_0\cdot 1^1 + a_1\cdot 1^2  + \dots = p(1)\\
+  & S +a_0\cdot 2^1 + a_1\cdot 2^2  + \dots = p(2)\\
+  & \vdots \\
+  & S +a_0\cdot (f+1)^1 + a_1\cdot (f+1)^2  + \dots = p(f+1)
+\end{align*}
+
+
+This solution is simple, but is limiting in other factors (see~\ref{lagrange-in-exponent}).
+In addition, it isn't very efficient; most known algorithms for solving linear equations 
+demand $O(n^3)$.
+One can improve performance by relying on Lagrange interpolation, which 
+can be implemented in $O(n^2)$ (again, see \ref{lagrange-in-exponent}).
+
+
+\paragraph{Improving Performance}
+While Lagrange interpolation is highly efficient when interpolating, it assumes we don't have 
+any structure over the points that the polynomial is evaluated on.
+
+By relying on roots of unity, we can both create the shares of the polynomial, and reconstruct it 
+via NTT (see~\ref{ntt}). 
+Doing so, we can perform secret sharing or secret reconstruction in $O(n\log n)$ complexity.
+
+\paragraph{Error Corrections}
+\red{TODO}
+\section{Verifiable secret sharing}
+The dealer will generate a random polynomial $P(x)=S+a_1\cdot x +a_2\cdot x^2 +\dots a_n\cdot x^n$. 
+It'll broadcast the polynomial as follows: $\{g^{a_i} | i\in [n]\cup {S}\}$.
+Then it'll send to each node $i$ its share of the polynomial $P(i)$. 
+To verify any share, including shares of other nodes, compute the following: 
+$$ g^{P(i)} =
+ g^{S}\cdot (g^{a_1})^{i} \cdot (g^{a_2})^{i^2}\cdots  =
+ \prod_{j=0}^{k} (g^{a_j})^{i^j} = 
+ g^{\sum_{j=0}^{t} a_j \cdot i^j} = 
+ g^{P(i)} $$
+
+Every node can compute for any $i$ the value $g^{P(i)}$ using the hidden coefficient broadcasted by the dealer.  
+The ability to compute $g^{P(i)}$ guarantees that no one can publish a corrupt share and fool other nodes when they reconstruct the secret.
+
+
+\section{Distributed key generation}
+\subsection{protocol}
+Assumptions, $n$ players, where each player has a broadcast channel (Might cost $n^2$ to publish through) and
+a private channel to the other players.
+Note: I'll use player/ member interchangeably.
+\begin{enumerate}
+  \item Each member performs VSS.
+  That is, player $i$ generates a random polynomial 
+  $p_{i}(x)=a_0+a_1\cdot x +a_2\cdot x^2 +\dots a_t\cdot x^t$, and broadcasts $ \{g^{a_i} | i \in [t]\}$.
+  Then it sends a private share $ p_{i}(j)$ to each player $j$ where $j>0$.
+  \item Each member verifies the share it receives according to the VSS protocol.
+  \item Each member $j$ takes the shares it received $\{p_{1}(j),p_{2}(j),\dots\}$ and adds them together. 
+  Then publish $ g^{y_i}=g^{\sum_{i}{p_{i}(j)}}$.
+  \item Each member verifies these shares. How? They take all the broadcasted values from the first step
+  as follows:$ \{g^{a_{ij}} | i \in [t], j \in Players\}$ and compute:
+  $$\{\prod_{j}{ g^{a_{1j}}}, \prod_{j}{ g^{a_{2j}}},\dots\}=$$
+  $$\{ g^{\sum_{j}{a_{1j}}}, g^{\sum_{j}{a_{2j}}}\} $$ 
+  Each member should be able to verify the share their peers sent using these values.
+  Denote $\mathcal{Q}$ the distributed polynomial.
+  Example:$$g^{\mathcal{Q}(k)}=\prod_{i}(g^{\sum_{j}{a_{ij}}})^{k^i}= g^{\sum_{i}{p_i(k)}}=g^{y_k}$$
+\end{enumerate}
+\subsection{complexity}
+\paragraph{Communication complexity} varies with the costs of broadcasting. using reliable broadcast means
+Each of these broadcasts costs $O(n^2)$. with up to constant rounds of broadcasting,
+ we get $O(n^3)$ total communication costs in the system. 
+ Without reliable broadcast - $O(n^2)$ communication costs
+ \paragraph{Computation complexity.} The top computation cost is creating $\mathcal{Q}$ then verifying each value.
+ That is, computing $ \{ g^{\sum_{j}{a_{1j}}}, g^{\sum_{j}{a_{2j}}},\dots\} $  is $O(n^2)$, and computing it for each player: $O(n^3)$ 
+
+
+\section{Largange interpolation in the exponent}\label{lagrange-in-exponent} %https://crypto.stackexchange.com/questions/67500/how-to-apply-lagrange-interpolation-on-bilinear-pairings
+\todo{The following is explanation regarding lagrange interpolation, give it a place of honour in the Algorithm.tex file}
+We can modify cryptographic schemes using Lagrange interpolation to work with $f<n$ participants.
+
+Given a dataset of coordinate pairs $(x_j,y_j)$ on 
+a polynomial $P(X)=\sum_{i=0}^{k}{a_i^{i}\cdot x^k}$ we can interpolate it as follows:
+ $$P(X)=L(x)=\sum _{j=0}^{k}y_{j}\ell _{j}(x)$$
+ where $\ell _{j}(x)$ is:
+
+ $$\prod_{0\leq m\leq k, \ m\neq j}\frac {x-x_{m}}{x_{j}-x_{m}}$$
+That is, we ensure the new polynomial pass through each point in its correct point-value representation $L(x_j)=y_j$.
+
+
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Information}
+When I think of the interpolation, I think Lagrange did something very clever in the above scheme:
+He didn't know how the polynomial looks like.
+But he knew that there is only one polynomial of degree $f$ that passes
+through $f+1$ points(see~\ref{polynomials:point-val-representation}).
+So he created a polynomial that will pass through the exact $f+1$ points, even if he doesn't know 
+where else this polynomial goes through, and because only one polynomial can pass through these same points
+the newly built polynomial (with the method above) must be equal to the original polynomial
+passing through these specific $f+1$ points.
+\end{bclogo}
+
+
+
+\subsection{Using it in crypto}
+For our convinicece, we publish onlt shares of the form: $\{(i,P(i))| i > 0\}$.
+
+Denote: $i_j\in T\subseteq [n]$,  means index of player $j$.
+in order to reconstruct we'll need enough indices such that $|T|=deg(P)+1$.
+
+So to evaluate $L(0)$ we'll need to compute for each $i_j\in T$:
+$$
+ \ell_{i_j}(0) = \frac{
+ \prod _{k\in T \setminus \{i_j\}}{\textbf{0}-k}
+}{
+  \prod_{k\in T \setminus \{i_j\}}{ (i_j - k)}
+}
+$$
+Now, let us finally evaluate the secret:
+$$ L(0) = \sum_{i_j \in T} {\ell_{i_j}\cdot P(i_j)} $$
+
+
+\subsubsection*{$n-out-of-n$ protocol}
+We'll take a complex and unfamiliar example to ensure one can apply it to other schemes.
+NOTE: We rely in the following example on pairing-based cryptography. 
+It'll have slight differences. 
+for example, using the key pair $(sk, g^{sk})$ one can sign a message $m$ as follows: $H(m)^{sk}$.
+
+Let's begin:
+
+
+A node can publish a secret tied to a specific ID in the following protocol (Assume we have pairings).
+Each user has a key pair $(sk_{i}, pk_{i})$, 
+and the shared public key would be $\prod_{i}pk_{i}=pk$.
+that is $\prod_{i}g^{sk_{i}}=g^{\sum_{i}sk_{i}}$.
+
+
+to hide a new transaction $tx$: sample new keys: 
+$\left(sk',pk'\right)$ and a random number $r$.
+\begin{itemize}
+\item compute $\gamma=Enc_{pk'}\left(tx\right)$
+\item compute $c=\left(\underbrace{g^{r}}_{c_{L}},\underbrace{e\left(pk,H\left(\gamma\right)^{r}\right)\cdot sk'}_{c_{R}}\right)$ 
+\item send $\left(c,\gamma,pk'\right)$.
+\end{itemize}
+
+
+Now, when every server signs: $\sigma_{i}=H\left(\gamma\right)^{sk_{i}}$\\
+we can compute the product signature: $\sigma=\prod H\left(\gamma\right)^{sk_{i}}$
+which can be used to decrypt the temp secret key: 
+\begin{align*}
+ & \frac{c_{R}}{e\left(c_{L},\sigma\right)}=\frac{e\left(g^{x},H\left(\gamma\right)^{r}\right)sk'}{e\left(g^{r},\sigma\right)}=\\
+ & =\frac{e\left(g^{\sum sk_{i}},H\left(\gamma\right)^{r}\right)\cdot sk'}{e\left(g^{r},H\left(\gamma\right)^{\sum sk_{i}}\right)}=\\
+ & =\frac{e\left(g^{\sum sk_{i}},H\left(\gamma\right)^{r}\right)\cdot sk'}{e\left(g,H\left(\gamma\right)\right)^{r\cdot\sum sk_{i}}}=\\
+ & =\frac{e\left(g,H\left(\gamma\right)\right)^{r\sum sk_{i}}\cdot sk'}{e\left(g,H\left(\gamma\right)\right)^{r\cdot\sum sk_{i}}}=\\
+ & =sk'
+\end{align*}
+ we managed to find out the temp secret key. now we can get the value
+under $\gamma=Enc_{pk'}\left(tx\right)$.
+
+
+\subsubsection*{$f-out-of-n$ protocol}
+We assume all nodes have shares of the same polynomial $P$.
+This protocol will have slight changes from the one described before.
+It'll ensure we need only $f-out-of-n$ signatures to reconstruct the secret.
+
+
+Each player holds a share $s_j$ (and a matching public key $g^{s_j}$), generated from Polynomial $P$. 
+The shared secret key is $P(0)= S = \sum_{k \in T}{\ell_k(0)\cdot s_k}$,
+and the public key is 
+$$
+  PK=
+  \prod_{k\in T}{(g^{s_k})^{\ell_k(0)}} =
+  g^{\sum_{k\in T}{\ell_k(0)\cdot s_k}} =
+  g^{L(0)}=g^{P(0)}=g^S 
+$$
+for $|T|=f+1$ indices.
+
+\paragraph*{Creating new secret}
+For each transaction $tx$: sample new keys: $\left(sk'\right)$ and a random number $r$.
+\begin{itemize}
+\item compute $\gamma=Enc_{sk'}\left(tx\right)$
+\item compute $c=\left(\underbrace{g^{r}}_{c_{L}},\underbrace{e\left(PK, H\left(\gamma\right)^{r}\right)\cdot sk'}_{c_{R}}\right)$ 
+\item send $\left(c, \gamma\right)$.
+\end{itemize}
+
+
+
+\paragraph*{reconstruction}
+
+
+With $f+1$ signatures over $H(\gamma)$, we can recompute the secret and extract out of $c$ the decryption key $sk'$.
+When a player receives a signature $\sigma_{i}=H\left(\gamma\right)^{s_{i}}$
+It verifies the signature and then stores $ (\sigma_i)^{\ell_i(0)}$.
+With enough signatures, we can compute the product signature: $$
+\sigma=\prod_{k\in T}{\sigma_k^{\ell_k(0)}} = 
+\prod_{k\in T}{H\left(\gamma\right)^{\ell_k(0)\cdot s_{k}}} = 
+H\left(\gamma\right)^{\sum_{k\in T}{\ell_k(0)\cdot s_{k}}}=
+H\left(\gamma\right)^{L(0)} =
+H\left(\gamma\right)^{S}
+$$
+Which can be used to decrypt the temp secret key: 
+\begin{align*}
+ & \frac{c_{R}}{e\left(c_{L},\sigma\right)}=\frac{e\left(PK, H\left(\gamma\right)^{r}\right)\cdot sk'}{e\left(g^{r},\sigma\right)}=\\
+ & =\frac{e\left(g^S, H\left(\gamma\right)^{r}\right)\cdot sk'}{e\left(g^{r},H(\gamma)^S\right)}=\\
+ & =\frac{e\left(g^S, H\left(\gamma\right)^{r}\right)}{e\left(g^{r},H(\gamma)^S\right)} \cdot sk'=\\
+ & =\frac{e\left(g, H\left(\gamma\right)\right)^{S\cdot r}}{e\left(g,H(\gamma)\right)^{r\cdot S}} \cdot sk'=\\
+ & =sk'
+\end{align*}
+ we managed to find out the temp secret key. now we can get the value
+under $\gamma=Enc_{pk'}\left(tx\right)$. as wanted.
+
+\chapter{protocols for identification and login}
+\section{Identification Protocols}.
+
+\subsection{Types of adversaries}
+
+The identification protocol is a set of a prover $P$ and a verifier
+$V$. where the prover wants to gain access to some resource, and
+to do so, the verifier must give it access. the verifier will only
+give access to a prover that convinces it that it has the rights to
+that resource. for example, $P$ wants to enter its house, and to
+do so it must unlock the door. the convincing method is a key.
+\begin{description}
+\item [{Direct$\,\,$attacks}] The adversary is not able to eavesdrop.
+Then using no information other than what is publicly avail- able,
+the adversary must somehow impersonate the prover to the verifier.
+A simple password protocol is sufficient to defend against such direct
+attacks.
+\item [{Eavesdropping$\:$attacks}] The adversary can eavesdrop and obtain
+the transcript of several interactions between the prover and verifier.
+In this case the simple password protocol is insecure. However, a
+slightly more sophisticated protocol based on one-time passwords (TBD)
+is secure.
+\item [{Active$\:$attacks}] an active adversary that interacts with the
+prover. The adversary uses the interaction to try and learn something
+that will let it later impersonate the prover to the verifier. Identification
+protocols secure against such active attacks require interaction between
+the prover and verifier. They use a technique called challenge-response.
+\end{description}
+
+\subsection{Salting}
+
+\paragraph{Storing the password in plaintext is prone to active attacks, once
+the verifier is compromised, the adversary can gain access easily.
+A simple solution would be to hash the plain-texts. unfortunately
+the space of possible passwords being used is not very large. Hence
+in addition to hashing the plain-texts, add salt! }
+
+\paragraph{To salt a plain-text, the verifier should add some random string
+to it, then store the salt as plain-text, and hash the password and
+the salt concat to it ($salt,Hash\left(salt||password\right)$).}
+
+\paragraph{Salting ensures a direct attack would need to run an exhaustive search
+over $D\times S$ where $D$ is the dictionary with all weak passwords
+and $S$ is the space of random strings the verifier uses, for example
+salt size can be $|S|=2^{128}$. }
+
+\paragraph{That is not really the case though, it just ensures the attacker
+cannot use a preprocessing algorithm to have efficient attacks. (?the
+attacker needs to make a preprocess for all salts it saw in the server
+along with the dictionary.) \protect \\
+Now its best case would be to run on a dict along hash the plaintext
+hash with the word from the dict in the hopes of finding a similar
+hash in the servers password file.}
+
+\subsubsection{salt and pepper}
+
+skipped it
+
+\subsection{eavesdrop safe}
+
+\subsubsection{Hotp}
+
+HOTP is a protocol for identification which is safe against eavesdrop
+attacks. 
+
+\paragraph{This attack attempts to change the password after each use. To do
+so, the prover and verifier should share a secret, which they will
+then be used to generate some proof of authenticity. Using $HMAC$
+(or a $PRF$ as follows $F\left(k,i\right)$) the prover generates
+a new value over a shared counter: $Hmac\left(i\right)$ and will
+send it to the verifier. verifier can authenticate it. and then they
+both advance $i$ by $1$. }
+\begin{rem}
+We can improve it by sending both $i$ and the output of the $HMAC$
+over $i$, this way the verifier can check if $i$ is greater than
+its counter $i'$, so they do not have to be matching counters at
+all times.
+\end{rem}
+
+\begin{rem}
+This verification protocol changes state only upon an attempt to login.
+A user that does not login frequently, might be compromised if an
+attacker gained the latest token. The attacker can sell the obtain
+token to anyone which should give access once unless the user logins
+again. 
+\end{rem}
+
+
+\subsubsection{TOPT: time base OTP }
+
+Instead of a counter, one can use the current time, and each login
+attempt is only valid if the timestamp is recent enough, say 10 seconds.
+
+\subsubsection{S/key }
+
+TODO.
+
+attempts to solve the leaking key issue: \\
+generate random $k$, give the verifier $H^{(n+1)}(k)$. the prover
+stores $(k,n)$ to send identification request: 
+\begin{itemize}
+\item $P$ sends $t=H^{i}(k)$ then sets $i=i-1$. 
+\item $V$ will inspect that $H(t)$ equals to what it stored, if it does
+it updates the storage as $t$.
+\end{itemize}
+this can be used for $n$ times, afterwards needs to be regenerated.
+kinda cool. 
+
+basically, the provers sends $H^{n}(k)$ then $H^{n-1}\left(k\right)$
+... $H(k)$.
+\begin{itemize}
+\item Assumes that the key is kept secret by the client
+\item the resulting password is at least 128bit, which is long to type by
+humans. 
+\end{itemize}
+%
+You reached 18.6 in the book, which is talking about security against
+active attacks. 
+
+\section{Active attack}
+
+the attacker can impersonate the verifier for a brief moment, and
+its goal is to find a secret to fool the actual verifier. 
+
+thus HOTP is easy to break, gain a legit one time password and forward
+it to the verification protocol. 
+
+\subsection{challenge-response protocol: }
+
+the verifier sends a random challenge $c$, the prover uses a mac
+over the challenge $c$ and send it back. the attacker can only interact
+with the prover, it cannot prepare ask the prover all possible challenges
+the verifier will chuck at him. and because we use $MAC$ the attacker
+cannot forge a response from the prover. 
+
+\subsubsection{improvement }
+
+to ensure the verifier can be compromised and the attacker can't do
+anything to gain access later using active attack - we use signature
+scheme instead of mac. 
+
+\chapter{Identification and signatures from sigma protocols}
+
+This chapter will be useful to develop zero--knowledge proofs.
+
+\section{Schnorr\textquoteright s identification protocol }
+
+\paragraph{Schnorr's identification protocol is a basic block for building signature
+schemes with DH assumption as its base.}
+
+This will be our first proof of knowledge ever to be seen.
+
+\paragraph{This protocol can be proved secure against eavesdropping attacks,
+assuming the discrete logarithm problem is hard.}
+
+Let $\G$ be a cyclic group of prime order $q$with a generator $g\in\G$.
+Suppose the prover has a secret key $\alpha\in\Z_{q}$ and a corresponding
+public key $u=g^{\alpha}$. $P$ wishes to prove to an identifier
+$V$ that it knows $\alpha$.
+
+\subsubsection{protocol}
+
+both the prover and the verifier generates random numbers respectively
+$k,c$. The prover send $g^{k}$ and once it receives the challenge
+$c$ from the verifier, it'll need to compute $t=k+\alpha\cdot c$
+and send $t$ to the verifier. in turn, the verifier should compute
+the following:$\left(u\right)^{c}\cdot g^{k}=g^{k+\alpha\cdot c}$
+which should be equal to $g^{t}$.
+
+\paragraph{A keen eye could see that this is very similar already to Schnorr's
+signature scheme.}
+
+\subsubsection{Honest verifier zero knowledge and security against eavesdropping}
+
+We prover that the protocol is eavesdrop safe by assuming the adversary
+has access to $vk$, and that it had seen a conversation between $P$
+and $V$. The idea is to show that these conversations do not help
+the adversary, because the adversary could have efficiently generated
+these conversations by himself, given $vk$ (but not $sk$).
+\begin{definition}
+Let $\mathcal{I}=(G,P,V)$ be an identification protocol. We say that
+$\mathcal{I}$ is honest verifier zero knowledge, or $HVZK$ for short,
+if there exists an efficient probabilistic algorithm $Sim$ (called
+a simulator) such that for all possible outputs $(vk,sk)$ of $G$,
+the output distribution of $Sim$ on input $vk$ is identical to the
+distribution of a transcript of a conversation between $P$ (on input
+$sk$) and V (on input $vk$).
+\end{definition}
+
+
+\paragraph{Comments on the terminology are in order. The term \textquotedblleft zero
+knowledge\textquotedblright{} is meant to suggest that an adversary
+learns nothing from $P$, because an adversary can simulate conversations
+on his own (using the algorithm $Sim$), without knowing $sk$. The
+term \textquotedblleft honest verifier\textquotedblright{} conveys
+the fact this simulation only works for conversations between $P$
+and the actual, \textquotedblleft honest\textquotedblright{} verifier
+$V$ , and not some arbitrary, \textquotedblleft dishonest\textquotedblright{}
+verifier, such as may arise in an \textbf{active attack} on the identification.}
+\begin{theorem}
+If an identification protocol $\mathcal{I}$ is secure against direct
+attacks, and is HVZK, then it is secure against eavesdropping attacks. 
+\end{theorem}
+The main idea here: if I'm secure against someone interacting maliciously with the verifier.
+and in addition to that, my regular protocol does not provide any useful information someone
+can use later on: im safe against eavsedrop attacks too.
+
+Schnorr's protocol is HVZK, they prove it using a simulator.
+In addition to that, they show it's safe against direct attacks by showing that 
+if there was some attacker that can break it, it can generate twice accepting answers
+to the verifier.
+then they can use these two answers to BREAK the discrete log assumption.
+
+
+\subsection{ECDSA }
+
+The ECDSA signature scheme $(G,S,V)$ uses the group of points $\G$
+of an elliptic curve over a finite field $F_{p}$. Let $g$ be a generator
+of $\G$ and let $q$ be the order of the group $\G$, which we assume
+is prime. Im skipping the algorithm, because it isn't as elegant.
+in addition to that, Schnorr sigs are strongly secure, but ECDSA are
+not. Given an ECDSA signature $\sigma=\left(r,s\right)$ on a message
+$m$, anyone can generate more signatures on $m$.
+
+
+\section{Sigma protocols: basic definitions }
+
+Schnorr\textquoteright s identification protocol is a special case
+of an incredibly useful class of protocols called Sigma protocols.
+We'll soon see the basic concepts associated with Sigma protocols
+and how they can become helpful to us.\\
+Later we'll see how Sigma protocols are useful to us, even out of
+the context of identification and signatures.
+\begin{definition}
+(Effective relation). An effective relation is a binary relation $R\subseteq X\times Y$,
+where $X,Y$ and $R$ are efficiently recognizable finite sets. Elements
+of $Y$ are called \textbf{statements}. If $\left(x,y\right)\in R$,
+then $x$ is called a witness for $y$.
+\end{definition}
+
+\begin{definition}
+Sigma Protocol. Let $R\subseteq X\times Y$ be an effective relation.
+A \textbf{Sigma Protocol }for $R$ is a pair $\left(P,V\right)$.
+\begin{itemize}
+\item $P$ is an interactive protocol algorithm called the \textbf{prover},
+which takes as input a witness--statement pair $\left(x,y\right)\in R$.
+\item $V$ is an interactive protocol algorithm called the \textbf{verifier},
+which takes as input a statement $y\in Y$, and which outputs accept
+or reject.
+\item $P$ and $V$ are structured so that an interaction between them always
+works as follows:
+\begin{itemize}
+\item To start the protocol, $P$ computes a message $t$, called the commitment,
+and sends $t$ to $V$;
+\item Upon receiving $P$\textquoteright s commitment $t$, $V$ chooses
+a challenge $c$ at random from a finite challenge space $C$, and
+sends $c$ to $P$;
+\item Upon receiving $V$ \textquoteright s challenge $c$, $P$ computes
+a response $z$, and sends $z$ to $V$;
+\item Upon receiving $P$\textquoteright s response $z$, $V$ outputs either
+\textbf{accept} or \textbf{reject}, which must be computed strictly
+as a function of the statement $y$ and the conversation $\left(t,c,z\right)$.
+In particular, $V$ does not make any random choices other than the
+selection of the challenge --- all other computations are completely
+deterministic.
+\end{itemize}
+\end{itemize}
+We require that for all $\left(x,y\right)\in R$, when $P\left(x,y\right)$
+and $V\left(y\right)$ interact with each other, $V\left(y\right)$
+always outputs accept.
+\end{definition}
+
+\begin{rem}
+So a sigma protocol, is any prover verifier challenge where the prover
+knows some witness to y and want to prove that $y$ is in the language
+to the verifier?
+\end{rem}
+
+If the output is accept we call the conversation $\left(t,c,z\right)$
+an accepting conversation for $y$.
+\begin{example}
+It should be clear that for Schnorr\textquoteright s identification
+protocol $\left(G,P,V\right)$, the pair $\left(P,V\right)$ is an
+example of a \textbf{Sigma protocol} for the relation $R\subseteq X\times Y$,
+where
+\[
+X=\Z_{q},Y=\G\text{ and }R=\left\{ \left(\alpha,g^{\alpha}\right)\in\Z\times\G\right\} .
+\]
+
+TODO continue
+\end{example}
+
+
+\chapter{MPC}
+We have a function f that takes n inputs and produces m outputs:
+$$  (y_1,...,y_m) = f(x_1,...,x_n).$$
+We also have N parties, $P_1,...,P_N$. 
+Their goal is to run a protocol where each input value $x_i$ is 
+contributed by one of the parties and each output $y_j$ is obtained by one or more of
+ the parties.
+
+
+We want to design an efficient protocol for this problem that provides
+\emph{ privacy, soundness, and input independence}.
+
+\section{Wanted properties}
+\begin{itemize}
+  \item Privacy: No part learns anything about any other part's inputs
+  (except for the information that is inherently revealed by the outputs).
+  \item Soundness/correctness: honest parties compute correct outputs. 
+  \item Input independence: All parties must choose their 
+  inputs independently of the other parties' inputs 
+  (No one can use Alice's inputs to their advantage).
+  \item Guaranteed output delivery: all honest parties are guaranteed to obtain
+  their output.
+  \item Fairness: If any party (including corrupted members) obtains their output, 
+  then all honest parties do so.
+\end{itemize}
+\section{Formal Security}
+The way to define security formally is to say that an attack on the protocol in 
+the "real world" 
+is equivalent to some attack on the protocol in an "ideal world" in which 
+no damage can be done.
+
+In the ideal world, the protocol is implemented using a trusted 
+party to which all parties (both honest and corrupt) submit inputs, 
+and from which all parties (both honest and corrupt) obtain their designated outputs. 
+The trusted party itself cannot be corrupted.
+
+We then describe the details of the ideal-world execution, including the 
+behavior of the trusted party who evaluates the function.
+
+The definition of security then basically says: for every efficient adversary $A$ 
+in the real world, there exists an "equivalent" efficient 
+adversary $\mathcal{S}$ in the ideal world (usually called a simulator).
+Since there is no possible attack in the ideal world, 
+there is no possible attack in the real world.
+
+the informal notions of \emph{privacy, soundness, and input independence} are
+ implied by this type of definition.
+
+ Essentially we'll want to show that the ideal world we describe is 
+ "equivalent" to the real world.
+
+ \subsection{A few applications of MPC}
+ \begin{itemize}
+  \item Elections: Without MPC, parties submit votes to a trusted server $T$ who 
+  counts the votes and states the winner.
+  \item Privacy-preserving mining of medical data. Two hospitals want to share data,
+  to perform research, but cannot share it due to regulations.
+
+ \end{itemize}
+
+\section{Securely evaluating arithmetic circuits}

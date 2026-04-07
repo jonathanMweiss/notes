@@ -1,44 +1,310 @@
 
-\chapter{Algorithms}
-\section{FFT, DFT and NTT}
-\subsection{representations of a polynomial}
-we can either use \emph{coefficient representation} or \emph{Point-value representation}.
 
-\subsubsection*{coefficient representation.}
-A coefficient representation of a polynomial $P(x)$ is a vector of coefficients 
-$a=(a_0,a_1,\dots, a_{n-1})$.
-In coefficient representation, we can evaluate or add a polynomial in $O(n)$ time. 
-unfortunately multiplying two polynomials takes $O(n^2)$.
-The operation of multiplying two polynomials $a,b$ is called convolution $c=a\otimes b$.
+\chapter{Finite Fields and Rings}\label{finite-fields}
+\section{GCD and Extended Euclidean Algorithm}
+
+\subsection{GCD}
+The greatest common divisor (GCD) of two integers
+ $a$ and $b$ is the largest integer that divides both $a$ and $b$.
+ While seemingly simple, the GCD is a fundamental concept in number theory
+ and used extensively when working with integers over finite fields.
 
 
-\subsubsection*{Point-value representation.}
-A point-value representation of a polynomial $P(x)$ of degree-bound $n$ is a set of $n$ point-value pairs.
-$$ \{ (x_0,P(x_0)),\dots , (x_{n-1}, P(x_{n-1})) \}$$
+ \begin{lstlisting}[language=Python,
+  caption={GCD algorithm in python}
+]
+
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a%b
+
+    return a
+
+ \end{lstlisting}
+
+This simple algorithm works since 
+$a=b*q+r$ where $r$ is some remainder. The $GCD(a,b)=x$
+must divide both of these numbers, thus it should be able to divide $b$, and $r$ (
+otherwise, $a/x = \frac{b*q+r}{x}=\frac{b*q}{x}+\frac{r}{x}$, and if $\frac{r}{x}$ has a remainder 
+then it is a contradication to it being a gcd of $a$).
+Thus, $GCD(a,b)=GCD(b,r)$, and we can continue the algorithm until the smaller 
+value is $0$.
+
+
+\subsection{Extended Euclidean Algorithm (inverse algorithm)}
+\label{sec:finite-field:extended-euclidean}
+The Extended Euclidean Algorithm is an important algorithm in any number theory course.
+This algorithm is used to find the inverse of an element in a finite field.
+\paragraph{Bezout's identity}
+Bézout's identity states that for any two integers $a$ and $b$ (not both zero), there exist integers $x$ and $y$ such that:
+$$ ax + by = \gcd(a, b) $$
+These integers $x$ and $y$ are called Bézout coefficients for $(a, b)$. Furthermore, $\gcd(a, b)$ is the smallest positive integer that can be expressed in the form $ax + by$.
+
+The following proof is an iteration of the above explanation.
+\begin{proof}
+    Let $S = \{ax + by \mid x, y \in \mathbb{Z}, ax + by > 0\}$. By the Well-Ordering Principle, $S$ has a smallest element $d$.
+    We claim $d = \gcd(a, b)$.
+    First, $d$ must divide $a$. If not, $a = qd + r$ with $0 < r < d$.
+    But $r = a - qd$ is a linear combination of $a$ and $b$ smaller than $d$, contradicting minimality. Thus $d \mid a$ and similarly $d \mid b$.
+    Since $d$ is a common divisor, $d \le \gcd(a, b)$. Also, $\gcd(a, b)$ divides any linear combination of $a$ and $b$, so $\gcd(a, b) \mid d$, implying $\gcd(a, b) \le d$.
+    Therefore, $d = \gcd(a, b)$.
+\end{proof}
+
+\paragraph{Using Bezout to Find Inverse}
+As a result of Bezout's identity, we can find the inverse of an element in a finite field $GF(q)$. 
+in short, in a finite field $q$ is a prime right? so $GCD(a,q)=1$ for every $a\in GF(q)$.
+As a result, we have $ax+qy=ax+0=GCD(a,q)=1$ (where $qy=0$ since we are in $GF(q)$), and thus $ax=1 \mod q$. and luckily, the 
+extended Euclidean algorithm can find this $x$ and this $y$ (we toss the $y$ when we just want the inverse of $a$ in $GF(q)$).
+
+
+
+The algorithm is basically applying the GCD algorithm, but keeping track of the coefficients
+$x$ and $y$ in the process.
+
+\begin{lstlisting}[language=Python,
+  caption={Extended Euclidean Algorithm in python}
+]
+def extended_euclidean(a, b):
+    x0, x1, y0, y1 = 1, 0, 0, 1
+    while b != 0:
+        q, a, b = a // b, b, a % b # advancing the algorithm by one step.
+
+        # updating the x coefficients. try doing gcd by hand to understand this.
+        x0, x1 = x1, x0 - q * x1 
+        y0, y1 = y1, y0 - q * y1
+
+    return a, x0, y0
+
+\end{lstlisting}
+
+\red{below paragraphs are generated via gemini3, i've read through them though.}
+
+\paragraph{Matrix Intuition}
+To understand the coefficients update, we can view the Euclidean algorithm steps as matrix transformations.
+We start with the identity relations:
+\[
+\begin{pmatrix} a \\ b \end{pmatrix} = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} \begin{pmatrix} a \\ b \end{pmatrix}
+\]
+In each step of the Euclidean algorithm, we perform the division $a = q \cdot b + r$, which implies $r = a - q \cdot b$.
+If we want to transition from the state $(a, b)$ to $(b, r)$, we can apply the following transformation matrix:
+\[
+\begin{pmatrix} b \\ r \end{pmatrix} = \begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix} \begin{pmatrix} a \\ b \end{pmatrix}
+\]
+By maintaining the product of these transformation matrices, we effectively track the linear combination coefficients $x$ and $y$ such that $r_i = x \cdot \text{original\_}a + y \cdot \text{original\_}b$.
+The code above implements exactly this logic, updating the coefficients $(x_0, x_1)$ and $(y_0, y_1)$ according to the transformation matrix $\begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix}$ at each step.
+
+\paragraph{Invariant Explanation}
+To make it even clearer, let's denote the initial inputs as $A$ and $B$.
+The variables $x_0, y_0$ track the coefficients for the current value of variable \texttt{a}, and $x_1, y_1$ track the coefficients for the current value of variable \texttt{b}.
+Throughout the execution of the loop, the following invariant holds:
+\[
+\begin{pmatrix} \texttt{a} \\ \texttt{b} \end{pmatrix} = \begin{pmatrix} x_0 & y_0 \\ x_1 & y_1 \end{pmatrix} \begin{pmatrix} A \\ B \end{pmatrix}
+\]
+This means that at any step:
+\[
+\texttt{a} = x_0 \cdot A + y_0 \cdot B \quad \text{and} \quad \texttt{b} = x_1 \cdot A + y_1 \cdot B
+\]
+When the loop terminates ($\texttt{b}=0$), the variable \texttt{a} holds the GCD, and the invariant tells us that $\text{GCD}(A, B) = x_0 \cdot A + y_0 \cdot B$.
+Thus, the returned $x_0$ and $y_0$ are the Bezout coefficients.
+
+\paragraph{Deriving the Update Rules}
+The code updates \texttt{x0, x1} and \texttt{y0, y1} by performing a matrix multiplication.
+Let $M = \begin{pmatrix} x_0 & y_0 \\ x_1 & y_1 \end{pmatrix}$ be the matrix storing the current coefficients.
+In each step of the loop, we apply the transformation $T = \begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix}$.
+The new coefficient matrix $M_{new}$ is the product $T \times M$:
+\[
+M_{new} = \begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix} \begin{pmatrix} x_0 & y_0 \\ x_1 & y_1 \end{pmatrix} 
+= \begin{pmatrix} x_1 & y_1 \\ x_0 - q \cdot x_1 & y_0 - q \cdot y_1 \end{pmatrix}
+\]
+This matrix multiplication exactly matches the Python tuple assignment:
+\begin{itemize}
+    \item The first row of $M_{new}$ becomes the new $(x_0, y_0)$, which takes values from the old second row $(x_1, y_1)$.
+    \item The second row of $M_{new}$ becomes the new $(x_1, y_1)$, calculated as $(x_0 - q x_1, y_0 - q y_1)$.
+\end{itemize}
+
+\section{Chinese Remainder Theorem}
+
+\section{Generator}
+
+\section{Roots of Unity}
+
+\chapter{Polynomial Algorithms}\label{chapter:polynomial-algorithms}
+
+\section{Polynomial evaluation}
+Polynomial evaluation is the process of computing the value of a polynomial at a given point.
+This is a fundamental operation in many algorithms and applications. 
+There are several methods to evaluate polynomials, with varying levels of efficiency.
+
+I highly recommend reading the section on polynomial evaluation before 
+proceeding (refer to~\ref{sec:poly-eval}), as I have personally used it in 
+practice to both verify the correctness of my algorithms (as outlined
+ in paper~\cite{SPIR} \todo{once published}) and gain a deeper 
+ understanding of the capabilities and limitations of polynomials.
+% To see the formal definition of a polynomial, refer to \autoref{def:poly-eval}
+
+\subsection{Evaluation Algorithms}
+Evaluating a polynomial at a point is a straightforward process.
+Substituting the point for $X$ in the polynomial gives the result. 
+However, Horner's rule offers a more efficient method.
+
+Horner's rule reduces the number of multiplications required to evaluate the polynomial.
+It rewrites the polynomial in a nested form, making computation more efficient.
+
+To apply Horner's rule to evaluate a polynomial $P(x) = a_0 + a_1x + a_2x^2 + \dots + a_nx^n$ at a 
+point $x = r$, follow these steps:
+
+\begin{lstlisting}[language=Python,
+  caption={Horner's rule algorithm in python}
+]
+def horner(p: List[int], r: int) -> int:
+    result = p[-1]
+    for i in range(len(p) - 2, -1, -1): # iterate from n-1 to 0
+        result = result * r + p[i] # result = ((((....)x+a_3)x+a_2)x+a_1)x +a_0 = p(r)
+    return result
+\end{lstlisting}\label{algorithm:polynomial:evaluation}
+
+
+\section{Coefficient vs Point-Value representation}\label{polynomials:point-val-representation}
+We've defined one representation for polynomials, the coefficient representation~\ref{polynomials:coeffcient-pres},
+But there is another representation, which is used in numerous algorithms (e.g.,~\ref{schawtz-zippel},\ref{polynomial:multiplication}):
+
+
+A point-value representation of a polynomial $P(x)$ of degree-bound $n$ is a set of $n+1$ point-value pairs.
+$ \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}$, which uniquely defines it.
 
 \begin{theorem}[Uniqueness of an interpolating polynomial]
-  For any set $ \{ (x_0,P(x_0)),\dots , (x_{n-1}, P(x_{n-1})) \}$ of $n$
+  For any set $ \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}$ of $n+1$
   point-value pairs such that all the $x_k$ values are distinct,
   there is a unique polynomial $P(x)$ of degree-bound $n$ such that
   $y_k = P(x_k)$. for $k\in[n]$ 
 \end{theorem}
 
-Due to the above theorem, we can see that this representation defines a polynomial well. 
-And one can move between both representations.
+\begin{proof}
+  \sloppy{
+  So let there be a polynomial $p(x) \neq 0$ of degree 
+  $n$ and a set $ \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}$
+  of points representing it. Let us assume in contradication that there exists $q(x)\neq p(x)$ and it also happens
+  that $p(x_0)=q(x_0), \dots, p(x_n)=q(x_n)$. That is, there is another polynomial that is evaluated to the same points,
+  making the representation non-unique.
 
-Because $C(X)=A(X)B(X)$ for any $x_j$, then $C(x_j)=A(x_j)B(x_j)$. Meaning 
-multiplication and addition in this representation cost $O(n)$.
- 
+  So if such $q(x)$ exists, we can create a new polynomial $(p-q)(x)$, notice that $(p-q)$ is also of degree $n$.
+  $x_i$ is a root $0\le i\le n$ of $(p-q)(x)$, since $(p-q)(x_i)=p(x_i)-q(x_i)$, thus it has $n+1$ roots.
+  This is a contradication to the fundamental theorem of algebra \todo{cite}, that is, a polynomial $p(x)\neq 0$ 
+  of degree $n$ has at most $n$ roots. }
+\end{proof}
+
+Now that we know that this representation is unique, I'll claim without proof that
+there is a mapping that is both injective and surjective (bijective) from both representations.
+Thus these both know representations are isomorphic.
+
+\section{Polynomial Identity Testing (SZ)}\label{schawtz-zippel}
+In this section, we talk about identity testing, 
+and some issues involving this subject.
+
+Given two polynomials $P(x)$ and $Q(x)$ of the same degree $d$, 
+how do we prove these are the same polynomials?
+We can calculate it and check $d$ points on each polynomial 
+since each polynomial can be solely defined by its point-value representation\ref{polynomials:point-val-representation}.
+
+
+Schwartz-Zippel \cite{SZ} made this notion much more efficient 
+(and complete since they discuss multivariate polynomials).
+By choosing a random point for evaluating each polynomial, we can 
+be almost entirely certain 
+whether the polynomials are equal or not.
+
+\begin{theorem}
+ Let $P(x)$ be a non-zero polynomial of total degree $d$ over 
+ an integral domain $R$. Let $S$ be a finite subset of $R$, and let $r$
+ be a selected random number from $S$. Then
+  $\Pr [P(x)=0]\le \frac{deg(p(x))}{|S|}$.
+\end{theorem}
+\begin{proof}
+  $P(x)$ is a polynomial, from the fundamental theorem of algebra\cite{Aigner2010} it has 
+ at most $d$ roots. Thus, choosing some random point $r$,
+  $\Pr [P(r)=0]\le \frac{d}{|S|}$. 
+\end{proof}
+
+
+Given this notion, one can easily extrapolate this idea and create a method 
+to check whether $P(x)\cdot Q(x)$ is equal to some given $Z(x)$: 
+choose a random number $r$, and evaluate $P(r)\cdot Q(r) - Z(r)$.
+if this expression equates to $0$, then $P(x)\cdot Q(x)=Z(x)$ with overwhelming 
+probability (depending on the size of $Z_q$).
+
+\subsection{Troubled waters in $Z_q[X]/F(X)$}
+Given the above method, we can investigate new and upcoming ideas on numerous
+problems (see  \cite{sz-usage2} and \red{fpir- to be published}).
+The unlucky ones might encounter a troubling problem.
+While SZ works quite well over fields and rings,
+One would quickly find out that more complex algebraic structures do not 
+bend so easily to this powerful technique.
+
+For instance, consider the following quotient polynomial rings $R_q=Z_q[X]/(X^n+1)$,
+choose two random polynomials from $R_q$, and try the method of testing above.
+It is highly likely that for some random $r$, $P(r)\cdot Q(r) \ne (PQ \mod (X^n+1))(r)$.
+
+This issue arises because not every point $r\in Z_q$ can be used to construct a
+polynomial evaluation map $f_r$ (refer to \autoref{def:poly-eval}) 
+over $R_q$ such that $f_r$ is a ring homomorphism. 
+Consequently, certain values of $r$ will not be compatible with the Schwartz-Zippel method.
+In other words, $f_r(P\cdot Q) \neq f_r(P)\cdot f_r(Q)$.
+
+
+\paragraph{Finding valuable points}
+
+Fortunately, there are some points $r\in \Z_q$ which can be used to create polynomial evaluation maps that 
+are ring homomorphisms.
+\begin{theorem}
+  Let $R_q=Z_q[X]/F(X)$ and let $r\in Z_q$. If $F(r)=0$ then $f_r$ is a ring homomorphism.
+\end{theorem}
+\begin{proof}
+  $f_r$ preserve the multiplicativeidentity: $f_r(1_{R_q}) = 1(r)=1$.
+  Every $f_r$ preserver addition.
+  preserving multiplication:
+  Let there be $P(X), Q(X) \in R_q$. 
+  By definition $P(X)\cdot Q(X) \mod F(X) = P(X)\cdot Q(X) \lfloor \frac{P(X)\cdot Q(X)}{F(X)} \rfloor \cdot F(X)$,
+  so $f_r(P(X)\cdot Q(X))= f_r(P(X))cdot f_r(Q(X)) - f_r(\lfloor  \frac{P(X)\cdot Q(X)}{F(X)} \rfloor)\cdot f_r(F(X))$.
+  Because $f_r$ is an evaluation map, $f_r(\lfloor  \frac{P(X)\cdot Q(X)}{F(X)} \rfloor)=z$ where is some unknown integral from $Z_q$.
+  then $f_r(P(X)\cdot Q(X)) =P(r)\cdot Q(r) - z \cdot 0= P(r)\cdot Q(r)$, as wanted.
+\end{proof}
+
+So, by finding the roots of $F(X)$, we can identify potential values where 
+the SZ algorithm continues to function effectively. 
+However, this set is quite limited (consider the maximum number of roots of the polynomial $F(X)$).
+
+\section{Polynomial addition}\label{polynomials:addition}
+\section{Fast Polynomial Multiplications}\label{polynomial:multiplication}\label{section:fft}
+
+We know how to add two polynomials as efficient as possible~\ref{polynomials:addition},
+but the simple definition of polynomial multiplication isn't as efficient, and demand $O(n^2)$.
+Many complex algorithms make use of polynomial multiplication, and as a result, the algortihm 
+we are going to describe was announced as one of the top 10 Algorithms of 20th
+Century by the IEEE magazine Computing in Science and Engineering.\cite{814652}
+
+
+We begin by remembering the point-value representation~\ref{polynomials:point-val-representation}.
+In this representation, once can perform both addition and multiplication between two polynomials 
+by performing point to point operations (similar to addition in coefficient representation)\todo{provide proof?}.
+As a result multiplication and addition in this representation cost $O(n)$.
+
+
+The naive algorithm of moving from coefficient representation to point-value representation
+requires evaluating the polynomials $n+1$ times, and as a result runs in $O(n^2)$.
+Thus, to perform polynomial multiplication we'll begin with finding a clever and fast way to move between representations.
 \subsection{FFT}
-Luckily there is a way to move to and from both representations quickly:
-\subsubsection*{root of unity}
-A complex $n$th root of unity is a complex number $\omega$ such that
+Luckily there is a way to move to and from both representations quickly using the \emph{roots of unity}.
+
+\begin{definition}
+An $n$th root of unity is a complex number $\omega$ such that
 $\omega^n =1$.
-There are exactly $n$ roots of unity: $e^{2\pi i k/n}$ for $k\in[n-1]$ 
+\end{definition}
+
+There are exactly $n$ roots of unity $e^{2\pi i k/n}$ for $k\in[n-1]$ 
 ($e^{iu}= \cos{u}+i \sin{u}$).
 
 The value $\omega_n=e^{2\pi i/n}$ is the \emph{principal nth root of unity}.
-all other complex nth roots of unity are powers of $\omega_n$:
+all other roots of unity are powers of $\omega_n$:
  $\omega_n^0, \omega_n^1, \omega_n^2,\dots, \omega_n^{n-1}$.
 
 FFT takes special advantage that these values have special properties.
@@ -110,9 +376,7 @@ $$
 
  Thus we gain a matrix with heavy symmetry, which the FFT can use.
 
-
-
-\subsubsection*{fft main idea}
+\paragraph{fft main idea}
 The FFT method employs a divide-and-conquer strategy, 
 using the even-indexed and odd-indexed coefficients of $A(x)$
 separately to define the two new polynomials $A^{[0]}(x)$ and $A^{[1]}(x)$ of degree-bound $n/2$.
@@ -140,6 +404,7 @@ We can continue in this manner until we evaluate the full polynomial on $n$ dist
 
 
 \subsection{putting it all together}
+\red{there might be some miscalculations here, but the idea is solid.}
 As we've seen we can create a matrix with heavy symmetry, called the DFT matrix. 
 now, we'd want to capitalize on that and create a recursive algorithm.
 To do so, instead of the regular polynomial assignment we've seen above using a matrix,  
@@ -147,7 +412,7 @@ we'll shuffle things a bit according to the divide-and-conquer approach from abo
 $$
 F_n \cdot p(x) = 
 \begin{pmatrix}
-  I_{ \frac{n}{2}} & -D_{\frac{n}{2}} \\
+  I_{ \frac{n}{2}} & D_{\frac{n}{2}} \\
   I_{ \frac{n}{2}} & -D_{\frac{n}{2}}
  \end{pmatrix}
  \cdot 
@@ -175,49 +440,58 @@ F_n \cdot p(x) =
 
  We can continue this process recursively, to get what we want.
  In each recursive level, the algorithm does at most $O(n)$ work (i.e., multiplying by sparse matrices),
-  and due to the logarithmic depth of the recursion, we get $O(nlogn)$.
+  and due to the logarithmic depth of the recursion, we get $O(n\log{n})$.
+x
+\label{algorithm:fft}
+  \begin{lstlisting}[language=Python,
+    caption={fft algorithm in python}
+  ]
+import numpy as np
 
-\subsection*{Interpolation}
+def fft(p: np.ndarray) -> np.ndarray:
+    n = len(p)
+    if n == 1:
+        return p
+    omega = np.exp(2 * np.pi * 1j / n)
 
-The process is similar, we simply need need to invert $F_n$~\ref{dft-matrix}.
-% We can write the polynomial as a Vandermonde matrix:
-% $$
-% \begin{pmatrix}
-%   y_0\\
-%   y_1\\
-%   \vdots \\
-%   y_{n-1}\\
-% \end{pmatrix}
-% =
-% \begin{pmatrix}
-%   1 & x_0 & x_0^2 ,\dots\\
-%   1 & x_1 & x_1^2, \dots,\\
-%   \vdots & \vdots & \vdots & \ddots & \\
-%   1 & x_{n-1} & x_{n-1}^2, \dots,\\
-%  \end{pmatrix}
-%  \cdot 
-% \begin{pmatrix}
-%   a_0\\
-%   a_1\\
-%   \vdots \\
-%   a_{n-1}\\
-% \end{pmatrix}
-%  $$
+    p_even, p_odd = p[::2], p[1::2] 
+    ye, yo = fft(p_even), fft(p_odd)
 
-%  and then if we assign the roots of unity as $x_0,x_1,\dots$
-%  we should be able to compute the inverse of the above matrix very quickly
-%  (they have some proof for that).
- 
-%  Then there is a quick method for computing $y\cdot Matrix(A(X))$.
+    # mult the structured left matrix with the recursive result.
+    # O(n) work comes from here.
+    y = np.zeros(n, dtype=np.complex128)
+    for k in range(n // 2):
+        y[k] = ye[k] + omega ** k * yo[k]
+        y[k + n // 2] = ye[k] - omega ** k * yo[k]
+    return y
+    \end{lstlisting}
+    
+    \begin{remark}[Summary]
+      Notice that to achieve this result, we needed to reduce the polynomial into
+      even and odd parts, and then adjust the assignment matrix using
+      the properties of roots of unity. Each part is important in its own way.
+    \end{remark}
+\subsection{Inverse FFT}\label{ifft}
+
+The DFT matrix is invertible.
+Thus one can solve for the vector of coefficients,
+by simply inverting the matrix in~\ref{dft-matrix}.
+
+Fortunately, with little tricks we can adjust the inverse of the DFT matrix such that
+we can use the same algorithm as above, but instead of
+$\omega^k$ we'll use $\omega^{-k}$, and after we are done with the FFT
+algorithm, we'll need to normalize it by dividing every coefficient element
+by $N$ the size of the polynomial.
 
  \begin{corollary}
   For FFT, DFT, and NTT we must use specific values to gain speedy interpolation and
   evaluation of the polynomial. 
  \end{corollary}{Conclusin:}
  
-\subsection{NTT}
-The NTT is a specialized version of the discrete Fourier transform,
-in which the coefficient ring is taken to be a finite field (or ring)
+\subsection{Number Theoretic Transform (NTT)}\label{ntt}
+
+NTT is a specialized version of the discrete Fourier transform,
+in which the coefficients of the polynomial are members of a finite field (or ring)
  containing the right roots of unity.
 It can be viewed as an exact version of the complex DFT, avoiding 
 round-off errors for exact convolutions of integer sequences.
@@ -225,7 +499,160 @@ While Gauss used similar techniques already in~\cite{gaussfft}, laying the groun
 for modern FFT algorithms to compute the DFT, and therefore the NTT, 
 is usually attributed to Cooley and Tukey's seminal paper \cite{fft}.
 
-\subsubsection{Special Features}
+NTT can use the same FFT algorithms but requires a 
+different DFT matrix~\ref{dft-matrix}.
+
+This fact lies in the foundational theorem of NTT:
+\begin{theorem}[\cite{ntt}]
+  A length $N$ transform having the DFT structure will
+  implement cyclic convolution if and only if there exists an 
+  inverse of N and an element $\alpha$,
+  a root of unity of order $N$ , i.e., $N$ is the least 
+  positive integer such that $\alpha^N =1$.
+\end{theorem}
+This is a very general result applying to both \emph{rings and fields} that are
+finite or infinite.
+
+It is important to note that $N$ also applies to the length of our polynomial.
+
+\subsubsection{Preliminaries}
+I will describe everything in terms of fields, but essentially all of this can be easily generalised to rings 
+using the Chinese Remainder Theorem (CRT), as shown below.
+\paragraph{\bf Finding Roots of Unity (In Field)}
+As described above, an $n$-th root of unity, is an element $\alpha\in Z_q$ 
+such that $\alpha^n =1  \mod q $, and for every $0<k<n$ $\alpha^k \neq 1 \mod q$.
+
+\paragraph{Finding roots of unity in a field}
+
+\begin{theorem}
+  Let $g\in GF(q)$ be a generator, thus
+  $\omega_0=g^{(q-1)/n}$ is an $n$-th root of unity.
+\end{theorem}
+\begin{proof}
+  \sloppy{
+  relying on \autoref{fermats-little-theorem}, we know that $g^{q-1}=1 \mod q$.
+  So $\omega_0^n=(g^{(q-1)/n})^n=1$, now we just need to explain away why $\omega_0^k \ne 1$ for 
+  every $0<k<n$.
+  Let us assume in contradiction that there exists some $k<n$ such that $\omega_0^k=1$, then 
+  $\omega_0^k=g^{(q-1/n)\cdot k}=1$, more specifically, $g^c=1$ for $c<q-1$. thus, we have a 
+  cycle $(1,g,g^1,...g^{c-1})$, which is less than $q-1$ elements, meaning that $g$ is not 
+  a generator, in contradiction.
+  }
+\end{proof}
+
+Now that we found the first root of unity,
+we can find the rest by computing the powers of $\omega_0$ up to $n$.
+
+
+But how do we find the generator to begin with? 
+There is a randomised algorithm to find a generator in an expected 
+$\approx O(\sqrt{q-1})+O(\log^2{q}\cdot \log (\log(q-1)))$ time for small primes.
+For larger primes it'll longer, but it is still feasible ($O(e^{\log q-1})$).
+
+The algorithm itself is based on factorising $q-1$ into prime factors, and then
+check that a random number $g$ is a generator by ensuring $g^{(p-1)/p_i} \not\equiv 1$
+for each $p_i$ prime factor of $q-1$ (where $q$ is the field's prime order).
+
+
+\paragraph{Neat Trick}
+\todo{This section would have saved me days of work, had I known it before.}
+One can make use of these roots of unity to find the roots of $X^n+1$ and $X^n-1$.
+Finding the roots of $X^n-1$ is from the definition! 
+Every n-th root of unity is a root of $X^n-1$: $(\omega^k)^n=(\omega^n)^k=1^k=1$.
+Substitute $X$ with any n-th root of unity, and you'll get $1-1=0$.
+
+Finding the roots of $X^n+1$ is a bit more tricky,
+but it can be done by finding the roots of $X^{2n}-1$ (which should be easy
+as we've shown above):
+First let's recall that $X^{2n}-1=(X^n+1)(X^n-1)$, then we notice that
+we have $n$ roots of $X^n-1$,
+and $n$ roots of $X^n+1$. So every one of the roots of $X^{2n}-1$ that is
+not a root of $X^n-1$ is a root of $X^n+1$.
+How do we find the roots of $X^{2n}-1$? Those are the $2n$-th roots of unity, 
+which are easy to find!
+
+\paragraph{\bf Chinese Remainder Theorem (CRT) For Dummies}
+CRT is a way of representing elements $x\in Z_q$ (
+  where $q=p_1,p_2,\dots,p_k$ and $p_i\in\text{Primes}$)
+such that the $x_{CRT}$ is a single and unique representation of $x$ using the 
+remainders of each of the prime factors constructing $q$:
+
+$$ x_{CRT} = (x\mod p_1, x\mod p_2 ,\dots x\mod p_k ) $$
+
+
+
+Because it is a unique representation, given $x_{CRT}$ and the list of
+ primes $(p_1,p_2,\dots,p_k)$ there is an algorithm to solve for $x \in Z_q$
+ (i.e., find $x \mod q$).
+
+
+Another important thing to notice is that if  $x=1 \mod q$
+ then $x_{CRT}= (1,1,1,\dots,1)$.
+
+
+There is more to it honestly, but for our cause, it's enough.
+
+\subsubsection{Putting it all together}
+
+\paragraph[NTT Over Finite Fields]{\bf NTT Over Finite Fields} \label{ntt-field}
+When working over a field $GF(p)$ such that $p$ is prime,
+the maximal $N$, the array of coefficients representing a
+polynomial, is $N_{max}=p-1$, and $N$ is a valid size for NTT
+ in this field iff $N|p-1$ (\cite[III. number theoretic transforms]{ntt}). 
+
+
+To compute the NTT over $GF(p)$, find the $n$th root of unity in $GF(p)$,
+ then run any FFT algorithm mod $p$ using the roots
+of unity for each level of the recursion.
+
+That is, find $\omega_n=\alpha$ such that $\alpha^N=1 \mod p$, 
+then run the (almost) same algorithm in \nameref{algorithm:fft}, 
+but change line 7 such that omega is now the $n$-th root of unity in $GF(p)$, and
+all operations in the algorithm are now $\mod p$.
+
+\paragraph{\bf iNTT}
+Just like in \nameref{ifft}, but to calculate $\omega^-1$, we'll
+use the algorithm shown in \autoref{sec:finite-field:extended-euclidean} 
+to find the inverse of every element ($x^-1$).
+
+
+
+\paragraph[short]{\bf NTT over Rings}
+Let $Z_M$ represent a ring of integers ${0,1,2,\dots , M-1}$,
+with arithmetics mod $M$.
+Where $M$ is constructed the following unique prime factorization
+$M=p_{1}^{r_1}\cdot  p_{2}^{r_2} \cdots p_{\ell}^{r_\ell}$
+and $p_i$'s are distinct primes (see \cite[NTT sec. III][]{ntt}
+ for further explanations).
+
+For NTT to work, the following must hold $\bf N|L(M)$
+where $L(M)$ is the greatest common
+divisor (gcd) of the $(p_{i}-1)$. That is, 
+$L(M):= gcd\{p_1-1,p_2-1,\dots\}$
+
+essentially it means we want $ N$ to divide $p_i-1$.
+
+\begin{corollary}
+  $L(M)=N_{max}$. i.e., it defines the maximal $N$ 
+  such that we can apply NTT.  
+\end{corollary}
+
+Now, Once $M$ and $N$ are known, to perform NTT we just need to be able to find 
+$N$-th root of unity. but it's quite hard to find one in $Z_M$.
+Luckily, we know it is feasible to do so in a prime field. 
+So, let's find $\alpha_i$, the $N$-th root of unity for every $p_i$.
+Once we find all of these roots of unity, we know that $\alpha_i^N=1 \mod p_i$ for every $i$.
+In other words, $N$ is the least positive integer such that
+\begin{align*}
+  &\alpha_{CRT}^N = (\alpha_1^N \mod p_1=1, \alpha_2^N \mod p_2=1,\dots)= (1,1,\dots)
+\end{align*}
+
+and according to CRT $\alpha^N=1 \mod M$. Thus, solving for $\alpha$ 
+means we'll be able to find the $N$-th root of unity in $Z_M$.
+
+The algorithm remains the same as in \nameref{ntt-field} from here on.
+
+\paragraph{Special Features}
 Applying the NTT transform provides a cyclic convolution, computing 
 $c = a \cdot b \mod (X^n + 1)$  with two polynomials $a$ and $b$ would require 
 applying the NTT of length $2n$ and thus $n$ zeros to be appended to each input;
@@ -237,28 +664,324 @@ This exploitation allows us to perform $NTT$ without expanding to $2n$ parameter
 meaning we can send less bandwidth over the network, and perform fewer computations too. 
 This trick can be seen in \cite{SEAL}.
 
-\section{Reed-Solomon}
-It is fairly simple, but effective algorithm to encode words and be able to deal with erasurs.
-\subsection{Naive solution}
-assuming we decide we want our words to be of size $k=4$, and we add additional two redundancies $n=6$. 
-Thus to send it we'll do the following: given a word vector, we'll treat it as coefficients values of a 
-polynomial of degree $k-1$ (because we have k coefficients its a k-1 degree poly), then to encode it, we'll evaluate it on the following $x$ values: $(-1,0,1,2,\dots n)$.
+\section{Fast Polynomial Division via Reversal and Newton Iteration}
+\red{Notice that this section is a somewhat explanation for section 9.1 of Modern Computer Algebra}
+Let $A(x), B(x) \in \mathbb{F}[x]$ with $\deg(A)=n$, $\deg(B)=m$, and assume
+the leading coefficient of $B(x)$ is invertible in $\mathbb{F}$. We want to compute
+the quotient $Q(x)$ and remainder $R(x)$ such that
+\[
+A(x) = Q(x) B(x) + R(x), \quad \deg(R) < m.
+\]
+
+\paragraph{Reversal.}
+Define the \emph{reversal} of a polynomial $f(x)=f_0 + f_1 x + \dots + f_d x^d$ of degree $d$
+by
+\[
+\operatorname{rev}_L(f)(x) \;=\; x^{L-1} f\!\left(x^{-1}\right) \bmod x^L,
+\]
+which essentially reverses the coefficients up to length $L$.
+
+If $Q(x)$ has degree $k-1$ with $k=n-m+1$, then
+\[
+\operatorname{rev}_k(Q)(x) \;=\; \operatorname{rev}_{n+1}(A)(x) \cdot
+   \bigl( \operatorname{rev}_{m+1}(B)(x) \bigr)^{-1} \bmod x^k.
+\]
+
+(Since $Q(x) = A(x)\cdot B(x)^{-1}$.)
+This reversal operation will later be used to \emph{convert the problem of dividing
+high-degree polynomials into the problem of inverting a series with a nonzero
+constant term}, which can be solved efficiently by Newton iteration(see next). In other words,
+reversal ensures that the divisor's leading coefficient becomes the constant term
+of $\operatorname{rev}_{m+1}(B)$, so its inverse exists modulo $x^k$ and can be
+computed in $O(M(k))$ time (i.e., $M(k)$ describe the cost of multiplication. using NTT it is $k\cdot \log k$).
+
+In other words, the newtwon iteration, which we describe next demands the polynomial has a constant, invertible, nonzero constant. Otherwise, it doesn't converge (don't ask me why)!
+
+\subsection{Series inversion via Newton iteration.}
+Newton iteration is a technique to find roots of polynomials (similar to gradient descent). Given some good starting point, each iteration approaches the root (if exists), up to some precision $k$.
+In our case, we modify technique to find a polynomial $T(X)$ to serve as the inverse of our input. That is, we are looking for the root of $F(T)=T(X)^{-1}-C(X)$ over the ring $\mathbb{F}/(x^k)$, that is, if we find $T(X)^{-1}$ that can serve as a root, we 
+know that $T(X)^-1=C(X)$, or in other words $T(X)$ is the inverse of $C(X)$. 
+\begin{bclogo}[logo=\bcinfo,noborder=true]{Explanation}
+    a more straightforward $F(T)$ would be $F(T)=1-T(x)C(X)$, but this leads to 
+    an issue with the iteration. Try to apply this to the iteration after you understand how it works, and you'll get stuck.
+\end{bclogo}
+
+So we begin with $x_1= T_1(X)=c_0^{-1}$, then compute each step using 
+the formula of the technique:
+$T_{i+1}= T_i - \frac{F(T_i)}{F'(T_i)}= T_i - \frac{1/T_i(X)-C(x)}{-1/T_i(X)^2}$
+So the computation in each step is $T_{i+1}= 2T_i(x)-C(X) \cdot T_i(X)^2$
+
+Thus, Given $C(x)$ wih nonztero constant term, its inverse series modulo $x^k$ can be
+computed by Newton iteration:
+\[
+T_{1}(x) = c_0^{-1}, \qquad
+T_{2\ell}(x) = T_\ell(x) \,\bigl(2 - C(x)T_\ell(x)\bigr) \bmod x^{2\ell}.
+\]
+This converges doubly in the precision, so after $O(\log k)$ iterations we obtain
+$C(x)^{-1} \bmod x^k$.
+It is important to notice, this function uses polynomial multiplication, but the overall work remains in $O(M(n))$.
+
+\begin{lstlisting}[language=Python,
+  caption={Newton iteration for polynomial series inverse},
+]
+
+def series_inverse(C, k):
+    """
+    Input: polynomial $C(x)$ with C[0] != 0
+           integer k = target precision
+    Output: polynomial $T(x)$ such that $C(x)*T(x) = 1 mod x^k$
+    """
+    # initial inverse modulo x
+    T = [ inverse(C[0]) ]  
+    ell = 1
+
+    while ell < k:
+        m = min(2*ell, k)
+
+        # U = C*T mod x^m
+        U = multiply(C, T, m)
+
+        # U = 2 - U mod x^m
+        U[0] = 2 - U[0]
+        for i in range(1, m):
+            U[i] = -U[i]
+
+        # T = T*U mod x^m
+        T = multiply(T, U, m)
+
+        ell = m
+
+    return T
+\end{lstlisting}
+
+proof of correctness is via induction. (See Modern Computer Algebra book, section 9.1, theorm 9.2).
+and runtime is around $4M(n)$, so if we use NTT, it should be aroud four times the cost of regular NTT multiplication.
+
+\paragraph{Why Newton Iteration Applies.}
+In polynomial division we know in advance the degree bound of the quotient:
+if $\deg(A)=n$ and $\deg(B)=m$, then $\deg(Q)=n-m$. Hence we only require
+the inverse of $\operatorname{rev}_{m+1}(B)(x)$ modulo $x^k$, where
+$k = n-m+1$. This gives Newton iteration a natural stopping criterion:
+compute the inverse series only up to precision $x^k$.
 
 
-Now given the 6 values that we received over the network we can decode it as follows: 
-We go over every group of 4 points, and try to reconstruct the polynomial. 
 
-the polynomial we've reconstructed the most is the correct one.
+\paragraph{Division Algorithm.}
+\begin{enumerate}
+  \item Compute $A^*(x) = \operatorname{rev}_k(A)(x)$ and $B^*(x) = \operatorname{rev}_{m+1}(B)(x)$.
+  \item Compute $T(x) = (B^*(x))^{-1} \bmod x^k$ using Newton iteration.
+  \item Compute $Q^*(x) = A^*(x)\,T(x) \bmod x^k$.
+  \item Recover the quotient by reversal: $Q(x) = \operatorname{rev}_k(Q^*)(x)$.
+  \item Finally, compute the remainder as $R(x) = A(x) - Q(x)B(x)$.
+\end{enumerate}
 
-\subsection{Systematic Reed-Solomon}
-Assuming we want to be able to correct up to $s$ values, we'd need at least $2s$ redundant symbols.
-So if $k=4$, and $n=6$, we can only recover a single byte.
+\paragraph{Complexity.}
+If polynomial multiplication of degree-$n$ polynomials costs $M(n)$ operations,
+then this division runs in $O(M(n))$ time. Using FFT/NTT-based multiplication,
+this yields quasi-linear complexity in $n$.
+\section{Half-GCD}\label{algorithm:half-GCD}
+\red{this section was written with codex 5.3, needs to be reviewed further when I am not so tired.}
+Half-GCD is a divide-and-conquer version of Euclid's algorithm.
+The usual Euclidean algorithm removes one quotient at a time:
+\[
+(a,b) \mapsto (b, a - qb).
+\]
+Half-GCD keeps the same mathematics, but tries to process \emph{many} Euclid steps at once,
+using only the high half of the inputs to predict those quotients.
 
-It won't work for larger values, like $k=223$, $n=255$ which is a popular value for reed-solomon.
-(Meaning we add 32 more symbols to our message, so we can repair 16 symbols in total).
+\paragraph{Why this helps.}
+When $a$ and $b$ are large (big integers, or high-degree polynomials),
+the expensive part is repeatedly dividing large objects.
+If we can reduce the size by about half in one recursive call,
+we get a much faster algorithm asymptotically.
+For polynomials over a field, this leads to roughly
+\[
+O(M(n)\log n)
+\]
+for GCD (and extended GCD), where $M(n)$ is multiplication cost.
 
-The previous algorithm will work, but we'd need to send different values then 
-the original message. It would be best to send $Message||\text{addition code word}$.
-that way,we might be able to avoid reconstruction if we can find quickly that there was no error.
+\paragraph{Core viewpoint: Euclid as matrix updates.}
+Each Euclid step with quotient $q$ can be written as
+\[
+\begin{pmatrix}a'\\ b'\end{pmatrix}
+=
+\begin{pmatrix}0 & 1\\ 1 & -q\end{pmatrix}
+\begin{pmatrix}a\\ b\end{pmatrix}.
+\]
+So a block of Euclid steps is just multiplication by one $2\times 2$ matrix.
+Half-GCD computes such a matrix from the \emph{most significant half}
+of the input, then applies it to the full input.
+This usually drops the size dramatically while preserving the same gcd.
 
-this is called a Systematic code. 
+\paragraph{Intuition for correctness (without proof).}
+There are two simple facts:
+\begin{itemize}
+  \item Every Euclid step preserves the gcd.
+  \item A product of Euclid-step matrices is still a valid gcd-preserving transform.
+\end{itemize}
+Half-GCD only groups these valid steps into larger chunks.
+Even if a guessed chunk from the high half is imperfect,
+we can safely correct with one ordinary Euclid step and continue.
+So correctness comes from doing exactly the same legal transformations as Euclid,
+just in larger batches.
+
+\paragraph{How to think about one recursive level.}
+Suppose inputs have size $n$ (bit-length for integers, degree for polynomials).
+\begin{enumerate}
+  \item Keep only the high $\approx n/2$ part of each input.
+  \item Run Euclid on this reduced pair to get a short transformation matrix $M$.
+  \item Apply $M$ to the \emph{full} inputs.
+  \item If needed, do one exact Euclid correction step.
+  \item Recurse on the now smaller pair.
+\end{enumerate}
+That is the entire idea: \emph{predict with high parts, apply exactly on full parts, recurse}.
+
+\paragraph{Relation to the polynomial case.}
+The same structure works for polynomials:
+replace bit-length by degree, integer division by polynomial division,
+and ``high bits'' by ``high-degree terms''.
+This is why Half-GCD is a standard building block in fast polynomial
+extended GCD, inversion modulo a polynomial, and related algorithms.
+
+\begin{lstlisting}[language=Python,
+  caption={Pedagogical Half-GCD (integer version, matrix-batched Euclid)}
+]
+def _mat_mul(A, B):
+  return (
+    (A[0][0] * B[0][0] + A[0][1] * B[1][0],
+     A[0][0] * B[0][1] + A[0][1] * B[1][1]),
+    (A[1][0] * B[0][0] + A[1][1] * B[1][0],
+     A[1][0] * B[0][1] + A[1][1] * B[1][1]),
+  )
+
+
+def _apply_mat(M, a, b):
+  c = M[0][0] * a + M[0][1] * b
+  d = M[1][0] * a + M[1][1] * b
+  return c, d
+
+
+def _hgcd_step(a, b):
+  """One half-gcd reduction step using top halves only."""
+  n = max(a.bit_length(), b.bit_length())
+  m = n // 2
+  ah, bh = a >> m, b >> m
+
+  M = ((1, 0), (0, 1))
+  while bh and bh.bit_length() > m:
+    q = ah // bh
+    ah, bh = bh, ah - q * bh
+    T = ((0, 1), (1, -q))
+    M = _mat_mul(T, M)
+
+  return _apply_mat(M, a, b)
+
+
+def half_gcd(a, b):
+  """Returns gcd(a,b). Correct, compact, and easy to read."""
+  a, b = abs(a), abs(b)
+  if b == 0:
+    return a
+
+  while b:
+    if b.bit_length() < 64:
+      while b:
+        a, b = b, a % b
+      return a
+
+    c, d = _hgcd_step(a, b)
+
+    if d == 0:
+      return abs(c)
+
+    # Safety fallback: if no progress, do one exact Euclid step.
+    if abs(d) >= abs(b):
+      a, b = b, a % b
+    else:
+      a, b = abs(c), abs(d)
+
+  return a
+\end{lstlisting}
+
+\paragraph{Reading the code.}
+The function \texttt{\_hgcd\_step} computes one ``batched Euclid'' move from high bits.
+Then \texttt{half\_gcd} repeatedly applies such moves.
+The fallback line keeps the implementation robust and easy to trust:
+if a batched move does not shrink enough, do one ordinary Euclid step.
+So this stays correct while still benefiting from larger jumps.
+
+\section{Lagrange's Interpolation}
+Given a set of points $(x_0,y_0),\dots,(x_n,y_n)$, 
+we can find a unique polynomial of degree-bound $n$ that passes through all of them.
+
+The output of the algorithm is a polynomial in coefficient form.
+This is a generalisation of inverse NTT for evaluation on arbitrary points.
+
+Naively computing the lagrange polynomial will cost us $O(n^3)$, 
+but it can be done in $O(n^2)$ time if computed carefuly (utilising cleverly both 
+memory and computation - kind of like dynamic programming).
+
+\todo{Complete this section, See book Modern Computer Algebra. Section 5 to see how to perform 
+interpolation fast. 
+another solution is implementing inverse NTT, and fill with zeros. }
+
+
+% \section{Reed-Solomon}
+% It is fairly simple, but effective algorithm to encode words and be able to deal with erasurs.
+% \subsection{Reed-Solomon for erasures}
+% The Reed-Solomon algorithm is a systematic error-correcting code that can correct multiple erasures.
+% It is based on polynomial arithmetic over a finite field, and it is used in many applications.
+
+% The algorithm works as follows:
+% encode the message in a polynomial of degree bound $k-1$,
+% and then evaluate the polynomial at $n$ distinct points.
+
+% To decode the message, we need to find the polynomial that interpolates the points we received.
+% Given any $k$ points, once can find a unique polynomial of degree $k-1$ that passes through them
+% using the Lagrange interpolation formula.
+
+
+% \paragraph{Using NTT for Reed-Solomon} 
+% The Reed-Solomon algorithm can be accelerated by employing the NTT algorithm (see \autoref{ntt}).
+% Instead of utilizing any arbitrary $n$ distinct points, we can leverage the $n$-th 
+% roots of unity (provided they exist within the finite field under consideration).
+% Now we can encode messages faster.
+
+% Decoding can still be done using the Lagrange interpolation formula.
+% \todo{How to improve decoding speed using NTT!} 
+
+
+% \subsection{Reed-Solomon for errors}
+% \todo[inline]{This section is not complete}
+% The Reed-Solomon algorithm can also correct data corruption.
+
+
+% decoding can be done using the Berlekamp-Welch algorithm, which is a generalization of the Euclidean algorithm.
+% It can be used to find the error locations and values, and then correct them.
+
+
+
+
+% \subsection{Naive solution}
+% assuming we decide we want our words to be of size $k=4$, and we add additional two redundancies $n=6$. 
+% Thus to send it we'll do the following: given a word vector, we'll treat it as coefficients values of a 
+% polynomial of degree $k-1$ (because we have k coefficients its a k-1 degree poly), then to encode it, we'll evaluate it on the following $x$ values: $(-1,0,1,2,\dots n)$.
+
+
+% Now given the 6 values that we received over the network we can decode it as follows: 
+% We go over every group of 4 points, and try to reconstruct the polynomial. 
+
+% the polynomial we've reconstructed the most is the correct one.
+
+% \subsection{Systematic Reed-Solomon}
+% Assuming we want to be able to correct up to $s$ values, we'd need at least $2s$ redundant symbols.
+% So if $k=4$, and $n=6$, we can only recover a single byte.
+
+% It won't work for larger values, like $k=223$, $n=255$ which is a popular value for reed-solomon.
+% (Meaning we add 32 more symbols to our message, so we can repair 16 symbols in total).
+
+% The previous algorithm will work, but we'd need to send different values then 
+% the original message. It would be best to send $Message||\text{addition code word}$.
+% that way,we might be able to avoid reconstruction if we can find quickly that there was no error.
+
+% this is called a Systematic code. 

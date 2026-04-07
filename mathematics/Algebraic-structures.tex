@@ -1,31 +1,35 @@
 
-\part{Algebraic structures}
-This section was motivated by a theorem for polynomial identity, which is used in many cryptography applications:
-\begin{lemma}[DeMillo-Lipton-Schwartz-Zippel lemma] 
-\label{schawtz-zippel}
-Let $p\in \F[x_1,x_2,x_3,\dots, x_n]$ be a non-zero polynomial of a total 
-degree $d\ge0$ over a field $\F$. Let $S$ be a finite set of $\F$ and let 
-$(r_1,r_2,\dots,r_n)$ be selected at random, \emph{independently and uniformly} from $S$.
-Then 
-$$ \Pr{[p(r_1,r_2,\dots,r_n)=0]}\le \frac{d}{|S|}$$
-\end{lemma}
+\chapter{Algebraic Structures}
+In this section I'll discuss basic definitions and theorems used in cryptography.
+This is by no means a comprehensive guide, 
+but rather a collection of definitions and theorems that I found useful.
+% This section was motivated by a theorem for polynomial identity, which is used in many cryptography applications:
+% \begin{lemma}[DeMillo-Lipton-Schwartz-Zippel lemma] 
+% \label{schawtz-zippel}
+% Let $p\in \F[x_1,x_2,x_3,\dots, x_n]$ be a non-zero polynomial of a total 
+% degree $d\ge0$ over a field $\F$. Let $S$ be a finite set of $\F$ and let 
+% $(r_1,r_2,\dots,r_n)$ be selected at random, \emph{independently and uniformly} from $S$.
+% Then 
+% $$ \Pr{[p(r_1,r_2,\dots,r_n)=0]}\le \frac{d}{|S|}$$
+% \end{lemma}
 
-Unfortunately, this doesn't work over quotient polynomial rings (e.g., instead of
- $\F[x]$, we have $\F[x]/(x^n+1)$).
+% Unfortunately, this doesn't work over quotient polynomial rings (e.g., instead of
+%  $\F[x]$, we have $\F[x]/(x^n+1)$).
 
-We'll start learning Algebraic structures in hopes we gain enough insight regarding \ref{schawtz-zippel}.
-\chapter{Group theory}
+% We'll start learning Algebraic structures in hopes we gain enough insight regarding \ref{schawtz-zippel}.
+\chapter{Groups Rings and Fields}
 
-\section{Group}
-\begin{defn}
-    A \emph{group} is a set $G$ with a binary operation $\cdot :G\times G\to G$ that satisfies the following constraints:
+\begin{definition}
+    A \emph{group} is a tuple $(G,\cdot,e)$ where $G$ is a set and $\cdot$ is a binary operation on $G$
+    that satisfies the following constraints:
     \begin{itemize}
         \item the operation holds closure: if $x,y\in G$ so is $x\cdot y\in G$.
         \item the operation is associative: $\forall x,y,z\in G$ it holds that $(x\cdot y)\cdot z = x\cdot (y\cdot z)$.
         \item has an identity element: there exists $e\in G$ such that $\forall x\in G x\cdot e = x = e\cdot x$
         \item Every element $x\in G$ has an inverse $x^{-1}\in G$ such that $x\cdot x^{-1} = e = x^{-1} \cdot x$.
     \end{itemize}
-\end{defn}
+\end{definition}
+
 
 \begin{remark}
     Note that a group can be an additive group or a multiplicative group.
@@ -35,166 +39,391 @@ We'll start learning Algebraic structures in hopes we gain enough insight regard
     $(\F, \cdot, 1)$ is not because there is no inverse to $0$ in $\F$.
 \end{example}
 
-\begin{defn}
+\begin{definition}
     group $G$ is called \emph{commutative}, or \emph{abelian} if for every $x,y\in G$ $x\cdot y=y\cdot x$ holds.
-\end{defn}
-
-\subsection{traits of groups}
-let $(G,\cdot,e)$ be a group, thus
-\begin{itemize}
-    \item $e$ is unique (like in fields).
-    \item the inverse of an element is unique.
-    \item $\forall x\in G (x^{-1})^{-1}=x$.
-    \item $\forall x,y\in G (x\cdot y)^{-1}=y^{-1}\cdot x^{-1}$
-\end{itemize}
+\end{definition}
 
 
-\begin{defn}
+\begin{definition}[monoid] \label{def:monoid}
+    A \emph{monoid} is a group without the requirement of inverses.
+    That is, a monoid is a tuple $(M,\cdot,e)$ where $M$ is a set and $\cdot$ is a binary operation on $M$
+    that satisfies the following constraints:
+
+    \begin{itemize}
+    \item the operation holds closure: if $x,y\in G$ so is $x\cdot y\in G$.
+    \item the operation is associative: $\forall x,y,z\in G$ it holds that $(x\cdot y)\cdot z = x\cdot (y\cdot z)$.
+    \item has an identity element: there exists $e\in G$ such that $\forall x\in G x\cdot e = x = e\cdot x$
+    \end{itemize}
+\end{definition}
+
+
+Now that we've defined what a group is, let's highlight some important theorems and definitions:
+
+\begin{definition}
     denote $|G|$ as the \emph{order} of a group - its size.
-\end{defn}
+\end{definition}
 
-\begin{defn}
+\begin{definition}
     denote the order of $x\in G$ to be the minimal $m!=0\in\N$ such that  $x^m=e$. if there is no such $m$, then
     the order of $x$ is infinite.
-\end{defn}
+\end{definition}
 
-\begin{thm}
+\begin{theorem}
     Let there a finite group $G$, thus $\forall x\in G$ has a finite order.
-\end{thm}
+\end{theorem}
 
-\begin{thm}
+\begin{theorem}
     Let $G$ be a group, and let $x\in G$ such that $order(x)=n$, thus $x^m=e$ iff $n|m$.
-\end{thm}
+\end{theorem}
 
-\begin{thm}[Fermat's little theorem]
-    let there be $x$ and $p$ prime, thus $x^p \equiv x \mod p$
-    (and as a result $x^{p-1}\equiv e mod p$).
-\end{thm}
+From a group, we can define a field, which is a more complex structure.
 
-\subsection{Subgroups}
+\section{Finite Fields}
+We are familiar with fields from Linear Algebra and Calculus.
+In this section, we introduce finite fields and explore some of their key properties.
 
-\begin{defn}
-    Let there be a group $G$, $\emptyset \neq H\subseteq G$  is a \emph{subgroup} if it is a group
-     with respect to the same operation of $G$.
-\end{defn}
-usually, we denote a subgroup with $H\le G$.
+\begin{definition}
+    A \emph{field} is a tuple $(F,+,\cdot,0,1)$ where $F$ is a set and $+,\cdot$ are binary operations on $F$
+    such that $(F,+,0)$ is an abelian group, $(F,\cdot,1)$ is an abelian group, and the distributive law holds.
 
-\subsection{cosets}
+    \begin{align*}
+        \forall x,y,z\in F, && x\cdot(y+z) = x\cdot y + x\cdot z
+    \end{align*}
+\end{definition}
 
+\begin{example}
+    The set of real numbers $\R$ is a field. 
+    The set of integers $\Z$ is not a field.
+    And every set of integers modulo a prime $p$ is a field.
+\end{example}
 
-
-% \section{Motivation}
-% \section{Ring theory intro}
-% In this chapter, we'll discuss definitions, and theorems (many without proofs) extracted and summed by me from~\cite{galois-book-edinburgh} And HUJI's Algebraic structures 1.
-
-
-% Historically, the subject of Galois theory was motivated by the desire to solve polynomial equations $p(x)=0$
-% where $p(x)=\sum_{i=0}^{n}{a_i\cdot x^{i}}$.
-% How do we solve for $x$ with some given degree $d$? we know how to do it for $d\in \{0,1,2,3,4\}$. 
-% There was no formal way to solve for $x$ when $d\ge 0$. and it remained an open question for hundred of years.
-% Unfortunatly,Raffini and Abel(1823) proved that there is no formula for roots of a quintic using only. $+, -, \times , \div, \sqrt[n]{}$.
+In the context of finite fields, 
+some people use the notation $GF(q)$ to represent a field with a 
+size of $q$, while others use $F_q$. In this summary, I'll use them interchangeably.
 
 
-% Evariste Galois gave a far more conceptual proof, inventing group theory on the way. 
-% He died at 20 in a duel (1831). The paper was only published in 1846.
+I'm skipping proving properties over the addition, multiplication, and distributive law,
+since they are quite trivial and can be found in any algebra book.
 
-% \section{Rings and fields}
+\begin{theorem}
+    Let $F$ be a set of $q$ elements, and addition and multiplications are defined 
+    over $F$ via modulo $q$. Then $F$ is a field iff $q$ is prime.
+\end{theorem}
 
-% \begin{defn}
-%     We call a group $R$ a \emph{ring} if it is an abelian group (commutative) whose operation $+$,
-%     is called addition, with a second operation $\cdot$ callend multiplication that is 
-%     associative, distributive and has a multiplicative identity element.
-% \end{defn}
+We usually write the above types of fields as $GF(q)$, $F_q$ or $Z_q$.
 
-% although it isn't always the case, we will assume all our rings are 
-% commutative with a multiplicative identity.
+\begin{definition}
+    Let $F$ be a field. The caracteristic of $F$ is the smallest \bf{positive} integer 
+    $p\in F$ such that $p\cdot 1=0$. 
+    If no such $p$ exists, the characteristic is $0$.
+\end{definition}
 
-% In terms of fields, a field is always a ring, 
-% it assumes more properties on the ggiven group.
-% a ring can have subsets which are fields.
+For instance, the characteristic of $\Z_p$ is $p$, and the characteristic of $\R$ is $0$.
+
+\begin{theorem}
+The characteristic of a field is either $0$ or a prime number.
+\end{theorem}
+
+I skip the proofs.
+
+\section{Polynomial Rings}
+
+Now that we defined groups and fields, we can define rings, and then polynomial rings.
+\begin{definition}
+    A \emph{ring} is a tuple $(R,+,\cdot,0,1)$ where $R$ is a set and $+,\cdot$ are binary operations on $R$
+    such that $(R,+,0)$ is an abelian group, $(R,\cdot,1)$ is a monoid, and the distributive law holds.
+\end{definition}
+
+In other words, a ring is a group with respect to addition, and a monoid with respect to multiplication (see \autoref{def:monoid}).
+
+\begin{example}
+    The set of integers $\Z$ is a ring, since some numbers don't 
+    have an inverse (e.g., $2$ doesn't have an inverse in $\Z$). 
+\end{example}
 
 
-% \begin{example}
-%     There are many ways of building new rings from old. One of the most fundamental
-%      is that from any ring $R$, we can build the ring $R[t]$ of polynomials over
-%      $R$ (i'll define it formally later).
-% \end{example}
+\section{Polynomial Rings}
 
-% \begin{defn}
-%     Given two rings, $R$ and $S$, a \emph{homomorphism} from $R$ to $S$ is 
-%     a function $\phi : R\to S$ satisfying the following equations
+Polynomials are heavily used in cryptography, and are a fundamental concept in algebra.
+\begin{definition}
+    Let $R$ be a ring, we'll denote $R[X]$ the ring of polynomials
+    in $x$ with coefficients in $R$. Formally, an element of $R[X]$ is 
+    defined as: $$ \sum_{i=0}^{d} r_i\cdot x^i $$
+    where $d$ is the degree of the polynomial, and $r_i\in R$.
+
+    We treat $x$s as symbols, rather than actual values or variables.
+
+    We define polynomial addition and multiplication as follows:
+    \begin{align*}
+        f(x) + g(x) &= \sum_{i=0}^{d}{(a_i+b_i)x^i} \\
+        f(x) \cdot g(x) &= \sum_{i=0}^{d}{\sum_{j=0}^{d}{a_i\cdot b_j\cdot x^{i+j}}}
+    \end{align*}
+\end{definition} \label{def:polynomial-ring}\label{def:polynomial}
+
+\subsection{Polynomial evaluation}\label{sec:poly-eval}
+Since we discuss formal mathematics, it is important to remember 
+that while polynomials seem like functions, in our context they are just a formal
+symbols.
+As a result, to evaluate a polynomial, we'll need to define a function that receives a polynomial 
+and a value and returns the result of the polynomial at that value.
+
+\begin{definition} \label{def:poly-eval}
+  For any polynomial $P$ in $Z_q[X]$ and any element $a$ in $Z_q$,
+  the substitution of $X$ with $a$ in $P$ defines an element of $Z_q$, which is denoted $P(a)$.
+  This element is obtained by carrying on in $Z_q$ after the substitution of the operations indicated by 
+  the expression of the polynomial.
+  We call this action polynomial evaluation of $P$ at $a$.
+\end{definition}
+
+Now that we've defined the evaluation of a polynomial,
+Let as define a function to evaluate polynomials at a point.
+
+\begin{definition}[polynomial evaluation map]\label{def:poly-eval-map}
+  A polynomial evaluation map is a function $f_r:Z_q[X]\to Z_q$ such that for every polynomial $P$ and $r\in Z_q$,
+  $f_r(P)=P(r)$.
+\end{definition}
+
+This notation of polynomial evaluation maps is crucial to reason about polynomials, their evaluation, 
+and proving properties. For instance, assume a matrix $M$ and a vector $v$ with polynomials entries in $\Z_q[x]$.
+It isn't clear straight away that $f_r(M\cdot v) = f_r(M)\cdot f_r(v)$. In fact, there are algebraic 
+structures where this above equation is false. 
+Thus, to claim the above statement we need to define ring homomorphisms, and prove that $f_r$ is a ring homomorphism.
+
+\begin{definition}
+  A ring homomorphism is a function $f:R\to S$ between two rings $R$ and $S$ such that for every $a,b\in R$:
+  \begin{align}
+    &f(a+b)=f(a)+f(b)\\
+    &f(a\cdot b)=f(a)\cdot f(b) \\
+    &f(1_R)=1_S
+  \end{align}
+   Where $1_R$ and $1_S$ are the multiplicative identities of $R$ and $S$ respectively.
+\end{definition}
+
+Fortunately, for every point in $\Z_q[X]$, we can construct a polynomial evaluation map that is 
+a ring homomorphism (prove this to ensure you understand the reasoning behind it).
+\begin{theorem}
+    Let $f_r:Z_q[X]\to Z_q$ be a polynomial evaluation map, then $f_r$ is a ring homomorphism.
+\end{theorem}
+
+Consequently, we can assert that $f_r(M\cdot v) = f_r(M)\cdot f_r(v)$.
+
+\paragraph{GCD and LCM}
+
+Like with other fields and rings, 
+we can define modulo operations over polynomials, and as a result
+these algebraic strucutres too have GCD and LCM.
+\begin{definition}
+    Let $f(x)\in F[X]$ be a polynomial of degree $d\ge 1$.
+    Then, for any polynomial $g(x)\in F[x]$, there exists a unique 
+    pair of polynomials $q(x),r(x)\in F[x]$ such that $g(x)=q(x)\cdot f(x) +r(x)$.
+    The polynomial $r(x)$ is called the remainder of $g(x)$ modulo $f(x)$.
+\end{definition}
+
+\begin{definition} \label{def:monic}
+    a \emph{monic} polynomial is a polynomial whose leading coefficient is $1$.
+    That is $f(x)= \bf{1}\cdot x^d + a_{d-1}x^{d-1}+\dots +a_1x+a_0$.
+    (see that the leading coefficient is $1$ and not some other value).
+\end{definition}
+
+\begin{definition}
+    GCD of two polynomials $f(x)$ and $g(x)$ is the monomic polynomial $h(x)$
+    of the highest degree which is a divisor of both.
+    In particular, we say that $f(x)$ and $g(x)$ are coprime if their GCD is $1$.
+
+
+    The LCM of these two polynomials is monic polynomial of the lowest 
+    degree which is a multiple of both
+\end{definition}
+
+
+\subsection{Polynomial Fields}
+\begin{definition}
+    Ideal $I$ is a subset of a ring $R$ that is closed under addition and, or multiplication by elements of $R$.
+
+    Furthermore the product of an element of $R$ and an element of $I$ is in $I$.
+    That is, $\forall r\in R$ and $i\in I$ it holds that $r\cdot i\in I$.
+\end{definition}
+
+For instance, the group $7\Z=\{7\cdot i:i\in\Z\}$ is an ideal of $\Z$ because it is closed
+under addition and multiplication by elements of $\Z$,
+and the product of an element of $\Z$ and an element of $7\Z$ is also in $7\Z$.
+
+Given an ideal $I$ and a ring $R$, we can define the quotient ring $R/I$.
+This ring is defined as the set of equivalence classes of $R$ under the equivalence relation 
+$x\sim y$ iff $x-y\in I$ (that is, there exists $i\in I$ such that $x-y=i$).
+This $\sim$ notation can be confusing, so we'll denote the equivalence class of $a$ as $[a]=\{b\in \Z :a\sim b \}$.
+Furthermore, we note that $[a]+[b]=[a+b]$ and $[a]\cdot[b]=[a\cdot b]$.
+
+\begin{example}
+    $\Z/7\Z$ is the set of equivalence classes of $\Z$ under the equivalence relation
+    $x\sim y$ iff $x-y\in 7\Z$. 
+    For instance, $[0]=7\Z$, $[1]=1+7\Z$, $[2]=2+7\Z$, and so on.
+
+    One can quickly see that there are only 7 equivalence classes, because $[7]=7+7\Z=0+7\Z$ (we wrap around, 
+    and don't care about the actual value of the number, only its residue modulo 7).
+
+    This specific quotient ring is also known as $\Z_7$, which is also a field.
+\end{example}
+
+
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{How I think about ideals}
+    This formal definition is quite confusing. I think about these ideals as groups 
+    with values we don't care about, and $R/I$ defines $R$ without 
+    the values we don't care about.
+
+    So in the case of $Z/7Z$, we don't care about 
+    all the multiplications of $7$, only the first 7 of them.
+
+
+    Another important example if the polynomial quotient ring $R[X]/X^d$. 
+This ring is the set of equivalence classes of $R[X]$ under the equivalence relation
+$f\sim g$ iff $f-g\in X^d$. Or in other words, all polynomials of degree less than $d$ are equivalent.
+\end{bclogo}
+
+\begin{definition}[irreducible polynomials]
+    Let $F$ be a field, and $f(x)\in F[X]$ be a polynomial of degree $d\ge 1$.
+    We say that $f(x)$ is irreducible over $F$ if it cannot be factored into 
+    two polynomials of lower degree.
+\end{definition}
+
+\begin{definition}[prime polynomials]
+    Let $F$ be a field, and $f(x)\in F[X]$ be a polynomial of degree $d\ge 1$.
+    We say that $f(x)$ is prime if for every two polynomials $g(x),h(x)\in F[X]$
+    such that $f(x)|g(x)\cdot h(x)$, then $f(x)|g(x)$ or $f(x)|h(x)$. (Stronger)
+\end{definition}
+
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{primes, irreducibility and roots}
+Note, the irreducible or primality of polynomials has nothing to do with roots 
+of the polynomial. For instance, $x+1$ is irreducible over $GF(157)$, but has 
+a root of $156$.
+\end{bclogo}
+
+\begin{theorem}
+    Let $f(x)\in F[X]$ be a polynomial of degree $d\ge 1$.
+    Then, $F[x]/f(x)$ is a field iff $f(x)$ is irreducible over $F$.
+\end{theorem}
+
+
+\section{Structure of Finite Fields}
+
+
+
+
+\begin{theorem}[Fermat's little theorem]\label{fermats-little-theorem}
+    For every element of a finite field $F$ with $q$ elements, 
+    $x^q=x$. 
+\end{theorem}
+
+\begin{corollary}
+    Let $F$ be a finite field with $q$ elements, and let $x\ne0\in F$.
+    Then, $x^{q-1}=1$.
+\end{corollary}
+
+This theorem is very useful in cryptography, algorithms, and many other fields.
+I specifically used it to explain to myself some aspects of the NTT algorithm (see \autoref{section:fft}). 
+
+
+\begin{corollary}
+    Let $F$ be a subfield of $E$ with $|F|=q$. Then 
+    an element $x\in E$ is in $F$ iff $x^q=x$.
+\end{corollary}
+
+
+
+\begin{theorem}
+    For any prime $p$ and any integer $n$, there exists a field of size $p^n$.
+\end{theorem}
+
+(This is without proof). 
+To create such a field:
+One can take a field $GF(q)$, and extend it.
+To do so, first find a polynomial $p(x)$ of degree $d$ that is irreducible over $GF(q)$
+(We'll use prime polynomials).
+Then, define the extension field $GF(q^d)$ as the set of polynomials of degree less than $d$ with coefficients in $GF(q)$.
+THis field is basically $GF(q)[X]/p(X)$. BUT, Once we have this field, 
+we can define it in order, and change the notations of the polynomials to be integers 
+in the range $[0,q^d-1]$. This is a way to extend the field, and get a larger field.
+
+
+For instance $GF(2)$ can be extended to any power $m$ of 2.
+
+For instance, $GF(2)[X]/(X^2+X+1)$ is $GF(2^2)$, and has the following elements:
+$0,1,X,X+1$. Once we define the elements and how they interact with their operations, we can 
+switch their notation to be integers in the range $[0,3]$. 
+
+\begin{remark}
+    Usually,  if we take a root of an irreducible
+    polynomial $f(x)$ over $F[X]$, say $\alpha$, we can 
+    represent the field $F[X]/f(x)$ as $F[\alpha]$, as follows
     
-%     \begin{align*}
-%         \phi(x+y) = \phi(x) + \phi(y), && \phi(0)=0  \\
-%         \phi(x\cdot y) = \phi(x)\cdot \phi(y), && \phi(1)=1 \textbf{\red{important!}}
-%     \end{align*}
-% \end{defn}
-% Note that we gain $\phi(-x) = -\phi(x)$ too. furthermore, that we switch the multiplicity
-% and addition operation to be the one that used in $S$
-% that is $\phi(x) \cdot \phi(y)$ elements of $S$, and $x\cdot y$ are elements of $R$.
+    $$F[x]/f(x)=F[\alpha]= \{a0 + a1 \alpha + \dots + a_{n-1} \alpha_{d-1} : a_i \in F\}$$
+    (we treat $\alpha$ as a symbol, rather than a value). 
+\end{remark}
 
-% lalalala
-% \begin{lemma}
-%      If for some function $\phi:R\to S$ it holds that: 
-%     $\phi(x+y) = \phi(x) + \phi(y)$  and $\phi(x\cdot y) = \phi(x)\cdot \phi(y)$,
-%     for all $x,y\in R$ than, $\phi$ is a homomorphism.
-% \end{lemma}
 
-% \begin{defn}
-%     A sub ring of a ring $R$ is a subset $S \subseteq R$ that contains 0 and \red{1} 
-%     and is closed under addition, multiplication and negatives.    
-% \end{defn}
+\begin{definition}(generator/primitive element)
+    An element $\alpha$ in a finite field $F_q$ is called a primitive element
+    (or generator) of $F_q$ if 
+    $F_q = \{0, \alpha, \alpha^2, \dots , \alpha^{q-1}\}$.
+\end{definition}
+That is, a primitive element is a generator 
+of the multiplicative group of the field.
 
-% \begin{defn}
-%     If $R$ is a ring, we'll denote $R[X]$ the ring of polynomials
-%     in $x$ with coefficients in $R$. Formally, an element of $R[X]$ is a finite
-%     sum: $$ r_0 + r_1x +r_2x^2 +\dots +r_dx^d$$
-%     With $d\in\Z\ge0$.
-%     We treat $x$s as symbols, rather than actual values or variables.
-%     \red{todo: define poly addition and multiplication}
-% \end{defn}
+\begin{definition}
+    The order of a non zero element $\alpha$ in a finite field $F_q$ 
+    is the smallest positive integer $m$ such that
+    $\alpha^m=1$.
+\end{definition}
 
-% \begin{remark}[technical but important]
-%     a polynomial $f(x)\in R[X]$ defined as $f(x)=\sum_{i=0}^{d}{a_i\cdot x^{i}}$. 
-%     can be evaluated as a function over $R$, defining $f:R\to R$ by $f(r)=\sum_{i=0}^{d}{a_i\cdot r^{i}}$
-%     However, in this generality, different polynomials can give rise to the same function!
-%     \begin{example}
-%         $R=\Z \\ 2\Z = {0,1}$ the two different polynomials
-%         $f(x)=x, g(x)=x^2$ give rise to the same function $R\to R$.
-%     \end{example}
-% \end{remark}
 
-% \section{Commutative Algebra}
-% In this section we gradually define preliminaries for the schwarts-zippel lemma, 
-% and polynomial homomorphism.
+It is important to note that, if $\alpha$ is a 
+root of an irreducible polynomial $f(x)$ over $F[X]$ of degree $m$, 
+then it is also a primitive element of $F_{q^m}=F_q[\alpha]$.
+As a result, every element can be written as a power of $\alpha$: 
+$F_{q^m}=\{0,1,\alpha,\alpha^2,\dots,\alpha^{q^{m-1}}\}$.
 
-% \begin{defn}
-%     Let $R$ be a ring. An element $a\in R$ is a \emph{unit} if there exists
-%      $b\in R$ such that $a\cdot b = b\cdot a = 1$. The set of all units is denoted by $R^*$.
-% \end{defn}
+Addition, and multiplication is easier while represented in terms of $\alpha$ 
+(since it doesn't demand polynomial multiplication and modulo).
 
-% \red{define zero divisors as well when you have the time}.
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Ordering of elements}
+    You don't know the ordering of the elements using the generator $\alpha$.
+\end{bclogo}
 
-% \begin{defn}
-%     Let $\alpha_0,\alpha_1,\dots \alpha_m-1\in R$. We call $A=\{\alpha_0,\alpha_1,\dots \alpha_m-1\}$ an exceptional set
-%     if and only if $\alpha_i- \alpha_j\in R^*$ for all $i,j\in[m]$ with $i\neq j$. 
-%     We define Lenstra constant of $R$ to be the size of the biggest exceptional subset of $R$.
-% \end{defn}
+\paragraph{Zech logarithms}
+Zech logarithms are used to implement addition in finite fields 
+(via a look up table)
+when elements are represented as powers of a generator. 
 
-% \begin{remark}
-%     an exceptional set is a private case of a regular difference set,
-%     I will not discuss this here.
-% \end{remark}
+For sufficiently small finite fields,
+ a table of Zech logarithms allows an especially efficient 
+ implementation of all finite field arithmetic in terms of a small 
+ number of integer addition/subtractions and table look-ups.
 
-% Now That we've defined exceptional sets, we can talk about the polynomial evaluation homomorphism:
+The utility of this method diminishes for large fields 
+where one cannot efficiently store the table. 
+This method is also inefficient when doing very few 
+operations in the finite field, because one spends more time 
+computing the table than one does in actual calculation.
 
-% \begin{defn}[polynomial evaluation homomorphism]
-%     \red{TODO}
-% \end{defn}
 
-% Given an exceptional set, one can prove  the following:
-% \begin{lemma}[schwarts-zippel over rings~\cite{schwarts-zippel-over-rings}]
-%     Let $R$ be a commutative ring and $f: R^n \to R$ be an $n$-variate non-zero 
-%     polynomial. Let $A \subseteq R$ be an exceptional set. Then
-%     $$ \Pr_{x\leftarrow A^n}{[f(x)=0]} \leq \frac{\text{deg} f}{|A|}$$
-% \end{lemma}
+\section{Minimal Polynomials}
+
+Let $F_q$ be a subfield of $F_r$. For an element $\alpha\in F_r$,
+we are interested in nonzero
+polynomials $f(x)\in F_q[x]$ of of the least degree such that $f(\alpha)=0$.
+\begin{definition}
+    A minimal polynomial of an element $\alpha\in F_{q^m}$ 
+    with respect to $F_q$ is a nonzero monic polynomial 
+    $f(x)\in F_q[x]$ of the least degree such that $f(\alpha)=0$.
+\end{definition}
+
+\todo{need to write this section.}
+% \begin{theorem}
+%     (i) The minimal polynomial of an element of $F_{q^m}$ with respect
+%     to $F_q$ exists and is unique. It is also irreducible over $F_q$.
+%     (ii)
+% \end{theorem}
+
+\section{Tricks}
+\todo{If you have any tricks or theorems you think are important, put them here.}
+% TODO: discuss Ittai's trick for $A\cap B$ probabiltiy.

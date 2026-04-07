@@ -1,0 +1,442 @@
+\chapter{Lattices}
+The following chapters are chosen parts from Peikert's Survey, and the notes from the MIT course Advanced Topics in Cryptography: From Lattices to Program Obfuscation.
+
+\section{Basic definition}
+
+Latices are n-dimensional subsets of $\mathbb{R}^n$. 
+A lattice $\mathcal{L}$ is both 
+\begin{itemize}
+    \item an \emph{addative} subgroup: $0\in \mathcal{L}$, and for every $x,y\in \mathcal{L}$ so are $-x, x+y\in \mathcal{L}$.
+    \item \emph{discrete}: every $x\in \mathbb{L}$ has a ball/ neighbourhood in $\mathbb{R}^n$, where $x$ is the only lattice point. 
+\end{itemize}
+
+for instance $\mathbb{Z}^n$ is a lattice, or just the even numbers is a lattice. In addition, given a lattice $\mathcal{L}$, for any $c\in \mathbb{R}$, $c\cdot\mathcal{L}$ is also a lattice.
+
+Every lattice has a base (since it is a vector space).
+
+Every lattice has a dual: $\mathcal{L}^*=\{w : <w,\mathcal{L}>\subseteq \mathbb{Z}\}$
+
+
+\begin{definition}
+    The minimum distance of a lattice $\mathcal{L}$ is the length of a shortest nonzero lattice vector:
+    $$ 
+    \lambda_1(\mathcal{L}) := \min_{v\in \mathcal{L} \setminus \{0\}}{||v||} 
+    $$
+\end{definition}
+\subsection{Problems Over Lattices}
+Apperently it is not easy to solve things over lattices. 
+
+\begin{definition}[Shortest Vector Problem (SVP)]
+    Given an arbitrary basis $B$ of some lattice $mathcal{L}= mathcal{L}(B)$ ($mathcal{L}$ is defined via the basis $B$),
+find a shortest nonzero lattice vector, i.e., a $v \in mathcal{L}$ for which $||v|| = \lambda_1(\mathcal{L})$.
+\end{definition}
+Think about this one, like given a random basis of lattice vectors. It is hard to find all the vectors around the origin. 
+Treat it like other problems that once they are discrete become hard (linear programming for instance).
+
+
+There are many other problems, but i won't write about them.
+
+\subsection{(Discrete) Gaussians and Subgaussians}
+Discrete gaussian samples for  lattice are a cornerstone in many of 
+lattice-based cryptographic primitives. But i won't write about it just yet.
+treat it like a black box.
+
+
+
+\section{Modern Foundations}
+In this chapter we survey the main foundational works that directly underlie most modern lattice-based
+cryptographic schemes. These include the two main average-case problems SIS and LWE, their analogues
+over rings, and analytical techniques involving (discrete) Gaussian probability distributions
+\subsection{Short Integer Solution (SIS)}
+The short integer solution (SIS) problem was first introduced in the seminal work of Ajtai,and has
+served as the foundation for one-way and collision-resistant hash functions, identification schemes, digital
+signatures, and other "minicrypt" primitives (but not public-key encryption).
+
+Here we define the SIS problem,
+survey its connection to worst-case lattice problems, and explore some of its basic properties and immediate
+cryptographic implications. (Further applications are described in~\cite[Chapters 5 and 6]{latticebook})
+
+
+\begin{definition} [Short Integer Solution (${SIS}_{n,q,\beta,m}$)]\label{def:sis}
+    Given $m$ uniformly random vectors $a_i\in \mathbb{Z}_q^n$ form-
+ing the columns of a matrix $A\in \mathbb{Z}_q^{n\times m}$, find \emph{nonzero}
+integer vector $z\in \mathbb{Z}^m$ of norm $||z|| \le \beta$ such that
+
+$f_A(z):=Az=\sum_{i}{a_i \cdot z_i}=0\in \mathbb{Z}_q^n$
+\end{definition}
+
+
+We now highlight several simple but useful observations about the SIS problem:
+\begin{itemize}
+    \item without the norm constraints over $z$it is easy to find a solution via Gaussian elimination. Similarly, we
+must take $\beta < q$, otherwise $z=(q,0,0,0,0,0...)\in \mathbb{Z}^m$ would be a legitimate (but trivial) solution.
+\item any solution for $A$ can easily be extended to $A|A'$, by attaching zeros to $z$ (the norm remains the same). In other
+words, we can ignore columns $a_i$ as desired, so the SIS problem can only become easier as $m$ increases. Similarly, it can only become harder as $n$ increases.
+\item The norm should be large enough to guarantee a solution, which happens when $\beta  \ge \sqrt{\bar{m}}$ for $m\ge\bar{m}$ the smallest integer greater than $n\log q$. Why? Chris explains in chapter 4.
+\item Additional point stating it is collision resistant.
+\end{itemize}
+
+
+\emph{SIS} is NP-Total. it has a solution, and easy to verify but hard to find a solution.
+% TODO: fix following
+\subsection{Learning With Errors}
+A very important work of Regev \todo{cite! On lattices, learning with errors, random linear codes} from 2005 introduced the average-case learning with errors (LWE)
+problem, which is the "encryption-enabling" analogue of the SIS problem.
+
+The two problems are syntactically very similar, and can meaningfully be seen as duals of each other
+
+\paragraph{defs:}
+LWE is parameterized by positive integers $n$ and $q$, and an error distribution $\mathcal{X}$ over $\mathbb{Z}$. For concreteness, $n$
+and $q$ can be thought of as roughly the same as in SIS, and $\mathcal{X}$ is usually taken to be a discrete Gaussian of
+width $\alpha q$ for some $\alpha<1$, which is often called the relative "error rate".
+
+\begin{definition}[LWE distribution] 
+    for a vector $s\in\mathbb{Z}_q^n$ called the secret, the LWE distribution
+    $A_{s,\mathcal{X}}$ over $\mathbb{Z}_q^n \times \mathbb{Z}_q$ sampled by choosing $a\in \mathbb{Z}_q^n$ uniformly at random, choosing $e\leftarrow\mathcal{X}$ and outputting $(a, <a,s>+e \mod q)$.
+\end{definition}
+
+There are two main versions of the LWE problem: \emph{search}, which is to find the secret given LWE samples,
+and decision, which is to distinguish between LWE samples and uniformly random ones.
+
+\label{def:LWE}
+\begin{definition}[Search-LWE] 
+    Given $m$ independent samples $(a_i,b_i) \in\mathbb{Z}_q^n \times \mathbb{Z}_q$ drawn from $A_{s,\mathcal{X}}$
+for a uniformly random $s \in \mathbb{Z}^n_q$ (fixed for all samples), find $s$.
+\end{definition}
+
+Note that $b_i$ is derived using the secret and $A$, as defined by \emph{LWE distribution}.
+
+\begin{definition}[decision-LWE] 
+    Given $m$ independent samples $(a_i,b_i) \in\mathbb{Z}_q^n \times \mathbb{Z}_q$ where every sample is distributed according to either:  (1)
+    $A_{s,\mathcal{X}}$ for a uniformly random $s \in \mathbb{Z}^n_q$ (fixed for all samples), or (2) the uniform distribution,
+    
+    Distinguish which is the case (with non-negligible advantage)
+\end{definition}
+
+Some highlights (like we did for SIS):
+\begin{itemize}
+    \item Without the error terms from $\mathcal{X}$ both problems are easy to solve, because we can efficiently recover s
+from LWE samples by Gaussian elimination.
+\item We can write instead of the $m$ samples $(a_i,b_i)$ simply: $b^t = s^t A +e^t$. where $e \leftarrow\mathcal{X}^m$.
+\end{itemize}
+
+
+\paragraph{\bf Normal Form} 
+Similarly to SIS, the LWE problem also has a normal form, in which the coordinates
+of the secret s are chosen independently from the error distribution $\mathcal{X}$.Using this form can
+yield substantial efficiency gains for certain cryptographic constructions.
+
+Pieker's survey discuss the hardness, but i skip it.
+
+
+\subsection{Ring-SIS}
+Micciancio introduced a compact ring-based analogue of Ajtai's SIS problem and its associated function $f_A$
+from \autoref{def:sis}.
+
+\paragraph{Definitions}
+The ring-SIS problem is parameterized by:
+\begin{itemize}
+    
+    \item A ring R, which is often (but not always) taken to be a degree-$n$ polynomial ring of the form
+$R_q= Z_q[X]/(f(X))$, e.g., $f(X) = X^{2^k} + 1$. (For more information, see \autoref{def:polynomial-ring})
+$R_q$ has the following norm: For a vector $z$ over $R_q$ we define $||z||=(\$sum_i{||z_i||^2})^{1/2}$.
+    \item real norm bound $\beta > 0$ for the "short" solution, and a number $m$ of samples. (m is not super important)
+
+\end{itemize}
+    
+\begin{definition}[Ring-Short-Integer-Solution (R-SIS)]\label{def:ring-sis}
+    Given $m$ uniformly random elements $a_i \in R_q$, defining a vector  $a\in R^m_q$,
+find a nonzero vector $z\in R^m$ (i.e., $R$ is like $R_q$ but without $\mod q$) of norm 
+$||z||<\beta$ such that:
+
+    $$f_a:=<a,z> = 0\in R_q$$
+    
+
+    note that $<a,z>$ is a vector multiplication between two vectors with polynomial entries.
+\end{definition}
+
+R-SIS is relatively more compact, where $m$ can be approximatly $log q$, instead of $n\log q$  as in the non-ring case.
+
+
+
+\paragraph{Relation to SIS}
+One can translate between cryptographic constructions over the two. 
+read more in (4.3.2 Peikert survey).
+
+
+\paragraph{\b One-wayness} For the ring $R= Z[X]/(X^n-1)$ and other appropriate parameters, Micciancio proved that
+the function $f_a$ defined in \autoref{def:ring-sis} is one-way.
+
+
+
+\subsection{Ring-LWE}
+
+I will define the RLWE "decision" problem, since by using decisional-RLWE,
+it is relatively easier to define encryption schemes under this notion of hardness.
+Do note that there is an additional hardness assumption, called "search", 
+which is equivalent under specific conditions and parameters to 
+the "decisional-RLWE" problem.
+
+For a full, and accurate definition see~\cite[def 3.3]{RLWE}.
+\begin{definition} (toy decisional-RLWE)
+    Let 
+    \begin{enumerate}
+        \item $a_i(x)$ be a set of random but known polynomials from $Z_q/\Phi(X)$ with 
+        coefficients from $Z_q$.
+        \item  $e_i(x)$ be a set of small random and unknown polynomials 
+        relative to a bound $B$ in the ring $Z_q/\Phi(X)$.
+        \item $s(X)$ be a small unknown polynomial 
+        relative to a bound $B$ in the ring $Z_q/\Phi(X)$.
+        \item $b_i(x)=a_i(x)\cdot s(x) + e_i(x)$
+    \end{enumerate}
+    
+    Given a list of polynomial pairs $(a_i(x),b_i(x)$) it is computationally infeasible 
+    to determine $s(x)$.
+\end{definition}
+
+
+
+\section{Essential Cryptographic Constructions}
+
+
+\subsection{Collision-Resistant Hashing}
+A collision resistant hashing scheme $\mathcal{H}$ consists of an ensemble of hash functions ${\mathcal{H}}n\in\mathbb{N}$ where each $\mathcal{H}_n$
+consists of a collection of functions that map $n$ bits to $m<n$bits. So, each hash function $h$ compresses its
+input, and by pigeonhole principle, it has collisions. That is, inputs $x\neq y$ such that $h(x)=h(y)$. Collision-
+resistance requires that every p.p.t. adversary who gets a hash function $h \leftarrow \mathcal{H}_n$ chosen at random fails to find a collision except with negligible probability.
+
+\paragraph{\bf Collision-Resistant Hashing from SIS}
+Here is a hash family ${\mathcal{H}}$ that is secure under $SIS_{(n,q,\beta,m)}$
+where $n \log q >  m \log (\beta +1)$. Each hash function $h_A$ is parameterized by a matrix 
+$A\in \mathbb{Z}^{n\times m}_q$, takes as input $e\in [0,\dots,\beta]^m$ and outputs:
+
+$$ h_A(e) = A\cdot e \mod q$$
+
+\paragraph{\bf why is it secure?}
+Assume we have two different values $x\neq y$ such that $x,y\in [0,\dots,\beta]^m$ and $h_A(x)=Ax=Ay=h_A(y)$, 
+Why this means that $Ax-Ay=A(x-y)=0$ right? We managed to find a vector $z=x-y$ such that $f_A(z)=0 \mod q$, and since $z\in[-\beta,\dots,\beta]$ this is a solution to the SIS problem! (which is in contradiction to the hardness) .
+
+
+\section{Fully Homomorphic Encryption}
+Homomorphic encryption (\emph{HE}) is a form of encryption that allows 
+computations to be performed on encrypted data without first having to decrypt it.
+More formally:
+\begin{definition}[HE]
+ Let there be an encryption scheme $\pi = (KeyGen,Enc, Dec)$
+ We say that $\pi$ is an homomorphic encryption scheme if
+ given $f:\text{PTX-SPACE}\to \text{PTX-SPACE}$ then there
+ exists $F:\text{CTX-SPACE} \to \text{CTX-SPACE}$ such that
+ given two encrypted messages $c_1=Enc(m_1)$ $c_2=Enc(m_2)$ the following
+ applies
+   $Dec(F(c_1,c_2))=f(m_1,m_2)$
+\end{definition}
+
+That is, we can compute some wanted function $f$.
+
+We have multiple encryption schemes. Some are \emph{partially HE},
+like ElGamal, where only multiplication is possible.
+\begin{theorem}
+ We call the encryption scheme $\pi$ \emph{fully homomorphic encryption} (FHE) if it 
+ can support addition, negation and multiplication.
+\end{theorem}
+
+As of the year 2025, most of the FHEs are heavy and slow,
+or called leveled-FHE, where one must first define their parameters, 
+and then it has a limited amount of operations to perform (many additions and a 
+handful of multiplications.)
+
+In the following sections, I'll talk about a specific scheme called BGV \cite{BGV},
+this is a (leveled)-FHE scheme, which is easy to work with, and relatively efficient.
+
+\subsection{Usages}
+\red{TODO: describe PIR, private machine learning (for finance and medicals), 
+private set intersection see 
+\href{https://bit-ml.github.io/blog/post/bgv-fully-homomorphic-encryption-scheme-in-python/}{bgv repo}}
+
+\subsection{The BGV Encryption Scheme}
+
+While there are more encryption schemes than BGV (for instance BFV which is very similar,
+ CKKS for floating point numbers and TFHE which I haven't encountered at all),
+I have most of my experience with BGV, and it is a very nice scheme, 
+where addition and multiplication associativity commutativity and more desired attributes 
+hold.  Thus, we will focus on it.
+
+
+BGV relies on the following parameters
+\begin{itemize}
+    \item $n$ (a power of 2), (the degree of $X^n+1$ from the RLWE problem).
+    \item $q$ the ciphertext modulus.
+    \item $t$ the plaintext modulus (usually plaintexts are "lifted" into the $R_q$ space)
+    \item $\mathcal{X}$ the noise distribution, a discrete Gaussian.
+\end{itemize}
+
+In BGV we work with polynomials over $R_q=Z_q/(X^n+1)$.
+This ring has polynomials with degree at most $n$ and integer coefficients in $(-q/2,q/2]$.
+
+\begin{remark}
+    It is important to understand the relationship between parameters, and choosing parameters 
+    is not an easy task, and should not be tampered with lightly.
+    There are some parameter generators online to find the best parameters
+     for your cause see \href{https://github.com/Crypto-TII/fhegen}{fhegen}.
+    
+    Some things to consider are $n$, which affects the number of multiplications we can have,
+    $q$ which, determines the safety of our scheme, and $t$ which determines 
+    the size and efficiency of message packing into our plaintexts. 
+    \emph{When $q$ reduces in size, it means better security}.    
+
+    Notice that, smaller $q$ and smaller $n$ mean faster computations.
+\end{remark}
+
+
+\begin{remark}
+    \begin{itemize}
+        \item \red{check: I think we can treat coefficients as they were in $(0,q]$.}
+        \item All polynomial operations are considered $\mod q$
+         unless otherwise specified, to ease notation.
+         \item When we talk about "small" polynomials, 
+         we intuitively think about them as having small coefficients.
+    \end{itemize}
+\end{remark}
+
+\paragraph{Plaintext and Ciphertext Spaces}
+The plaintext and ciphertext spaces in BGV are defined over two distinct
+polynomial rings. the plaintext space is denoted by the polynomial
+ring $\mathcal{P}=R_{t}= Z_{t}\left[x\right]/\left(x^{n}+1\right)$,
+that is, polynomials of degree less than $n$ with coefficients modulo
+$t$. 
+\begin{remark}
+    Since Plaintexts must be polynomials in $R_q$, treat 
+    $m$ as a string and encode each letter of the string as a coefficient of a polynomial
+    $a_{0}a_{1}a_{2}\dots$
+\end{remark}
+
+
+the ciphertext space: $\mathcal{C}=R_q \times R_q$. 
+
+\subsubsection{Algorithms}
+In the following algorithms, $params$ is essentially the chosen security parameters. 
+\paragraph{$sk,pk \leftarrow KeyGen(params)$}
+The secret key $sk$ should be sampled from a distribution that outputs "small" elements 
+with overwhelming probability. In practice (e.g., in Microsoft's SEAL library) $sk\in\{-1,0,1\}^n$,
+with the probability of sampling 0 specified as a parameter, and the probability of sampling $-1$ or $1$
+being equal. 
+
+Once the secret key is derived, we can compute the public key $pk=(pk_0,pk_1)$.
+First, draw a random polynomial $a\overset{r}{\leftarrow} R_q$ and 
+noise (vector) $e\overset{r}{\leftarrow} \mathcal{X}$. Then compute 
+$pk=(pk_0,pk_1)=(a\cdot sk+t\cdot e, -a)$.
+
+Notice that here we rely on the hardness assumption? 
+Can you guess why we multiply the noise by $t$?
+
+\paragraph{$(c_0,c_1) \leftarrow encrypt(m,pk, params)$}
+To encrypt we draw noise $e_0,e_1 \overset{r}{\leftarrow} \mathcal{X}$, and a "small" polynomial 
+$u\in \{-1,0,1\}^n$ (like the secret key).
+Then we compute the ciphertext as follows $$c=(c_0,c_1)= (pk_0\cdot u +t\cdot e_0+m, pk_1\cdot u +t\cdot e_1)$$
+
+(Every element in the ciphertext tuple is in $R_q$).
+
+
+\paragraph{$m \leftarrow decrypt(c,sk,params)$}
+
+Decryption is performed by evaluating the ciphertext on the secret
+key as follows $ m=((c_0+c1\cdot sk) \mod q) \mod t$
+
+The following expansion of the expression above should make it clearer
+\begin{align*}
+c_{0}+c_{1}\cdot sk & =pk_{0}\cdot u+e_{0}\cdot t+m+(pk_{1}\cdot u+e_{1}\cdot t)\cdot sk=\\
+ & =\underbrace{(a\cdot sk +e\cdot t)}_{pk_0} \cdot u + e_{0}\cdot t + m + (\underbrace{-a}_{pk_1}\cdot u+e_{1}\cdot t)\cdot sk=\\
+ & = \cancel{a\cdot sk\cdot u} +e\cdot t\cdot u +e_{0}\cdot t + m  \cancel{-a\cdot u\cdot sk} +e_{1}\cdot t\cdot sk = \\
+ & = e\cdot t\cdot u +e_{0}\cdot t + m  +e_{1}\cdot t\cdot sk = \\
+ & = \underbrace{t\cdot (e\cdot u + e_0 +e_1\cdot sk)}_{error} + m
+\end{align*}
+If the error is small enough (doesn't cause $m$ to wrap around the modulus $q$), we should be able to eliminate the noise 
+by applying $\mod t$ on the result above (e.g., remember that for every number $z$: $z\cdot t \equiv 0 \mod t$).
+
+The decryption won't be correct when we have too much noise since $m$ parts of $m$
+will be zeroed out by the $\mod q$ operation we perform.
+
+\paragraph{addition and multiplication}
+is simple, we treat the ciphertext tuples and the plaintexts as polynomials in a higher dimension,
+that is $R_q[Y]$. The plaintexts are simply constant polynomials, and the freshly encrypted ciphertexts are polynomials 
+of degree $1$.
+It is a bit hard to see it in this manner, so let us discuss regular polynomials for instance.
+
+Given $a(x)=a_0+a_1x$, $b(x)=b_0$, and $c(x)=c_0+c_1x$ adding them together or multiplying them is simple, right?
+\begin{itemize}
+    \item $a(x)+b(x)= (a_0+b_0)+a_1x$
+    \item $a(x)\cdot b(x)= a_0\cdot b_0 + a_1\cdot b_0 x$
+    \item $a(x) \cdot c(x)= (a_0\cdot c_0) +(a_0\cdot c_1 + a_1\cdot c_0)\cdot x + a_1\cdot c_1 \cdot x$
+\end{itemize}
+
+Okay, that's easy, right? Well, now you know how to perform addition and multiplication with plaintexts and ciphertexts!
+$b(x)$ is a plaintext (since it has only one coefficient $b_0$), $a(x),c(x)$ are ciphertexts
+since they are tuples.
+
+In our ciphertext notions:
+$p*c=(p\cdot c_0, p\cdot c_1)$,
+$c*c'=(c_0\cdot c_0', c_0\cdot c_1' + c_1\cdot c_0', c_1\cdot c_1')$ and you can complete addition by yourself.
+
+\subsubsection{Advanced Algorithms}
+\paragraph{relianization}
+The issue with multiplications is that they increase the noise very fast, and it means we'll need to work harder 
+for decryption. That is, we increase the "degree" of our ciphertext every time we multiply it
+Either we decrypt like so: $decrypt(c, sk, params)= c_0 +c_1\cdot sk+c_2\cdot sk^2+\dots$, 
+or we perform relinearization.
+
+I will not describe relinearization here but know that it can be performed between each multiplication
+using something called an evaluation key (which is also public). After using the relianization algorithm 
+a ciphertext of degree $3$ (i.e., $c\cdot c'$ is of degree $3$) for instance, will return to degree $2$.
+
+\paragraph{key switch}
+\red {TODO}
+\paragraph{modulus switch}
+is used to decrease the noise/error. once can "hop" to decreasing modulus values to reduce the noise, and thus allow 
+more multiplications. \red{TODO}.
+
+\paragraph{rotations}
+\red{TODO}
+\subsubsection{bootstrapping}
+Read \href{https://www.zama.ai/post/what-is-bootstrapping-homomorphic-encryption}{bootstrapping for dummies} by Nigel Smart.
+
+% \section{security of the scheme}
+
+% Choosing optimal BFV parameters that maximize performance and respect
+% security and functionality constraints is an art that is practiced
+% by expert cryptographers. but there is a standard one can follow.
+
+% But mainly, we first start by choosing the max size of integers $\left(q\right)$
+% for the coefficients, and the max polynomial degree $\left(n\right)$.
+% but generally, larger $n$ gives more security (but slower ops), larger
+% $q$ means we can do more complex computations. 
+
+% \paragraph{Ciphertexts in these encryption schemes contain a noise component
+% (which is important for security), and that noise grows with each
+% operation (The encrypted result can only be decrypted if the noise
+% is smaller than $q$, hence using larger values of $q$ imply that
+% we can do more operations).}
+
+% \section{Relinearization}
+
+% Remeber we generated another key along with the private and public.
+% called $ek=\left(ek_{0},ek_{1}\right)$. using this key as randomness
+% source, we can relinearize the result of multiplication: the new ciphertext
+% would be :
+% \begin{align*}
+% c_{1} & =\left[C_{1}^{*}+ek_{0}\cdot C_{3}^{*}\right]_{q}\\
+% c_{2} & =\left[C_{2}^{*}+ek_{1}\cdot C_{3}^{*}\right]_{q}
+% \end{align*}
+% Remember, decryption is : $c_{1}+c_{2}\cdot sk$. After doing that,
+% the decryption would result with: 
+% \[
+% C_{1}^{*}+C_{2}^{*}\cdot sk+C_{3}^{*}\cdot sk^{2}+C_{3}^{*}\cdot e
+% \]
+%  which would decrypt just fine, but with a big error $\left(C_{3}^{*}e\right)$!
+% We can fix that by using base decomposition.
+
+
+% \section{Base Decomposition}
+% \section{Mod Switching}
+
+% \section{Choosing Parameters}
+

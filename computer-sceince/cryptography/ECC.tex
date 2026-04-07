@@ -1,0 +1,383 @@
+\chapter{Elliptic curves}
+Taken from \emph{A Graduate Course in Applied Cryptography, Dan Boneh and Victor Shoup}
+
+The best-known discrete log algorithm in an elliptic curve group of size $q$ runs in time $O(\sqrt{q})$. 
+This means that to provide security comparable to AES-128, it suffices to use a group of size $q \approx 2^{256}$ 
+so that the time to compute discrete log is $\sqrt{q} \approx 2^{128}$.
+
+\section{a bit of history on elliptic curves}
+\sloppy{
+Elliptic curves come up naturally in several branches of mathematics.
+Here we will follow their development as a branch of arithmetic (the study of rational numbers).
+Diophantus, a greek mathematician who lived in Alexandria in the third century, was interested 
+in the following problem: Given a bivariate polynomial equation, $f(x,y)=0$ find 
+rational points satisfying the equation. That is, find $P=(x,y)$ such that $x,y\in\mathbb{Q}$.
+Diophantus wrote a series of influential books on this subject, called the \emph{Arithmetica}, of which six survived.
+Much of Arithmathica studies integer and rational solutions of quadratic equations.
+For example, one of the first problems in the books regarding elliptic curves is to find $(x,y) \in \Q$
+ that satisfy the equation $$ y^{2}=x^3 - x + 9$$
+The method invented to answer this question secures most Internet traffic worldwide.
+One can easily verify that the following points are on the curve $(0, \pm3), (1, \pm3), (-1, \pm 3)$.
+Diophantus developed a method similar to \underline{chord method}:
+Given two rational points $U$ and $V$ on the curve, where $U\neq -V$, we can pass a line through them,
+ and this line must intersect the curve at a third rational point $W$. 
+The chord method was rediscovered several times over the centuries, but it finally stuck with the work of Poincare.
+
+Poincare defines the sum of $U, V$, denoted $U \boxplus V$ as $U \boxplus V := -W$
+Diophantus' method, the \emph{tangent method} is another way to build a new rational point from a given rational point. 
+We should later see that the method corresponds to adding the point $P$ to itself: $P\boxplus P$.}
+
+\section{elliptic curves over finite fields}
+We are primarily interested in elliptic curves over finite fields for cryptographic applications.
+\begin{definition}
+  Let $p >3 $ be a prime. An \textbf{elliptic curve} $E$ defined over $\mathbb{F}_p$ is an 
+  equation  
+  $$ y^2 = x^3 +ax + b$$
+  where $a,b \in \mathbb{F}_p$ satisfy $4a^3 +27b^2 \neq 0$. We write $E/\mathbb{F}_p$ to denote
+  the fact that $E$ is defined over $\F_p$.
+\end{definition}
+The weird condition $4a^3 +27b^2 \neq 0 $ ensures that the equation 
+$ x^3 + ax + b = 0$ does not have a double root (needed to avoid degeneracies).
+
+\begin{definition}
+  We say that point $P=(x,y)$, where $x,y \in \F_p$, is on curve $E$ if it satisfies the equation of $E$.
+\end{definition}
+\begin{definition}
+  $E(\F)$ denotes the set of all points on the curve E and are defined over $\F$.
+\end{definition}
+
+The addition law, and adding to the set $E(F_p)$ the member $\mathcal{O}$,
+ which servers as the identity member, turns it into a group. I'm not getting into the addition laws.
+
+\section{Elliptic curve cryptography}
+
+
+Given two points $P$ and $\alpha \cdot P$, where $\alpha \in \Z_q$, it is hard to compute $\alpha$.
+The best known algorithm to compute $\alpha$ is $\Omega(\sqrt{q})$.
+There are a few exceptions to these rules, and thus one should be careful when defining a new curve.
+So it's better to use some specific already implemented and used curve rather than 
+generating a random prime $p$ and a random curve over $\F_p$.
+\todo[inline]{TODO, put here an encryption scheme, and a signature scheme (can use schnorr here honestly)
+The most important thing to remember is that elliptic curve cryptography 
+assumes hard exponent, and everything is similar to those algorithms
+}
+
+\subsection{ECDSA}
+The ECDSA is essential DSA over elliptic curves.
+The most commonly known is the signature algorithm used by bitcoin and other cryptocurrencies:
+ECDSA, which commonly refers to the following algorithm:
+
+\begin{description}
+  \item[Key generation] Grab a random number $x\in \mathbb{F}_q$ where the elliptic curve  
+  is a vector space over $\mathbb{F}_q$, and $q$ is the order of the group.
+  and return $(sk,pk)=(x,xG)$, where G is the generator of the elliptic curve 
+  (Usualy $G$ is a specific base point, because over a a group with $q$ points, 
+  almost every point is a generator - due to Fermat's little theorm \ref{fermats-little-theorem}).
+  \item[Signing] $(r,s)=\sigma = Sig_{sk}(m)$ is generated as follows:
+  \begin{enumerate}
+    \item generate a random scalar $k\in \mathbb{F}_q$.
+    \item compute $R=g^{k^{-1}}$
+    \item compute $r=H(R)$ (notice that this is now a scalar).
+    If $r mod=0$ then go back to step 1.
+    \item compute $s=k^{-1}\cdot(H(m)+x\cdot r)$\todo{This part is incorrect because
+     they want specific bits from $H(m)$, but it's not crucial to understand the algorithm,
+      so I skipped it.}
+    \item set $\sigma=(r,s)$.
+  \end{enumerate}
+  \item[Verification] To verify a signature $\sigma=(r,s)$ on message $m$ with 
+  public key $pk$, one needs to compute the following 
+  $ R'= G^{m\cdot s^{-1}}\cdot pk^{r\cdot s^-1} $ (note that this is a point in the EC).
+  Notice that if you subtitute $s$ and $pk$ to their actual values, you should get $R$ if 
+  the signature is valid.
+  Then, check that $r=H(R')$, if it is accept the signature.
+\end{description}
+
+\subsection{Schnorr Signature}
+\todo[inline]{need to fill this...}
+\section{Pairing based cryptography}
+We now show that certain elliptic curves have an additional structure,
+called a pairing, which enables a world of new schemes that could not be built
+ from discrete log groups without this other structure.
+
+ \begin{definition}
+  Let $\G_0, \G_1, \G_T$ be three cyclic groups of prime order $q$ where 
+  $g_0\in\G_0$ and $g_1\in\G_1$ are generators. A \textbf{pairing} is an efficiently
+  computable function $e: \G_0 \times \G_1 \to \G_T$ satisfying the 
+  following properties:
+  \begin{itemize}
+    \item bilinear: $\forall u,u'\in\G_0, v,v'\in\G_1$  we have 
+        $$ e(u\cdot u',v) = e(u,v) \cdot e(u',v) and  e(u,v\cdot v') = e(u,v)\cdot e(u,v')$$
+    \item non-degenerate: $g_T := e(g_0,g_1)$  is a generator of $\G_T$.
+  \end{itemize}
+\end{definition}
+We refer to $\G_0,\G_1$ as the pairing groups and $\G_T$ as the target group.
+
+Bilinearity implies the following central property of pairing that will be used
+in all our constructions: for all $a, b\in \Z_q$ we have
+  $$ e(g_0^a,g_1^b)=e(g_0,g_1)^{a\cdot b}= e(g_0^b,g_1^a)$$
+This equality follows from the equalities 
+$e(g_0^a,g_1^b)=e(g_0,g_1^b)^a=e(g_0^a,g_1^b)=e(g_0^a,g_1)^b$
+which are themselves a direct consequence of bilinearity (Note that in cyclic groups
+ such as $\G_0 and \G_1$ this definition is equivalent to the definition of bilinearity above).
+[if I understand correctly, due to $\G_0 and \G_1$ having generators, we can represent every number
+as a power of the generators themselves, and using bilinearity we can reach the above equations]
+
+In a symmetric pairing group, where $G_0 = G_1$ schemes like ElGamal aren't secure anymore,
+that is, given two public keys, it is to break the DDH assumption: 
+  $$ e(g^x,g^y) = e(g,g)^{x\cdot y}$$ 
+Hence, it is possible to extract information. 
+
+In asymmetric pairing, where $G_0 \neq G_1$, it may still be possible
+that the DDH assumption holds in both $G_0$ and $G_1$. 
+
+Furthermore, if the discrete log in $G_T$ is easy, it is easy in $G_0$ (and $G_1$).
+
+\begin{rem}
+  The pairing function $e$ on an elliptic curve comes from an algebraic pairing called the \textbf{Weil pairing}.
+  Which can be efficiently evaluated. In practice, one uses variants of the weil 
+  pairing, called the Tate and Ate pairings.
+\end{rem}
+
+We'll avoid $bn256$ curve as it isn't secure.
+
+
+\subsection*{optimisations}
+\begin{itemize}
+  \item When the first value of the pairing is known, we can speed things up
+  by calculating a table of the other possible values. (though it seems very inefficient, and memory intensive.)
+\end{itemize}
+
+\section{Advanced encryption schemes from pairings}
+
+\subsection{The BLS signature scheme}
+Let $e:F_0 \times G_1 \to G_T$ be a pairing where $G_0,G_1,G_T$ are
+cyclic groups of prime order $q$, and where $g_0\in G_0, g_1\in G_1$ are
+generators. 
+We'll also require a hash function $H : \mathcal{M} \to G_0$.
+
+The BLS signature scheme denoted $\mathcal{S}_BLS = (G,S,V)$, has message space
+$\mathcal{M}$ and works as follows:
+\begin{itemize}
+  \item $G():$ The key generation algorithm runs as follows 
+  $$  \alpha \from \Z_q,u\from g_1^\alpha \in G_1  $$
+  The public key is $ pk := u$, and the secret key is $\alpha$.
+
+  \item $S(sk,m):$ To sign a message $m\in \mathcal{M}$ using a secret key
+  $sk=\alpha\in\Z_q$ do:
+  $$ \sigma\from H(m)^{\alpha} \text{ output } \sigma$$
+
+  \item $V(pk,m,\sigma):$ To verify a signature 
+  $$ e(H(m), u) = e(\sigma,g_1) $$
+  that is, the signature is accepted due to the following calculations
+  $$e(H(m), g_1^\alpha) = e(H(m),g_1)^\alpha = e(H(m)^\alpha,g_1)= 
+  e(\sigma, g_1)
+  $$
+\end{itemize}
+
+\subsection{Identity based encryption}
+Using Identity-Based Encryption (IBE from now), Alice can send an encrypted message to Bob
+without asking for bobs key beforehand. Beyond key exchange, IBE can also 
+be used to construct CPA-secure public key encryption and even search encrypted data.
+In an IBE scheme, a trusted entity, Trudy, generates a master key pair $(mpk, msk)$.
+The key $mpk$ is the \emph{master public key} and is known to everyone. Trudy keeps the \emph{master 
+secret key} $msk$ to herself. When Bob wants to use his email address as his public key, he must
+somehow obtain the private key derived from $msk$ and Bob's public key.
+We denote Bob's email address as his (public) identity $id$ and denote the corresponding private key 
+by $sk_{id}$. He receives $sk_{id}$ by contacting Trudy, she'll use $msk$ and $id$ to generate $sk_{id}$,
+and send it back to Bob.
+Now anyone, including Alice, can send bob messages without looking up his public key. 
+Assuming, of course, that Alice knows $mpk$.
+
+\begin{definition}
+  An \textbf{Identiy based encryption scheme $ \mathcal{E}_id =(S,G,E,D)$}
+  is a tuple of four efficient algorithms: a \textbf{setup algorithm $S$}, a 
+  \textbf{Key generation algorithm $G$}, an \textbf{encryption algorithm $E$}
+  and a \textbf{decryption algorithm $D$}.
+
+  \begin{itemize}
+    \item $S$ is a probabilistic algorithm which outputs $(mpk, msk) \overset{_R}{\leftarrow} S()$.
+    \item $G$ is a probabilistic algorithm invoked as $sk_{id} \getrandom G(msk, id)$.
+    \item $E$ is a \emph{probabilistic} algorithm invoked as $c \getrandom E(mpk, id, m)$.
+    \item $D$ is a deterministic algorithm invoked as $m\getrandom D(sk_{id},c)$. Where $m$ is
+      either a message or a \textbf{reject} value.
+    \item We require that decryption undoes encryption: 
+    $$ \Pr[D(G(msk,id), E(mpk,id,m))=m]=1$$
+    \item identities, messages, and ciphertexts are in their respective finite spaces,
+    and $\mathcal{E}_id$ is defined over $(\mathcal{ID},\mathcal{M},\mathcal{C})$.
+  \end{itemize}
+\end{definition}
+
+We can view IBE as a particular public key encryption scheme where the messages
+to be encrypted pairs $(id, m)\in\mathcal{ID\times M}$. The master secret key can
+decrypt any well-formed ciphertext. However, there are weaker secret keys, 
+such as $sk_{id}$ that can decrypt a ciphertext $c\getrandom E(mpk, id', m)$ only if $id'=id$.
+
+
+Bob won't use his email address as a public key if a company uses IBE. Otherwise, if Bob's secret key 
+is compromised, bob would need to change his email. Instead, Bob's public key
+should bob could use the identity string $(id, date)$.
+Bob will need to request a new secret key from Trudy every day.
+Now Alice can even encrypt emails for specific dates, and bob cannot access it before that, 
+unless Trudy gives bob any key he requests.
+
+I will not go into detail about the formal definition of security, but the idea is that
+the attacker has access to any $sk_{id'}$ it want but should not be able to break semantic
+security for some other identity with secret key $sk_{id}$ that the adversary does not have.
+
+
+\subsection*{IBE from pairings}
+We'll need a few components before being able to construct an IBE: 
+\begin{itemize}
+  \item a pairing. as defined above, over cyclic groups of prime order $q$, 
+  with generators $ g_0, g_1 $.
+  \item a symmetric cipher $\mathcal{E}=(E_s,D_s)$.
+  \item hash functions $H_0:\mathcal{ID}\to \G_0$ and $H_1:\G_1\times\G_T\to \mathcal{k}$,
+  where k is the key space.
+\end{itemize}
+\subsubsection*{Construction 1}
+
+\begin{itemize}
+  \item $S():$ runs as follows:
+  $$ \alpha\getrandom \Z_q, u_1\from g^\alpha, mpk \from u_1, msk \from \alpha 
+  \text{ output }(mpk,msk) $$
+  \item $G(msk,id):$ key generation using $msk = \alpha$:
+  $$ sk_id \from H_0(id)^\alpha \in \G_0 \text{ output } sk_id$$
+  \item $E(mpk, id, m ):$ encryption using the public parameters $mpk=u_1$:
+  \begin{align*}\label{lamlam} 
+    \beta \getrandom \Z_q,\  z\from e(H_0(id),mpk^\beta) 
+    \\ \ 
+    k\from H_1(g^\beta,z), c\getrandom E_s(k,m), \text{ output } (g^\beta,c)
+  \end{align*}
+  The encryption generates a new secret key $k$ at random. This private key relies on the pairing with
+  the hashed public id. Once we've generated the ephemeral secret key $k$, we encrypt the message $m$.
+
+  \item $D(sk_id,(w_1,c)):$ decryption using secret key $sk_id$ of ciphertext $(w_1,c)$:
+  \begin{align*}
+    z \from  e(sk_{id},w_1), k\from H_1(w_1, z), m\from D_s(k,c),
+  \text{ output } m
+  \end{align*}
+  The decryption relies on $w_1=g^\beta$ to figure out the symmetric encryption key $k$.
+  With $k$, the message can be decrypted.
+  \newline
+  To generate $k$ correctly, we first remind the reader that $$sk=H(id)^\alpha, mpk^\beta=g^{\alpha\beta}, k=H(g^\beta,z)$$
+  now, let's compute $z$, our missing component:
+  $$
+  z=\underbrace{e(sk_{id},g^\beta)}_{\text{z in decryption}}=e(H(id)^\alpha,g^\beta)=e(H(id),g^{\alpha\beta})=\underbrace{e(H(id),mpk^\beta)}_{\text{z in encryption}}
+  $$
+\end{itemize}
+
+\section{KZG Commitment Scheme}
+% Modified by Gemini, but inspected and verified by myself.
+The Kate, Zaverucha, and Goldberg (KZG) commitment scheme is a polynomial commitment scheme that leverages elliptic curve pairings to provide a concise and efficient way to commit to a polynomial and later prove its evaluation at a specific point. It is widely used in Zero-Knowledge Succinct Non-Interactive Arguments of Knowledge (ZK-SNARKs) and scaling solutions for blockchains.
+
+In this section, we adopt the common notation for elliptic curve cryptography where an integer multiplied by a generator, e.g., $s \cdot G$, denotes repeated addition (additive notation). KZG commitments are typically elements of the $\mathbb{G}_1$ group.
+\subsection{Setup}
+The KZG scheme requires a one-time trusted setup ceremony to generate a Common Reference String (CRS), sometimes referred to as a "structured reference string" or "powers of tau." This CRS consists of a set of elliptic curve points:
+$$ \text{CRS} = (G, \alpha\cdot G, {\alpha^2}\cdot G, \dots, {\alpha^N}\cdot G, H, \alpha \cdot H) $$
+where $G \in \mathbb{G}_1$ and $H \in \mathbb{G}_2$ are generators of the respective elliptic curve groups $\mathbb{G}_1$ and $\mathbb{G}_2$ (which are the source groups for the pairing function $e: \mathbb{G}_1 \times \mathbb{G}_2 \to \mathbb{G}_T$). $\alpha$ is a random secret value chosen during the setup and then immediately discarded. $N$ is the maximum degree of polynomials that can be committed to.
+
+\subsection{Commitment}
+Given a polynomial $f(x) = \sum_{i=0}^N f_i x^i$, our commitment $C$ is computed by evaluating the polynomial at the secret value $\alpha$ from the CRS, and then multiplying the result by the generator $G \in \mathbb{G}_1$. That is, $C=f(\alpha)\cdot G$. Since we don't know $\alpha$, our computation of $C$ utilise the CRS values as follows:
+$$C= \sum_{i=0}^{N}{f_i \cdot (\alpha^i\cdot G)}=(\sum_{i=0}^{N}{(f_i \cdot \alpha^i)})\cdot G= f(\alpha)\cdot G$$
+The commitment $C$ is a single element of the $\mathbb{G}_1$ group.
+For instance, if $f(x)=2x^2+5x+7$, then its commitment would be $C= 2 \cdot (\alpha^2\cdot G) + 5 \cdot (\alpha\cdot G) + 7 \cdot G= f(\alpha)\cdot G$.
+
+
+\subsection{Opening Proof (Proving an Evaluation)}
+To prove that $f(u) = v$ for some point $u$ and value $v$, the prover needs to construct an opening proof $\pi$.
+\begin{lemma}
+If $f(u)=v$, then we can construct $h(x)=f(x)-v$, and $h$ is divisable by $(x-u)$
+\end{lemma}
+\begin{proof}
+    by definition $f(x)=\sum_{i=0}^{N}{f_i\cdot x^i}$, and $f(u)=v$. 
+    From the Fundamental Theorem of Algebra, we know that any polynomial has at most $n\le \deg(f)$ roots. 
+    In addition, we know from the Factor Theorem that if $v$ is a root of $f$, then $f=(x-v)\cdot q(x)$ where
+    $\deg(q)< \deg(f)$. 
+    Thus, by constructing $h(x)=f(x)-v$, we know for a fact that $h(x)$ has a root in $u$, and thus can be 
+    factored by $(x-u)$. Q.E.D
+\end{proof}
+
+Now, let's create an opening proof that someone else can verify against our commitment:
+First, the prover (has access to $f$) computes the following quotient polynomial $Q(x)$:
+$$ Q(x) = \frac{f(x) - v}{x - u} $$
+This polynomial is $h(x)=f(x)-v$ divided by its factor $x-u$. 
+The prover then computes the commitment to this quotient polynomial, which is the evaluation of $Q(\alpha)\cdot G$. This commitment, denoted as $\pi_Q = Q(\alpha)\cdot G$, serves as the opening proof.
+
+
+\subsection{Verification}
+The verifier, given the commitment $C$, the point $u$, the claimed value $v$, and the proof $\pi_Q = Q(\alpha)\cdot G$, checks the following pairing equation:
+$$ e(\pi_Q, \alpha \cdot H - u \cdot H) =  e(C-v\cdot G,H)$$
+This equation holds if and only if $f(u) = v$.
+
+The intuition behind this verification equation comes from the Polynomial Remainder Theorem and the properties of pairings. Specifically, it relies on the bilinearity of the pairing.
+Let's substitute $\pi_Q = Q(\alpha)\cdot G$ and $C=f(\alpha)\cdot G$ into the equation and use the bilinearity property:
+From the construction of $Q(x)$, we have $Q(x) = \frac{f(x) - v}{x - u}$, which implies $f(x) - v = Q(x)(x-u)$.
+Evaluating this at $\alpha$, we get $f(\alpha) - v = Q(\alpha)(\alpha-u)$.
+Multiplying by $G$: $(f(\alpha) - v) \cdot G = Q(\alpha)(\alpha-u) \cdot G$.
+So, $C - v \cdot G = Q(\alpha) \cdot (\alpha-u) \cdot G$.
+Now, let's look at the pairing equation (unchanged yet):
+$$ e(Q(\alpha)\cdot G, (\alpha-u) \cdot H) = e((f(\alpha)-v)\cdot G,H) $$
+The left side:
+$$ e(Q(\alpha)\cdot G, \alpha \cdot H - u \cdot H) = e(Q(\alpha)\cdot G, (\alpha-u) \cdot H) $$
+By bilinearity, this is equivalent to:
+$ e(G, H)^{Q(\alpha) \cdot (\alpha-u)} $
+The right side:
+$$ e(C - v \cdot G, H) = e((f(\alpha)-v)\cdot G, H) $$
+By bilinearity, this is equivalent to:
+$ e(G, H)^{f(\alpha)-v} $
+Since we established that $Q(\alpha) \cdot (\alpha-u) = f(\alpha)-v$, both sides of the pairing equation are equal if the proof is valid.
+
+
+\subsection{Security Properties}
+The KZG scheme offers two important security properties:
+\begin{itemize}
+    \item \textbf{Perfect Hiding}: Given a commitment $C$, it is computationally hard to derive any information about the committed polynomial $f(x)$. This property holds perfectly because the commitment $C=f(\alpha)\cdot G$ is an element of $\mathbb{G}_1$, and $f(\alpha)$ is a scalar. Since $\alpha$ is a secret value (discarded after CRS generation), $f(\alpha)$ is unknown, making it impossible to reconstruct $f(x)$ from $C$.
+    \item \textbf{Computational Binding}: It is computationally hard to find two different polynomials $f(x)$ and $f'(x)$ such that their commitments $C$ and $C'$ are equal (i.e., $f(\alpha)\cdot G = f'(\alpha)\cdot G$). This property relies on the Discrete Logarithm assumption in elliptic curve groups and the fact that $\alpha$ is unknown to the prover. If a prover could find two such polynomials, they would essentially find a root to $f(\alpha) - f'(\alpha)$, which is hard.
+\end{itemize}
+
+\subsection{Applications}
+KZG commitments are fundamental to constructions like:
+\begin{itemize}
+    \item \textbf{ZK-SNARKs}: Providing efficient and succinct proofs for computations.
+    \item \textbf{Data Availability Sampling (DAS)}: Used in sharding solutions (e.g., Ethereum's Danksharding) to ensure data availability without requiring all nodes to download all shard data.
+    \item \textbf{Verifiable Delay Functions (VDFs)}: Used in some consensus mechanisms.
+\end{itemize}
+
+
+\section{Verkle Trees}
+TODO: Verify.
+% Verkle Trees are a new type of cryptographic accumulator that use polynomial commitments (specifically, KZG commitments) to achieve a significant reduction in proof size compared to Merkle trees. This makes them particularly attractive for blockchain applications where state size and proof efficiency are critical, such as Ethereum's scaling roadmap.
+
+% \subsection{Structure and Concept}
+% A Verkle tree can be thought of as a tree where each node commits to its children's values (or their commitments) using a polynomial commitment scheme. Instead of hashing, a polynomial is formed from the children's values, and the commitment to this polynomial becomes the parent's commitment.
+
+% \begin{itemize}
+%     \item \textbf{Nodes as Polynomials}: Each internal node in a Verkle tree represents a polynomial whose evaluations at specific points correspond to the commitments of its children.
+%     \item \textbf{KZG Commitments for Nodes}: KZG commitments are used to commit to these polynomials. A single KZG commitment (an elliptic curve point) serves as the "hash" for an entire node.
+%     \item \textbf{Branching Factor}: Unlike binary Merkle trees, Verkle trees can have a very high branching factor (e.g., 256 or more). This means a single parent can directly commit to many children, leading to shallower trees.
+% \end{itemize}
+
+% \subsection{Proof Generation and Verification}
+% To prove the existence and value of a leaf in a Verkle tree, one needs to provide:
+% \begin{itemize}
+%     \item The value of the leaf itself.
+%     \item A path from the root to the leaf, where each step consists of a KZG opening proof for the relevant polynomial at that node.
+% \end{itemize}
+% The beauty of KZG commitments is that these opening proofs are very small (a single elliptic curve point), regardless of the number of children a node has. This leads to extremely compact proofs for Verkle trees.
+
+% \subsection{Advantages over Merkle Trees}
+% \begin{itemize}
+%     \item \textbf{Smaller Proof Sizes}: The primary advantage. Merkle proofs require providing all sibling hashes along the path to the root. In a Verkle tree, due to KZG commitments, the proof for a branch is logarithmic in the depth of the tree, but critically, independent of the branching factor, leading to much smaller proof sizes for high-degree trees.
+%     \item \textbf{Efficient Updates}: While not as straightforward as Merkle trees, updates can be efficiently handled by recomputing polynomial commitments along the path from the modified leaf to the root.
+%     \item \textbf{Larger State Capacity}: The high branching factor allows for a significantly larger state to be represented in a tree of a given depth.
+% \end{itemize}
+
+% \subsection{Applications in Blockchains}
+% Verkle trees are being considered for:
+% \begin{itemize}
+%     \item \textbf{Ethereum State Management}: A potential upgrade to Ethereum's state tree (currently a Merkle Patricia tree) to reduce the witness size needed for state proofs, which is crucial for stateless clients and sharding. This would allow nodes to verify transactions without storing the entire blockchain state, greatly reducing hardware requirements for running a node.
+%     \item \textbf{Scalability Solutions}: By enabling smaller proofs, Verkle trees can enhance the efficiency and scalability of various blockchain protocols and layer-2 solutions.
+% \end{itemize}
+
+% \subsection{Relation to KZG Commitments}
+% Verkle trees directly leverage KZG polynomial commitments as their fundamental building block. The efficiency of Verkle tree proofs stems directly from the succinctness of KZG opening proofs. Without KZG (or similar polynomial commitment schemes), Verkle trees would not offer their significant advantages over Merkle trees.

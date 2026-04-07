@@ -73,3 +73,162 @@ isbn="978-3-540-71039-4"
   year={2018},
   publisher={Cambridge University Press}
 }
+
+@ARTICLE{ntt,
+  author={Agarwal, R.C. and Burrus, C.S.},
+  journal={Proceedings of the IEEE}, 
+  title={Number theoretic transforms to implement fast digital convolution}, 
+  year={1975},
+  volume={63},
+  number={4},
+  pages={550-560},
+  doi={10.1109/PROC.1975.9791}}
+
+
+@inbook{Aigner2010,
+	abstract = {Every nonconstant polynomial with complex coefficients has at least one root in the field of complex numbers.},
+	address = {Berlin, Heidelberg},
+	author = {Aigner, Martin and Ziegler, G{\"u}nter M.},
+	booktitle = {Proofs from THE BOOK},
+	doi = {10.1007/978-3-642-00856-6_19},
+	isbn = {978-3-642-00856-6},
+	pages = {127--129},
+	publisher = {Springer Berlin Heidelberg},
+	title = {The fundamental theorem of algebra},
+	url = {https://doi.org/10.1007/978-3-642-00856-6_19},
+	year = {2010},
+	bdsk-url-1 = {https://doi.org/10.1007/978-3-642-00856-6_19}}
+
+
+
+@article{SZ,
+	address = {New York, NY, USA},
+	author = {Schwartz, J. T.},
+	doi = {10.1145/322217.322225},
+	issn = {0004-5411},
+	issue_date = {Oct. 1980},
+	journal = {J. ACM},
+	number = {4},
+	numpages = {17},
+	pages = {701--717},
+	publisher = {Association for Computing Machinery},
+	title = {Fast Probabilistic Algorithms for Verification of Polynomial Identities},
+	url = {https://doi.org/10.1145/322217.322225},
+	volume = {27},
+	year = {1980},
+	bdsk-url-1 = {https://doi.org/10.1145/322217.322225}}
+
+@misc{sz-usage2,
+  author = {Emil Pepil},
+  title = {{Why are Polynomials Useful for ZKPs?}},
+  howpublished = "\url{https://medium.com/@emilpepil/why-are-polynomials-useful-for-zkps-c22489d57d83}",
+  year = {2024}, 
+  note = "[]"
+}
+
+@Article{BGV,
+  title =	"(Leveled) Fully Homomorphic Encryption without
+		 Bootstrapping",
+  author =	"Zvika Brakerski and Craig Gentry and Vinod
+		 Vaikuntanathan",
+  journal =	"ACM Trans. Comput. Theory",
+  year = 	"2014",
+  number =	"3",
+  volume =	"6",
+  bibdate =	"2020-06-08",
+  bibsource =	"DBLP,
+		 http://dblp.uni-trier.de/https://doi.org/10.1145/2633600;
+		 DBLP,
+		 http://dblp.uni-trier.de/db/journals/toct/toct6.html#BrakerskiGV14",
+  pages =	"13:1--13:36",
+}
+
+@misc{RLWE,
+      author = {Vadim Lyubashevsky and Chris Peikert and Oded Regev},
+      title = {On Ideal Lattices and Learning with Errors Over Rings},
+      howpublished = {Cryptology ePrint Archive, Paper 2012/230},
+      year = {2012},
+      note = {\url{https://eprint.iacr.org/2012/230}},
+      url = {https://eprint.iacr.org/2012/230}
+}
+
+Consensus in the Presence of Partial Synchrony
+@article{partial-async,
+author = {Dwork, Cynthia and Lynch, Nancy and Stockmeyer, Larry},
+title = {Consensus in the presence of partial synchrony},
+year = {1988},
+issue_date = {April 1988},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {35},
+number = {2},
+issn = {0004-5411},
+url = {https://doi.org/10.1145/42282.42283},
+doi = {10.1145/42282.42283},
+abstract = {The concept of partial synchrony in a distributed system is introduced. Partial synchrony lies between the cases of a synchronous system and an asynchronous system. In a synchronous system, there is a known fixed upper bound Δ on the time required for a message to be sent from one processor to another and a known fixed upper bound Φ on the relative speeds of different processors. In an asynchronous system no fixed upper bounds Δ and Φ exist. In one version of partial synchrony, fixed bounds Δ and Φ exist, but they are not known a priori. The problem is to design protocols that work correctly in the partially synchronous system regardless of the actual values of the bounds Δ and Φ. In another version of partial synchrony, the bounds are known, but are only guaranteed to hold starting at some unknown time T, and protocols must be designed to work correctly regardless of when time T occurs. Fault-tolerant consensus protocols are given for various cases of partial synchrony and various fault models. Lower bounds that show in most cases that our protocols are optimal with respect to the number of faults tolerated are also given. Our consensus protocols for partially synchronous processors use new protocols for fault-tolerant “distributed clocks” that allow partially synchronous processors to reach some approximately common notion of time.},
+journal = {J. ACM},
+month = apr,
+pages = {288-323},
+numpages = {36}
+}
+
+
+@article{flp,
+author = {Fischer, Michael J. and Lynch, Nancy A. and Paterson, Michael S.},
+title = {Impossibility of distributed consensus with one faulty process},
+year = {1985},
+issue_date = {April 1985},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {32},
+number = {2},
+issn = {0004-5411},
+url = {https://doi.org/10.1145/3149.214121},
+doi = {10.1145/3149.214121},
+abstract = {The consensus problem involves an asynchronous system of processes, some of which may be unreliable. The problem is for the reliable processes to agree on a binary value. In this paper, it is shown that every protocol for this problem has the possibility of nontermination, even with only one faulty process. By way of contrast, solutions are known for the synchronous case, the “Byzantine Generals” problem.},
+journal = {J. ACM},
+month = apr,
+pages = {374-382},
+numpages = {9}
+}
+@ARTICLE{814652,
+  author={Dongarra, J. and Sullivan, F.},
+  journal={Computing in Science and Engineering}, 
+  title={Guest Editors Introduction to the top 10 algorithms}, 
+  year={2000},
+  volume={2},
+  number={1},
+  pages={22-23},
+  keywords={Linear algebra;History;Eigenvalues and eigenfunctions;Linear programming;Large-scale systems;Equations;Programmable control;Matrix decomposition;Sparse matrices;Art},
+  doi={10.1109/MCISE.2000.814652}}
+
+
+
+@inbook{Gao2003,
+	abstract = {A new algorithm is developed for decoding Reed-Solomon codes. It uses fast Fourier transforms and computes the message symbols directly without explicitly finding error locations or error magnitudes. In the decoding radius (up to half of the minimum distance), the new method is easily adapted for error and erasure decoding. It can also detect all errors outside the decoding radius. Compared with the BerlekampMassey algorithm, discovered in the late 1960's, the new method seems simpler and more natural yet it has a similar time complexity.},
+	address = {Boston, MA},
+	author = {Gao, Shuhong},
+	booktitle = {Communications, Information and Network Security},
+	date-modified = {2025-02-25 13:16:06 +0200},
+	doi = {10.1007/978-1-4757-3789-9_5},
+	editor = {Bhargava, Vijay K. and Poor, H. Vincent and Tarokh, Vahid and Yoon, Seokho},
+	isbn = {978-1-4757-3789-9},
+	pages = {55--68},
+	publisher = {Springer US},
+	read = {0},
+	title = {A New Algorithm for Decoding Reed-Solomon Codes},
+	url = {https://doi.org/10.1007/978-1-4757-3789-9_5},
+	year = {2003},
+	bdsk-url-1 = {https://doi.org/10.1007/978-1-4757-3789-9_5}
+}
+
+@BOOK{latticebook,
+  author={Peikert, Chris},
+  booktitle={A Decade of Lattice Cryptography},
+  year={2016},
+  volume={},
+  number={},
+  pages={},
+  keywords={Cryptography and information security;Computational complexity;Randomness in Computation;Quantum Computation},
+  doi={10.1561/0400000074}
+  }

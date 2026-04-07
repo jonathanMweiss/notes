@@ -1,0 +1,635 @@
+\chapter{Code Theory}
+
+small sum about code theory. needed for a project of mine.
+
+\section{Introduction}
+We begin with some basic notions. What is a codeword? what is a code? what are symbols?
+\begin{definition}
+    Let $A=\{a_1, a_2, \dots a_q \}$ be a set of size $q$.
+    We refer to $A$ as the \emph{alphabet} of the code. and each element is a 
+    \emph{code symbol}.
+
+    \begin{enumerate}
+        \item A q-ary word is a sequence of $n$ symbols from $A$:  $w=w_1w_2\dots w_n$ 
+        where $w_i\in A$.
+        \item A q-ary \emph{block code} of length $n$ over $A$ is a non-empty 
+        set $C$ of q-ary words
+        having the same length $n$.
+        \item An element in $C$ is called a \emph{codeword} in $C$.
+        \item The number of codewords in $C$ is called the \emph{size} of 
+        $C$ and is denoted by $|C|$.
+        \item A code of length $n$ and size $M$ is called an $(n,M)$-code.
+    \end{enumerate}
+\end{definition}
+
+For instance, $C=\{000, 111, 010, 101\}$ is a block code of length 
+$3$ over the binary alphabet $\{0,1\}$,
+and q-ary of size $3$ each. This is a $(3,4)$-code.
+
+\begin{definition}
+A \emph{communication channel} consists of a finite channel alphabet 
+$A=\{a_1, a_2, \dots a_q \}$, 
+as well as a \emph{forward channel probabilties} 
+$\Pr[a_j\text{ received}| a_i\text{ sent}]$, satisfying
+$$ \sum_{j=0}^q \Pr[a_j\text{ received}| a_i\text{ sent}] = 1$$
+
+for each different $i$.
+\end{definition}
+
+In other words, a communication channel allows specific symbols to be sent, 
+but when sending something 
+something else might arrive (with some probabiltiy).
+
+\begin{definition}
+    A communication channel is said to be \emph{memoryless}  if the outcome
+    of any one transmition is independent of the outcome of the previous 
+    transmitions.
+    I.e., if $c=c_1c_2\dots c_n$ and $x=x_1x_2\dots x_n$ are words of length $n$ then 
+    $$ \Pr[x \text{ received}| c \text{ sent}] = \prod_{i=1}^n \Pr[x_i \text{ received}| c_i \text{ sent}]$$
+\end{definition}
+
+\begin{definition}
+a q-ary \emph{symmetric channel} is a memoryless channel such that 
+\begin{enumerate}
+    \item Each symbol trasmitted has the same probability $p$ of being received in error.
+    \item if a symbol is received in error, then it is equally likely 
+    to be received as any of the other $q-1$ symbols.
+\end{enumerate}
+\end{definition}
+
+For instance, let's look at the \emph{Binary symmetric channel} (BSC) 
+with error probability $p$.
+The channel alphabet is $\{0,1\}$, and the forward channel probabilities are:
+\begin{itemize}
+\item $ \Pr[0\text{ received}| 0\text{ sent}] = 1-p$
+\item $ \Pr[1\text{ received}| 0\text{ sent}] = p$
+\item $ \Pr[1\text{ received}| 1\text{ sent}] = 1-p$
+\item $ \Pr[0\text{ received}| 1\text{ sent}] = p$
+\end{itemize}
+
+Given such a channel one can create a code that relies on the channel's
+ properties to correct errors.
+For instance, the Maximum likelihood decoding algorithm (which I skip).
+
+
+\subsection{Distance of a code}
+
+We use distances of codes to measure how well they can correct and detect errors.
+The most common distance used is the Hamming distance.
+
+\begin{definition}\label{def:hamming-distance}
+    Let $x$ and $y$ be words of the same length $n$ over an alphabet $A$.
+    The \emph{(Hamming) distance} between $x$ and $y$ is the number of
+     positions in which they differ.
+    If $x=x_1x_2\dots x_n$ and $y=y_1y_2\dots y_n$ then the distance is defined as:
+    $$ d(x,y) = |\{i: x_i\neq y_i\}|$$
+
+    where $x_i$ and $y_i$ are regarded as words of length $1$.
+\end{definition}
+
+For instance, the distance between $101$ and $111$ is $1$, 
+and the distance between $101$ and $000$ is $3$.
+
+Few properties of the Hamming distance:
+\begin{itemize}
+    \item $d(x,y)\ge0$ and $d(x,y)=0$ if and only if $x=y$ (non negativity).
+    \item $d(x,y)=d(y,x)$ (symmetry).
+    \item $d(x,y)\le d(x,z)+d(z,y)$ (triangle inequality).
+\end{itemize}
+
+Given a code block $C$, one can develop a decoding mechanism
+based on the Hamming distance, known as the \emph{nearest neighbor decoding} (which I skip).
+
+
+\begin{definition}
+    The \emph{minimum distance} of a code $C$ is the smallest distance 
+    between any two distinct codewords in $C$.
+    It is denoted by $d(C)$.
+    I.e., $d(C) = \min\{d(x,y): x,y\in C, x\neq y\}$.
+\end{definition}
+
+\begin{definition}
+    An $(n,M)$-code $C$ with minimum distance $d$ is called an $(n,M,d)$-code.
+\end{definition}
+
+
+\begin{example}
+    $C=\{00000, 00111, 11111\}$ is a $(5,3,2)$-code. (since the minimal distance is $2$).
+\end{example}
+
+
+It turns out that the distance of a code is intimately related to the error-
+detecting and error-correcting capabilities of the code.
+
+\begin{definition}
+Let $u$ be a positive integer. A code $C$ is $u-error-detecting$ 
+if, whenever a codeword receives at least 1 error but no more than $u$ results
+in a word that is not a codeword.
+\end{definition}
+
+\begin{example}
+    The set $C=\{00000, 00111, 11111\}$ is a $1-error-detecting$ code
+     because a single bit flip
+    cannot result in a codeword being changed. 
+    However, it is not a $2-error-detecting$ code because changing
+     $00111$ to $11111$ is possible with 
+    only two bit flips.
+\end{example}
+
+\begin{theorem}
+    A code $C$ is $u-error-detecting$ if and only if the minimum
+     distance of $C$ is at least $u+1$.
+    (i.e., $d(C)\ge u+1$).
+\end{theorem}
+We skip the proof.
+
+
+We have the same notion for error detecting codes, but for error correcting codes.
+\begin{definition}
+Let $v$ be a positive integer. A code $C$ is $v-error-correcting$
+if minimum distance decoding is able to correct $v$ or fewer errors.
+\end{definition}
+
+\begin{example}
+    Consider the binary code $C = \{000, 111\}$. By using the mini-
+mum distance decoding rule, we see that
+\begin{itemize}
+    \item If $000$ is sent and one error occurs in the transmission, then the received word
+    ($100$, $010$ or $001$) will be decoded to $000$.
+    \item If $111$ is sent and one error occurs in the transmission, then the received word
+    ($011$, $101$ or $110$) will be decoded to $111$.
+\end{itemize}
+
+In all cases, the distance is enough to correct a single error. Notice that two errors 
+are too much for this code to correct.
+\end{example}
+
+\begin{theorem}
+    A code $C$ is $v-error-correcting$ if and only if the minimum distance of $C$ is at least $2v+1$.
+    I.e., $d(C)\ge 2v+1$ (at most $\lfloor \frac{d-1}{2}\rfloor$).
+\end{theorem}
+
+Without proof.
+
+
+\section{Linear Codes}
+
+\todo{at least describe what a linear code is, and the difference between linear and non-linear codes}
+
+\section{Construction of Linear Codes}
+
+\begin{theorem}
+    Suppose there is an $[n, k, d]$-linear code over $F_q$. Then
+    \begin{enumerate}
+        \item (lengething) There exists an $[n + r, k, d]$-linear code over 
+        $F_q$ for any $r \ge 1$.
+
+        \item (subcodes) there exists an $[n, k-r, d]$-linear code over $F_q$ for any 
+        $1 \le r \le k- 1$.
+
+        \item (puncturing) there exists an $[n- r, k, d- r]$-linear code over $F_q$ for any
+        $1 \le r \le d- 1$.
+
+        \item there exists an $[n, k, d- r]$-linear code over
+         $F_q$ for any $1 \le r \le d- 1$.
+        
+        \item there exists an $[n- r, k- r, d]$-linear code over
+         $F_q$ for any $1 \le r \le k- 1$.
+    \end{enumerate}
+\end{theorem}
+
+\begin{bclogo}[couleur=blue!10, arrondi=0.1, logo=\bcinfo]{How useful is it?}
+The above theorem produces codes with worse
+parameters than the old ones. We usually do not make new codes using these
+constructions. However, they are quite useful when we study codes
+\end{bclogo}
+
+
+% \chapter{Robust Interpolation}
+\section{Reed-Solomon codes}
+Reed-Solomon codes were invented in 1960, defining a new class 
+of codes. These codes were well suited for erasures and were used in
+many applications, such as QR codes, CDs, and storage devices (RAID 6).
+
+The key idea behind Reed-Solomon codes is to encode a message $m$ of length $k$
+into a polynomial of degree $k-1$ over a finite field $F_q$. Then, use regular interpolation 
+to reconstruct the polynomial.
+
+More precisely, if the sender wants to send a message $m=(m_0, m_1 ,\dots m_{k-1})$,
+it first encodes the data $m=(m_0, m_1 ,\dots m_{k-1})$ as the following polynomial
+$ p(x)=m_0 +m_1 \cdot x + \dots m_{k-1}x ^{k-1}$.
+Once the data is encoded, instead of sending $m$, the sender would 
+evaluate the polynomial $p(x)$ at $n$ different points $\alpha_1,\alpha_2,\dots,\alpha_n$,
+and send the codeword $c=(c_1,c_2,\dots c_n) =(p(\alpha_1), p(\alpha_2),\dots p(\alpha_n))$.
+
+Since every polynomial of degree $k-1$ is uniquely defined by $k$ points,
+the receiver can reconstruct the polynomial $p(x)$ from any $k$ points it receives.
+That is, if some of the points are lost along the way, the receiver can still
+use interpolation to reconstruct the polynomial $p(x)$, and thus recover the message $m$.
+
+This elegant solution solves the problem of erasures, and was optimised throughout the 
+years. Though we won't delve into the details of the optimisations, since they 
+are not relevant to robust interpolation.
+
+
+\paragraph{Voting and Corruptions}
+    In most cases, solving the problem of erasures and relying on a hash 
+    function to detect corruptions is sufficient. However, there are instances 
+    where it's impossible to determine what constitutes a valid value 
+    and what doesn't (commonly referred to as \emph{corruptions}).
+
+    The original Reed-Solomon codes suggested a theoretical solution
+    to this problem, by interpolating the $\binom{n}{k}$ polynomials
+    and then taking the majority vote.
+    Making this algortihm not practical.
+
+    The following section discusses the Berlekamp-Welch algorithm,
+    which emerged 23 years later and finally resolved this problem.
+
+\section{Berlekamp-Welch Algorithm}
+The Berlekamp-Welch (BW) algorithm is a robust interpolation algorithm that
+can be used as a decoder for Reed-Solomon codes and solves the following problem:
+
+\begin{bclogo}[logo=\bcattention,noborder=true]{Problem: Decode 
+    $RS_q(\bar{\alpha},n,k)$ from $e\le \lfloor\frac{n-k}{2}\rfloor$}
+Given a word of $w=w_1w_2\dots w_n$ of length $n$, 
+find a polynomial $f(x)\in F_q[x]$ such that
+\begin{itemize}
+    \item $\deg(f)\le k$.
+    \item $f(\alpha_i)\ne w_i$ for at most $e$ values of i. Else, return $\bot$.
+\end{itemize}
+
+\end{bclogo}
+That is, BW can decode a word of size $k$ from a corrupted reeds-solomon 
+codeword $w$ of length $n$, containing at most $e$ errors. Otherwise, it returns $\bot$.
+
+BW key idea is assuming we can create some special polynomial $E(x)$ called
+the \emph{Error Locator Polynomial}. 
+This polynomial has roots at each $\alpha_i$ where $w_i\ne f(\alpha_i)$. That is, 
+for each $\alpha_i$  that we have an error: $w_i\ne f(\alpha_i)$, we have a root in $E(x)$.
+So, we define $ E(x) = \prod_{i:w_i\ne f(\alpha_i)}^{n} (x-\alpha_i)$.
+Notice that if we plug the $\alpha_i$, such that $w_i\ne f(\alpha_i)$,
+ we get $E(\alpha_i)=0$.
+This polynomial exists, but unfortunately, we don't know it (yet). 
+
+Now that we have defined $E(x)$, we describe a specific 
+equation that is correct, and will let us later find $E(x)$:
+$$ w_i\cdot E(\alpha_i) = f(\alpha_i)\cdot E(\alpha_i)= Q(\alpha)$$
+
+
+\begin{bclogo}[logo=\bcinfo,noborder=true]{Explanation}
+    Notice that for $\alpha_i$, if $w_i\ne f(\alpha_i)$, then $E(\alpha_i)=0$.
+    and thus we have $w_i\cdot 0 = f(\alpha_i)\cdot 0$, which is true.
+    Otherwise, $f(\alpha_i)=w_i$ and we have
+     $w_i\cdot E(\alpha_i) = f(\alpha_i)\cdot E(\alpha_i)$, which is also true.
+\end{bclogo}
+
+If we knew $E(x)$, we could find $f(x)$ by dividing $Q(x)$ by $E(x)$:
+$f(x)=\frac{Q(x)}{E(x)}$.
+
+\paragraph{High Level Algorithm}
+\begin{enumerate}
+    \item Find a monic (see \autoref{def:monic}) degree $e$ polynomial $E(x)$.
+    \item Find a polynomial $Q(x)$ of degree $\le e+k-1$ such 
+    that $w_i\cdot E(\alpha_i)=Q(\alpha_i)$, for all $i$.
+
+    If there isn't, then return $\bot$.
+    \item Set $\tilde{f}(x)=\frac{Q(x)}{E(x)}$. Count the number of different 
+    evaluations between $\tilde{f(\alpha_i)}$ and $w_i$ ($\Delta(\tilde{f}(\alpha_i),w)$).  
+    If  $\Delta(\tilde{f}(\alpha_i),w)$ is greater than $e$, return $\bot$.
+    \item Return $\tilde{f}(x)$.
+\end{enumerate}
+
+
+\begin{bclogo}[logo=\bcquestion]{Why?}
+    The algorithm above raises two key questions.
+    \begin{enumerate}
+        \item How do we find $E(x)$ and $Q(x)$?
+        \item Why is this a good idea? even if we found some $E(x)$ and $Q(x)$, 
+        how do we know that they give as the correct question?
+    \end{enumerate}    
+\end{bclogo}
+
+
+\begin{theorem}
+ If there exists a polynomial $f(x)$ such that $\Delta(f,w)\le e$
+ then there exists $E(x)$ and $Q(x)$ such that 
+
+ \begin{itemize}
+    \item $E(x)$ is monic of degree $e$.
+    \item $Q(x)$ is of degree $e+k-1$.
+    \item $\forall i, w_i\cdot E(\alpha_i)=Q(\alpha_i)$ for all $i$.
+ \end{itemize}\label{theorem:berlekamp-welch:demands}
+
+ and $f(x)=\frac{Q(x)}{E(x)}$.
+\end{theorem}
+
+\begin{proof}
+    Let $E(x)=\prod_{i:w_i\ne f(\alpha_i)}^{n} (x-\alpha_i)\cdot x^{e-\Delta(f,w)}$.
+    (we multiplied by $x^{e-\Delta(f,w)}$ to make sure it's of degree $e$).
+    Let $Q(x)=E(x)\cdot f(x)$.
+    
+    Given these defintions, all the requirements we requested above 
+    (\S\ref{theorem:berlekamp-welch:demands}) are satisfied (check it for yourself).
+
+    We just need to show uniqueness, and we are done.
+    \begin{lemma}
+        Given $(E_1, Q_1)$ and $(E_2, Q_2)$ that satisfy the requirements in
+         \ref{theorem:berlekamp-welch:demands},
+        then $E_1(x)/Q_1(x) = E_2(x)/Q_2(x)$.
+    \end{lemma}
+
+    \begin{proof}
+        Let us assume by contradication that $E_1(x)/Q_1(x) \ne E_2(x)/Q_2(x)$.
+        We build a new polynomial  $R(x)=E_1(x)Q_2(x) - E_2(x)Q_1(x)$.
+        Since $E_1(x)/Q_1(x) \ne E_2(x)/Q_2(x)$, then $R(x)\ne 0$.
+
+        The degree of $R(x)$ is at most $2e+k-1$. Let us consider what happens when we 
+        evaluate it over $\alpha_i$.
+        $R(\alpha_i)= E_1(\alpha_i)Q_2(\alpha_i) - E_2(\alpha_i)Q_1(\alpha_i)$
+        and from the requirements in \ref{theorem:berlekamp-welch:demands}, we know that
+        $$E_1(\alpha_i)Q_2(\alpha_i) = E_1(\alpha_i)\cdot w_i\cdot E_2(\alpha_i)$$
+        and that 
+        $$E_2(\alpha_i)Q_q(\alpha_i) = E_2(\alpha_i)\cdot w_i\cdot E_1(\alpha_i)$$
+        So $R(\alpha_i)= w_i(E_1(\alpha_i)E_2(\alpha_i) - E_2(\alpha_i)E_1(\alpha_i))=0$.
+
+        Notice that we have $n$ points where $R(\alpha_i)=0$, and $R(x)$ is 
+        of degree $2e+k-1$,
+        Furthermore, $e<\lfloor \frac{n-k+1}{2}\rfloor$, so $2e+k-1<n$.
+        This means that $R(x)$ is a polynomial of degree less than $n$ that has $n$ roots.
+        This is a contradication to the fundamental theorem of arithmetics,
+        and thus $E_1(x)/Q_1(x) = E_2(x)/Q_2(x)$.
+    \end{proof}
+
+    So finding $E(x)$ and $Q(x)$ is enough to find $f(x)$.
+\end{proof}
+
+
+\begin{bclogo}[logo=\bcquestion]{Why is it important that $E(x)$ is monic?}
+    Consider polynomial long division, specifically 
+    the division of $x^2-1$ by $2x$ over $\mathbb{Z}[X]$. 
+    As we attempt the division, we quickly realize that the element 
+    $\frac{1}{2}$ is required, which is not an element of $\mathbb{Z}$. 
+    In other words, if $E(x)$ is not monic, we cannot guarantee 
+    that we can divide $Q(x)$ by $E(x)$.
+\end{bclogo}
+
+\paragraph{Finding $E(x)$ and $Q(x)$}
+
+We solve a system of linear equations to find $E(x)$ and $Q(x)$.
+More specifically, we have $n$ constraints of the form $w_i\cdot E(\alpha_i)=Q(\alpha_i)$.
+These constraints are linear in the coefficients of $E(x)$ and $Q(x)$.
+We have $e$ coefficients in $E(x)$ and $e+k$ coefficients in $Q(x)$. Thus 
+we have $2e+k$ variables (coefficients).
+
+We know from our proof that a solution exists, and that any solution will do.
+So we just need to solve the system of linear equations.
+
+\begin{align*}
+    w_1\cdot E(\alpha_1) &= Q(\alpha_1)\\
+    w_2\cdot E(\alpha_2) &= Q(\alpha_2)\\
+    &\vdots\\
+    w_n\cdot E(\alpha_n) &= Q(\alpha_n)\\
+\end{align*}
+% which is translated to matrix form as:
+
+% \[
+%     \left(\begin{array}{ccc|lcc}
+%         w_{1}\cdot\alpha_{1}^{e} & w_{1}\cdot\alpha_{1}^{e-1}\dots w_{1}\alpha_{1} & w_{1} & -\alpha_{1}^{e+k-1} & \dots-\alpha_{1} & -1\\
+%         w_{2}\cdot\alpha_{2}^{e} & w_{2}\cdot\alpha_{2}^{e-1}\dots w_{2}\alpha_{2} & w_{2} & -\alpha_{2}^{e+k-1} & \dots-\alpha_{2} & -1\\
+%          &  & \vdots
+%         \end{array}\right)=\left(\begin{array}{c}
+%         1\\
+%         a_{e-1}\\
+%         \vdots\\
+%         a_{1}\\
+%         a_{0}\\
+%         \hline b_{e+k-1}\\
+%         b_{e+k-2}\\
+%         \vdots\\
+%         b_{1}\\
+%         b_{0}
+%         \end{array}\right)
+% \]
+
+Solving the linear equations is done by using Gaussian elimination,
+which is a standard algorithm for solving systems of linear equations.
+Thus, although the berlekamp-welch algorithm is immensly faster than try to find agreement 
+between $f(x)$ and $w$ by brute force, it still takes $O(n^3)$ time. 
+
+% Dividing these two polynomials can be done via NTT (Number Theoretic Transform) or FFT (Fast Fourier Transform).
+
+% \paragraph{Speeding up the algorithm using NTT}
+% We won't get better in this algorithm than $O(n^3)$, but we can reduce the constant.
+% For instance, filling the matrix above takes $O(n^2)$ time, where each matrix entry 
+% is a set of exponents over the field. This is quite costly. 
+% If we know the polynomial is evaluated using roots of unity, we can 
+% create a look-up-table (LUT) and evaluate $\omega$'s $e+k-1$ powers. 
+% Then, whenever we need to evaluate $\omega_i^j$, we look for it in entry $i\cdot j \mod n$ 
+% in the LUT.
+% In addition, this specific matrix can be built ahead of time, then multiply the entries in 
+% the matrix by the corresponding $w_i$. 
+
+
+\section{Gao's decoder}
+Gao's decoder is a faster version of the Berlekamp-Welch algorithm.
+It utilises roots of unity to achieve $O(n^2)$ runtime.
+
+\subsection{prequisites}
+The algorithm relies on three sub algorithms: extended Euclidean algorithm (EEA),
+Lagrange interpolation, and polynomial division.
+
+We discuss each of those algorithms in \S\ref{chapter:polynomial-algorithms}, 
+but since the proof relies on specific notation, I'll just state 
+that the input and output of EAA: given $r_0$ and $r_1$, the algorithm
+outputs $r_m,u_m,v_m$ satisfying $r_m=r_0u_m+r_1v_m$.
+
+\subsection{Algorithm}
+Like every reed-solomon decoder, we assume the message that one 
+wishes to send was first encoded into a polynomial's coefficients.
+Then, the polynomial was evaluated at some points $\alpha_i$ and 
+each such evaluation was sent.
+The \emph{key} difference between Gao's decoder and the Berlekamp-Welch algorithm
+is that Gao's decoder assumes that the polynomial was evaluated at
+the \emph{$n$-th roots of unity}.
+As a result, Gao utilises this fact to avoid implementing actual Lagrange's interpolation.
+
+The algorithm begins by receiving $b=(b_1,b_2,\dots,b_n)$ that is presumed to
+be the corrupted codeword $c=(c_1,c_2,\dots c_n)=(f(\omega_1),f(\omega_2)\dots, f(\omega_n))$,
+where $f(x)$ is a polynomial of degree $k$.
+
+\begin{enumerate}
+    \item Compute $g_0(x)=\prod_{i=0}^{n-1}(x-\omega_i)$. 
+    This polynomial can be precomputed and reused for decoding any 
+    $n$th-degree polynomial. 
+    (In this case, it resembles $x^n-1$ if $n$ divides $q-1$,
+    where $q$ is the field size, which is always the case for NTT.) 
+
+    This polynomial has roots at $\omega_i$, what does it imply?
+    Notice that it contains the error locator polynomial $E(x)$.
+
+    \item Compute $g_1(x)$ using lagrange interpolation from the points $\{(i,b_i)\}_{i=1}^{n}$.
+    \todo{If some values of $b_i$ are missing, we can replace them with zeros (i.e., add faults).}
+
+    \item (Partial GCD) apply the extended Euclidean algorithm to 
+    $g_0$ and $g_1$. Stop when the remainder, $g(x)$, has degree $<\frac{n+k}{2}$.
+    At this time we have $ug_0(x)+vg_1(x)=g(x)$.
+
+    \item Divide $g(x)=f(x)v(x)+r(x)$ by $v(x)$ (where $deg(r(x))<deg(v(x))$).
+    if the resulting remainder $r(x)$=0 and $f(x)$ has degree $<k$, return $f(x)$. Else fail 
+    (more than $(n-k)/2$ errors occured).
+\end{enumerate}
+
+
+
+During the proof of the algorithm, Gao shows that the $v(x)$ is the error 
+locator polynomial $E(x)$ (from the Berlekamp-Welch algorithm).
+
+\subsection{In depth}
+
+
+Understanding Gao's algorithm is not trivial.
+It assumes that if the polynomial can be "fixed", then its fix is 
+similar to berlekamp-welch algortihm. It prepares in advance 
+a polynomial $g_0$ which is like the error locator polynomial $E(x)$,
+but assumes everything is an error. 
+Then it excavates the differences between the correct polynomial $f(x)$ and the
+corrupted interpolated polynomial $g_1(x)$ using the extended Euclidean algorithm
+between $g_0$ and $g_1$.
+
+This excavation capitalises on the notion that a corruptor polynomial
+must be present in $g_1$, and it is coprime with $E(X)$ (gcd=1). Leading 
+to a smart and quick way to find the error locator polynomial.
+
+Given it knows the error locator polynomial, it can 
+find the wanted $f(x)$ by dividing $g(x)$ by the extracted 
+error locator polynomial.
+Notice that if there are too much errors, we won't be able to get a remainder $r(x)=0$,
+and thus the algorithm will fail.
+% \begin{bclogo}[logo=\bcquestion]{Can you spot the crux?}
+%     What if there are too much errors? 
+%     If there are too much errors, than $f$ can't be extracted 
+%     after dividing by $E(x)$.
+%     So, how do we know that $g$ is "good enough" to be fixed?
+%     \emph{We don't in Gao's algorithm}.
+
+%     Furthermore, why not go deeper when performing the partial GCD?
+%     After a certain depth, we get 
+% \end{bclogo}
+
+\paragraph{Correctness}
+I'm writing down to lemma's which i don't prove, for the sake of completeness.
+The first lemma is about the extended Euclidean algorithm.
+The second lemma is about the usage of the extended Euclidean algorithm
+to excavate the error locator polynomial out of the corrupted polynomial.
+
+
+\begin{lemma}
+    Let $r_0$ and $r_1$ be two nonzero polynomials over $F_q[x]$.
+    Suppose the extended Euclidean algorithm performs the computation as
+    described in the pseudo-code above,
+    then 
+    $$ u_{m+1}=(-1)^{m+1}\cdot \frac{r_1}{r_m}, v_{m+1}= (-1)^{m}\cdot\frac{r_0}{r_m}$$
+\end{lemma}
+
+Remember, $r_m=r_0u_m+r_1v_m$, the result of the extended Euclidean algorithm.
+The above lemma used to prove the following
+\begin{lemma} 
+    Let $g_0=w_0\cdot r_0+\epsilon_0$ and $g_1=w_0\cdot r_1+\epsilon_1$, where 
+    $GCD(r_0,r_1)=1$ and $deg(\epsilon_i)\le\ell$, $deg(r_i)\le t$ ($t=\#errors$).
+    Suppose $deg(w_0) \ge d_0 \ge \ell+t$
+
+    Apply the extended Euclidean algorithm to $g_0$ and $g_1$  and stop whenever 
+    the remainder $g(x)$ has degree $d_0$, then for the output 
+    $g(x),u(x),v(x)$ that satisfy 
+    $$g(x)=g_0(x)u(x)+g_1(x)v(x)$$
+    it happens that $u(x)=-\alpha r_1(x)$, and $v(x)=\alpha r_0(x)$ for some 
+    $\alpha\in F_q[x]$. \todo{the original paper used $F_q$, but i think this is a mistake
+    since it uses $\alpha=(-1)^m/r_m$ where $r_m$ is polynomial.}
+\end{lemma}
+
+This lemma is complex. and it isn't clear why it is built like that on first glance. 
+First, notice that $g_0=w\cdot w_0(x)$ where $w$ is the error locator polynomial,
+and $w_0(x)$ is a cofactor, indicating the \emph{correct} locations.
+
+Now that we defined $g_0$, we want to describe $g_1$ 
+in a similar manner. We know that $g_1$ is the polynomial that interpolates
+some points correctly, and some points incorrectly.
+Namely, $g_1=w_0(x)\cdot \tilde{w}(x)+f(x)$, for each $i$ with no fault $w_0(\omega_i)=0$
+and then $g_1(\omega_i)=f(\omega_i)$. Otherwise, there is a fault at $\omega_i$, 
+we can think about $\tilde{w}(\omega_i)$ as a polynomial,
+that moves $f(\omega_i)$ to its new location:
+$\tilde{w}(\omega_i)=(b_i-c_i)/w_0(\omega_i)$ and $g_1(x)$ is the resulting polynomial.
+
+Clearly, we have $GCD(w(X),\tilde{w}(X))=1$, right? 
+Since this polynomial has no roots in common with 
+$w(x)$, and therefore they don't have any common
+ factors, leading to $GCD=1$.
+
+Reread the whole section, and you'll see we have $g_0$ and $g_1$ as wanted by the lemma.
+
+Now we can finally prove correctness of the algorithm.
+\begin{proof}
+By the lemmas from above, we have 
+$u(x)=-\alpha\tilde{w}(x)$ and $v(x)=\alpha w(x)$. for some $\alpha\in F_q[x]$.
+That is, 
+\begin{equation}
+    \begin{split}
+    g(x) & = u g_0+vg_1= \\
+         & = -\alpha\tilde{w}\cdot g_0 + \alpha w g_1= \\
+         & = -\alpha\tilde{w}\cdot (w_0 \cdot w) + \alpha w (w_0 \cdot \tilde{w}+f) = \\
+         & = -\alpha w w_0 \tilde{w} + \alpha w w_0 \tilde{w} + \alpha w f = \\
+         & = 0 + \alpha w f = v\cdot f
+    \end{split}
+\end{equation}
+
+So if we divide $g(x)$ with $v(x)$ we'll get $f(x)$!
+
+The next steps of the proof define why it's okay it returns failure when it does.
+I SKIP them.
+\end{proof}
+
+\subsection{Another take on the explanation}
+GAO used a strong assumption:
+If there is a fix to the polynomial, it'll look like Berlekamp-Welch equation:
+$E(\omega_i)*f(\omega_i) = Q(\omega_i)$ for $i\in[n]$.
+$f(\omega_i)=y_i$ is the original polynomial, without corruptions.
+$E(x)$ will be the ERROR LOCATOR polynomial. $E(x)$ has roots where there are corruptions,
+Assume $Q(\omega_i)=E(\omega_i)*y_i$
+The above equation is true for any evaluation point $\omega_i$:
+$E(\omega_i)*f(\omega_i)= E(\omega_i) * y_i$, for errors equals $0$ on both sides.
+for non errors we get $E(\omega_i) *y_i$, a corrupt point on both sides of the equation
+
+Berlekamp-Welch proved that there if there is a solution, then there is only 1 unique $Q$ and $E$ in existence,
+also $Q$ has a specific degree and $E$ has a specific degree.
+Berlekamp-Welch then solve an equation system to find $Q$ and $E$ in $O(n^3)$, and returns $f=Q/E$.
+
+Gao capitalize on their proof and statement, and go extracts $Q$ and $E$ via a partial GCD, returning $g$ of the specific degree of $Q$.
+$$GCD(g0,g1)=g=g0*u+g1*v$$.
+That is, since $g0=(x-\omega_1)(x-\omega_2)...(x-\omega_n)$, $g$ as GCD must have roots on the evaluation points too!
+meaning $g(\omega_i)=0$ for $\omega_i$ (otherwise it isn't a GCD), and $g(\omega_i)=0$ for $\omega_i$ with errors too.
+Since it has the same properties of $Q$, and it has the same degree, it must be $Q$, and thus we can get $f(x)$ by dividing $g$ by $v$
+
+If there is a remainder, then GAO's strong assumption is violated, meaning there is no solution to $Q=Ey_i$, and thus we return an error.
+
+AI Generated explanation for Decoding with erasures:
+Decode with erasures (known missing points):
+Let $U(x)=$ product over erased indices $j$ of $(x - \omega_j)$. This is the erasure locator.
+We multiply every received value by $U(\omega_i)$, so:
+
+	$$y'_i = U(\omega_i) * y_i$$
+
+and interpolate $g1$ from $(\omega_i, y'_i)$.
+
+For non-erased points, $y_i$ still matches $f(\omega_i)$, so $y'_i = U(\omega_i)*f(\omega_i)$.
+For erased points, $U(\omega_i)=0$ by construction, so $y'_i=0$ and those constraints are neutralized.
+
+In the no-erasure case, partial GCD gives $g/v = f$ directly.
+With erasures, partial GCD gives $g/v = U * f$, so we divide once more by $U$.
+If either division leaves a remainder, the decoding assumptions are inconsistent and we return an error.
+
+
+\paragraph{how to achieve max speed}
+Using the Half-GCD~\ref{algorithm:half-GCD}, with NTT based divvision we can keep the runtime fast.
+
+

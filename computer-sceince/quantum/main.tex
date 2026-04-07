@@ -1,0 +1,159 @@
+%TODO: look for ket and bra brackets.
+
+\chapter{quantum computing}
+
+q-bits are basically vectors. <0> is described as (1,0) and <1> as (0,1).
+
+q-bit $\alpha= a\cdot <0>+b\cdot <1>=(a,b)$, where 0,1 are vectors (as seen before), and $a,b\in \mathbb{C}$. In addition $||\alpha||=1$.
+
+% note:
+When we want to describe circular movement on the plane (using the unit circle), then, $\alpha=e^i\omega \cdot t$ for $t=0,1,2,3,\dots,\infty$.
+
+measurements of $\alpha$ according to the basis $0,1$ gives us the results:
+\begin{enumerate}
+    \item 0 in probability $|a|^2$
+    \item 1 in probability $|b|^2$
+\end{enumerate}
+In addition, the state after measurement is either <0> or <1>.
+
+Namely, measurement changes the result to go either to 0 or 1.
+So given $\alpha=a<0>+b<1>$, upon measurement, 
+$a$ and $b$ states what probability we'll get $<0>$ or $<1>$.
+
+this measurement doesn't "destroy" the value.
+
+If we measure using poloroyde lenses, photon's polarity is exactly q-bit. So poloroyde lenses can help us look at the 'state'. Given a uniform random photon, it'll either go through a poloroyde with $<0>$ polarity, or through a $<1>$ poloroyde with $0.5$ probability.
+
+\paragraph{What happens with $2,\dots,n$ q-bits?}
+Again, two (classical) bits can have the states $00,01,10,11$.
+Two q-bits can also have these states, we define them as vectors in space, wher $00,01,10,11$ are translated to the vectors $<00>, <01>, <10>, <11>$.
+
+Namely, we defined our space with words of length 2, and a state/word of the system is defined given these vectors:
+$\alpha=a \cdot <00>+b \cdot <01>+c \cdot <10>+d \cdot <11>$, where $a,b,c,d\in \mathbb{C}$ and $||\alpha||=|a|^2+|b|^2+|c|^2+|d|^2=1$.
+
+In practice, when we want a q-bits, these q-bits need to have two different "energy" levels that do not affect one another. if the energies "leak" it is possible to still operate as long as we don't have "too much" noise.
+
+These 2 q-bits can run on two different systems, for instance one q-bit system in one place, and have another q-bit in a different location. 
+
+Instead of writing <00>, we can also write
+$<a,b>=<a>\otimes <b>$ where $\oplus$ is a tensor product.
+
+Namely, a Hilbert space $\mathcal{H}_2\otimes \mathcal{H}_2= \mathcal{H}_4$
+
+When we want to inspect the space, we can "collapse" it to look at what state it (like before)
+\begin{enumerate}
+ \item 00 in probability $|a|^2$
+ \item 10 in probability $|b|^2$
+ \item \dots
+\end{enumerate}
+
+What happens when we measure the first q-bit?
+We'll get with probability $|a|^2+|b|^2$ the value $<0>$.
+and the new state $\alpha$ is given by:
+$$\alpha=\frac{a<00>+b<01>}{\sqrt{|a|^2+|b|^2}} $$
+
+
+if we have $n$ q-bits:
+
+$$\alpha=\sum_{x\in\{0,1\}^n} {a_x\cdot <x>}$$ and $\sum_{x\in\{0,1\}^n} |a_x|^2=1$.
+
+Did you notice? just to store a state, we need the sum of an exponential amount of data.
+
+\paragraph{operations}
+Given an hilbert space $\mathcal{H}_d$ where $\dim(\mathcal{H}_d)=d$.
+
+The allowed physical operations (which might be hard to do in a reasonal computation model) are all the linear operations that keep/reserve ("shomrot") angle and distance. Namely, all unitary operations: $\mathcal{U}:\mathcal{H}_d\to \mathcal{H}_d$ 
+such that $u\cdot U^\dagger=I_d$, and $\mathcal{U}^\dagger=\bar{\mathcal{U}}^T$.
+and since we use Complex numbers: 
+$\mathcal{U}^\dagger=(\bar{\mathcal{U}}_{i,j})$.
+
+Reminder: Hilbert space is a vector space over the complex numbers with an inner product.
+
+denote two vectors $\alpha =(a_1,a_2,\dots a_d)$ and $\beta=(b_1,b_2,\dots b_d,) \in \mathcal{H}_d$
+So $\alpha^\dagger=(\bar{a_1},...,\bar{a_d})$. 
+and $<\alpha | \beta > =\sum{a_ib_i}$
+
+
+
+
+\pagebreak
+We need to define how to operate these complex operations, which are basically multiplying matrices. 
+How can we do it in a single step?
+
+\paragraph{Possible operations on a single q-bit}
+\begin{enumerate}
+    \item ID: the id matrix: $\begin{matrix}
+        1 0 &
+        0 1 &
+    \end{matrix}$
+    \item NOT: $\begin{matrix}
+        0 1 &
+        1 0 &
+    \end{matrix}$
+    \item Z operation (face-flip) $|0> = |0>$  $Z|1> = -|1>$
+    \item $H|0> = \frac{|0>+|1>}{\sqrt{2}}$ and for 1: $H|1> = \frac{|0> - |1>}{\sqrt{2}}$ (The Haddamard matrix) $H=\frac{1}{\sqrt{2}}\begin{matrix}
+        1 1 &
+        1 -1 &
+    \end{matrix}$
+    \item Rotation in $\theta$ (using a cos,sin matrix).
+\end{enumerate}
+
+We can create using all these functions every unitary matrix.
+
+If we add to this collection (of operations) the following operation:
+$|a,b> \to^{\text{CNOT}} |a,a+b>$, a $4\times4$ matrix (controled not), it is "easy to see" that one can build any unitary operation over $n$ q-bits.
+
+
+If we want a finite set of gates, it is enough to the following operation, instead of all possible rotation operations $R_\theta$, choose $T=\begin{matrix}
+    1 0
+    0 e^{i\pi/4}
+\end{matrix}$
+One can use powers of $T$ to get closer to the actual wanted values, without needing to be able to compute rotation gates for very complex numbers.
+
+Let us look at the following 2 q-bits
+$|\phi>=\frac{1}{\sqrt{2}}|00>-\frac{1}{\sqrt{2}}|11>$
+what happens if we apply $R_\alpha\oplus R_\beta$ to it?
+
+We get:
+$|\phi>=(R_\alpha|0>\oplus R_\beta|0>+R_\alpha|1>\oplus R_\beta|1>)/ \sqrt{2}=\cos(\alpha+\beta)(\frac{|00>-|11>}{\sqrt{2}})+\sin(\alpha+\beta)()\frac{|01>+|10>}{\sqrt{2}}$.
+
+Why is it important?
+Assume we have Alice and Bob. Alice holds the first q-bit, and bob holds the second q-bit. Then they go to different rooms. 
+
+They play the following (co-op) game wher Alice $A$ and Bob $B$ want to win together: 
+
+$R$ the referee chooses $x,y\in\{0,1\}$ in uniform random. $R$ gives alice $x$ and bob $y$ at the same time, withotu telling the others the value. 
+Alice and Bob need to answer $a,b$ such that 
+$a\oplus b=x\cdot y$.
+
+$A$ and $B$ can win with $3/4$ probability by ignoring $x$ and $y$ and saying: $a=b=0$. 
+
+[From bit to bit, there are 4 functions ($o\to0, o\to1, 1\to0, 1\to1$)].
+
+If Alice and Bob share a state $\phi$ (one of EPR states - Einstein, Pozolski, Rosen 1936), they can do better!
+
+The strategy: $A$ given $x$ is to apply a unitary operator on the bit:
+
+for $x=0$ applies $R_\alpha$ for $\alpha=-\frac{\pi}{16}$ and $\alpha=\frac{3\pi}{16}$ for $x=1$.
+$B$ does the same for its $y$ value.
+
+Looking at the results, $A$ and $B$ measure and the followings are the $a,b$ values:
+
+% TODO: put into a table
+x/y | 0 | 1
+0   |$\frac{-\pi}{8}$  |  $\frac{+\pi}{8}$ |
+1   |$\frac{\pi}{8}$   |  $\frac{3\pi}{8}$ |
+
+
+The probability for $0$ is $cos^2(\pi/8)=0.85$
+The probability for $1$ is $sin^2(3\pi/8)=cos^2=(\pi/8)=0.85$
+
+Thus, in any way we have a solution better than a classical strategy.
+
+Why does this happen? because they have a *corelation* in the state over the entire system. without passing information between them.
+Namely, Quantum allow us to give us more possibilities.
+
+In Quantum world: the measurement changes the state and thus creates a correlation that are stronger than what we expect.
+
+This is called the EPR-game/ CHSH-game.
+
