@@ -1,0 +1,4397 @@
+%% LyX 2.3.7 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[oneside,american]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{color}
+\definecolor{note_fontcolor}{rgb}{0.800781, 0.800781, 0.800781}
+\usepackage{babel}
+\usepackage{refstyle}
+\usepackage{enumitem}
+\usepackage{amstext}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{setspace}
+\PassOptionsToPackage{normalem}{ulem}
+\usepackage{ulem}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+
+\AtBeginDocument{\providecommand\thmref[1]{\ref{thm:#1}}}
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+%% The greyedout annotation environment
+\newenvironment{lyxgreyedout}
+  {\textcolor{note_fontcolor}\bgroup\ignorespaces}
+  {\ignorespacesafterend\egroup}
+\RS@ifundefined{subsecref}
+  {\newref{subsec}{name = \RSsectxt}}
+  {}
+\RS@ifundefined{thmref}
+  {\def\RSthmtxt{theorem~}\newref{thm}{name = \RSthmtxt}}
+  {}
+\RS@ifundefined{lemref}
+  {\def\RSlemtxt{lemma~}\newref{lem}{name = \RSlemtxt}}
+  {}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\theoremstyle{plain}
+\newtheorem{thm}{\protect\theoremname}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{\protect\definitionname}
+\theoremstyle{definition}
+\newtheorem{example}[thm]{\protect\examplename}
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{\protect\remarkname}
+\theoremstyle{remark}
+\newtheorem{claim}[thm]{\protect\claimname}
+\theoremstyle{definition}
+\newtheorem{xca}[thm]{\protect\exercisename}
+\theoremstyle{plain}
+\newtheorem{cor}[thm]{\protect\corollaryname}
+\theoremstyle{plain}
+\newtheorem{prop}[thm]{\protect\propositionname}
+\newlist{casenv}{enumerate}{4}
+\setlist[casenv]{leftmargin=*,align=left,widest={iiii}}
+\setlist[casenv,1]{label={{\itshape\ \casename} \arabic*.},ref=\arabic*}
+\setlist[casenv,2]{label={{\itshape\ \casename} \roman*.},ref=\roman*}
+\setlist[casenv,3]{label={{\itshape\ \casename\ \alph*.}},ref=\alph*}
+\setlist[casenv,4]{label={{\itshape\ \casename} \arabic*.},ref=\arabic*}
+\theoremstyle{plain}
+\newtheorem{fact}[thm]{\protect\factname}
+\theoremstyle{plain}
+\newtheorem{lem}[thm]{\protect\lemmaname}
+\theoremstyle{definition}
+\newtheorem{sol}[thm]{\protect\solutionname}
+\newenvironment{lyxlist}[1]
+	{\begin{list}{}
+		{\settowidth{\labelwidth}{#1}
+		 \setlength{\leftmargin}{\labelwidth}
+		 \addtolength{\leftmargin}{\labelsep}
+		 \renewcommand{\makelabel}[1]{##1\hfil}}}
+	{\end{list}}
+\theoremstyle{remark}
+\newtheorem*{claim*}{\protect\claimname}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{amsmath}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\usepackage{bbm}
+
+\makeatother
+
+\providecommand{\casename}{Case}
+\providecommand{\claimname}{Claim}
+\providecommand{\corollaryname}{Corollary}
+\providecommand{\definitionname}{Definition}
+\providecommand{\examplename}{Example}
+\providecommand{\exercisename}{Exercise}
+\providecommand{\factname}{Fact}
+\providecommand{\lemmaname}{Lemma}
+\providecommand{\propositionname}{Proposition}
+\providecommand{\remarkname}{Remark}
+\providecommand{\solutionname}{Solution}
+\providecommand{\theoremname}{Theorem}
+
+\begin{document}
+\begin{titlepage} 
+\title{Mathematical Tools for Computer Science}
+\author{Jonathan Weiss}
+\maketitle
+\begin{spacing}{0}
+\noindent \begin{center}
+Please send comments to: \href{mailto:Jonathan.weiss1@mail.huji.ac.il}{Jonathan.weiss1@mail.huji.ac.il}
+\par\end{center}
+\end{spacing}
+
+\end{titlepage}
+
+\pagebreak{}
+
+\global\long\def\ball#1{B_{\left|\left|\cdot\right|\right|_{#1}}}%
+\global\long\def\C{\mathbb{C}}%
+\global\long\def\bin#1#2{\binom{#1}{#2}}%
+\global\long\def\p#1{\Pr\left[#1\right]}%
+\global\long\def\limn#1{\lim\limits _{n\to\infty}\left(#1\right)}%
+\global\long\def\one{\mathbbm{1}}%
+\global\long\def\cov#1#2{COV\left[#1,#2\right]}%
+\global\long\def\E#1{\mathbb{E}\left[#1\right]}%
+\global\long\def\var#1{var\left[#1\right]}%
+\global\long\def\R{\mathbb{R}}%
+\global\long\def\N{\mathbb{N}}%
+\global\long\def\then{\Rightarrow}%
+\global\long\def\norm#1{\left\Vert #1\right\Vert }%
+\global\long\def\Z{\mathbb{Z}}%
+\tableofcontents
+
+\pagebreak{}
+
+\part{probability}
+
+\section{Probability recap}
+\begin{defn}
+Probability space (merchav midgam)
+
+a set $\Omega$ and a probability measure $p_{r}$. 
+\end{defn}
+
+
+\subsubsection*{Simplest case:}
+
+Finite discrete probability space $\left|\Omega\right|<\infty$ individual
+element $\omega\in\Omega$ we associate non negative number $p_{r}\left(\omega\right)\ge0$
+s.t $\sum\limits _{\omega\in\Omega}p_{r}\left(\omega\right)=1$.
+\begin{defn}
+Events (meora)
+
+We call $A\subseteq\Omega$ an event. The probability of an event
+is: $p_{r}\left(A\right)=\sum\limits _{\omega\in A}p_{r}\left(\omega\right)$. 
+\end{defn}
+
+
+\subsubsection*{Obvious extension: }
+
+$\left|\Omega\right|=\aleph_{0}$ for example $\Omega=\mathbb{N}$.
+$\Omega=\left\{ x_{1},x_{2},\dots\right\} $ and $p_{1}.p_{2}\dots\ge0,\sum p_{i}=1$.
+
+\subsubsection*{Last case:}
+
+$\Omega=\left[0,1\right],0<\alpha<\beta<1,A=\left[\alpha,\beta\right]$.
+$p_{r}\left(A\right)=\beta-\alpha$
+\begin{defn}
+Independent events (meoraot bilti tloolim)
+
+Let $\left(\Omega,p_{r}\right)$ be a probability space\c{ }and let
+$A,b\subseteq\Omega$ be two events. We say that events $A$ and $B$
+are independent if $p_{r}\left(A\cap B\right)=p_{r}\left(A\right)\cdot p_{r}\left(B\right)$
+\end{defn}
+
+\begin{example}
+intuition for random variables
+
+a fair dice and a fair coin are being tossed. $\Omega=\left[6\right]\times\left\{ \mathbb{H},\mathbb{T}\right\} $,
+$\forall\omega\in\Omega,p_{r}\left(\omega\right)=\frac{1}{12}$ (uniform
+distribution). We treat the dice and the coin as independent. Thus
+$p_{r}\left(\text{dice is even}\right)=p_{r}\left(A\right)=\frac{1}{2}$,
+$p_{r}\left(\text{coin is on }H\right)=p_{r}\left(B\right)=\frac{1}{2}$.
+$p_{r}\left(\text{dice is even}\cap\text{coin is on }H\right)=p_{r}\left(A\cap B\right)=p_{r}\left(A\right)\cdot p_{r}\left(B\right)=\frac{1}{4}$.
+Now we can inspect all possible cases of $\left[6\right]\times\left\{ \mathbb{H},\mathbb{T}\right\} $
+and find the event. $A\cap B=\left\{ \left(2,H\right),\left(4,H\right),\left(6,H\right)\right\} $
+thus $p_{r}\left(A\cap B\right)=\frac{3}{\left|\Omega\right|}=\frac{3}{12}=\frac{1}{4}$
+\end{example}
+
+\begin{defn}
+Conditioning (hatnaya)
+\begin{defn}
+conditioning on the event $A$ is defined as follows: $p_{r}\left(B|A\right)=\frac{p_{r}\left(A\cap B\right)}{p_{r}\left(A\right)}$.
+In case of independence between the events it is simple to deduce
+that $p_{r}\left(B|A\right)=p_{r}\left(B\right)$: 
+\[
+p_{r}\left(B|A\right)=\frac{p_{r}\left(A\cap B\right)}{p_{r}\left(A\right)}=\frac{p_{r}\left(A\right)\cdot p_{r}\left(B\right)}{p_{r}\left(A\right)}=p_{r}\left(B\right)
+\]
+.
+\end{defn}
+
+\end{defn}
+
+\begin{rem}
+We can think of conditioning as looking at event $A$ as our probability
+space thus we normalize according to it. $A$ happened what is the
+probability that $B$ will happen too? so we do a conjunction between
+the two and normalize by A to get the new probability.
+\end{rem}
+
+\begin{defn}
+Random Variable: Let $\left(\Omega,p_{r}\right)$ be a probability
+space and $X:\Omega\to\mathbb{R}$ is called a real random variable.
+In general it is very typical to not care about where $X$ maps $\omega\in\Omega$.
+In most cases we care about the event that is tied to the random variable. 
+\end{defn}
+
+\begin{example}
+Random Variable: 
+
+$X:\Omega\to\mathbb{R}$, $\left[\alpha,\beta\right]\subseteq\mathbb{R}$,
+let $A\subseteq\Omega$ be the event $\left\{ \omega\in\Omega|X\left(\omega\right)\in\left[\alpha,\beta\right]\right\} $.
+Using random variable we this way allows us to inquire important information
+about real life events. Each $\omega\in\Omega$ in this example can
+be a person and $X$ can map from a person to it's salary. 
+\end{example}
+
+\begin{defn}
+Random variable independency 
+
+Let $X,Y:\Omega\to S$ be Random Variables (R.V) we say that $X,Y$
+are independent if $\forall r,\sigma\in S$ the events $\left\{ \omega|X\left(\omega\right)=r\right\} ,\left\{ \omega|Y\left(\omega\right)=\sigma\right\} $
+are independent events.
+\end{defn}
+
+\begin{defn}
+Indicator 
+
+$X:\Omega\to\left\{ 0,1\right\} $ is called an ``indicator random
+variable''.
+\end{defn}
+
+When we are working with random variables we might face questions
+like the following: What is the average grade of $X$
+\begin{defn}
+Expectation (Tochelet)
+
+Denote $\mathbb{E}\left[x\right]=\sum\limits _{\omega\in\Omega}p_{r}\left(\omega\right)\cdot X\left(\omega\right)$
+the expectation of $X$.
+\end{defn}
+
+\begin{claim}
+Linearity of expectation (with no proof)
+
+$\forall X,Y:\Omega\to\mathbb{R},\forall a,b\in\mathbb{R},\mathbb{E}\left[aX+bY\right]=a\mathbb{E}\left[X\right]+b\mathbb{E}\left[Y\right]$
+\end{claim}
+
+Aside from the average (expectation) of a R.V we might also wish to
+know how \uline{concentrated} it is. how can we find how far are
+all the values $p_{1}a_{1}+\dots+p_{n}a_{n}=\mathbb{E}\left[X\right]$
+from the average of $X$?
+
+\paragraph*{First try}
+
+$\mu:=\mathbb{E}\left[X\right]=\sum p_{i}a_{i}$ , now to calculate
+how far each value (with it's appropriate size factor):$\sum p_{i}\left(a_{i}-\mu\right)=\sum\left(p_{i}a_{i}\right)-1\cdot\sum p_{i}a_{i}=0$
+\\
+Didn'\'{t} go as wanted.
+
+A working definition would be $Var\left[X\right]=\sum p_{i}\left(a_{i}-\mu\right)^{2}$
+\begin{defn}
+Variance of a random variable
+
+$Var\left[X\right]=\sum p_{i}\left(a_{i}-\mu\right)^{2}=\mathbb{E}\left[\left(X-\mu\right)^{2}\right]=\mathbb{E}\left[\left(X-\mathbb{E}\left[X\right]\right)^{2}\right]$
+Let as simplify this equation:
+\begin{align*}
+\mathbb{E}\left[\left(X-\mathbb{E}\left[X\right]\right)^{2}\right] & =\mathbb{E}\left[X^{2}-\underbrace{2\mathbb{E}\left[X\right]}_{scalar}\cdot X+\mathbb{E}\left[X\right]^{2}\right]=\\
+\text{Linearity} & =\mathbb{E}\left[X^{2}\right]-2\cdot\mathbb{E}\left[X\right]\cdot\mathbb{E}\left[X\right]+\mathbb{E}\left[X\right]^{2}=\\
+ & =\mathbb{E}\left[X^{2}\right]-2\mathbb{E}\left[X\right]^{2}+\mathbb{E}\left[X\right]^{2}=\\
+ & =\mathbb{E}\left[X^{2}\right]-\mathbb{E}\left[X\right]^{2}
+\end{align*}
+\end{defn}
+
+\begin{thm}[Markov inequality]
+ If $X$ is a non-negative R.V and $c>1$ then $p_{r}\left(x\ge c\cdot\mathbb{E}\left[X\right]\right)\le\frac{1}{c}$
+\end{thm}
+
+\begin{thm}[Chebyshev inequality]
+ If $X$ is a real R.V then $p_{r}\left(\left|X-\mathbb{E}\left[X\right]\right|\ge c\cdot\sigma\right)\le\frac{1}{c^{2}}$
+where $var\left[X\right]=\sigma^{2}$ .
+
+In general we can view Chebyshev's inequality as a way to see how
+far $X$ is from It's expectation by units of it's standard deviation
+($\sigma=\sqrt{Var\left[X\right]}$).
+
+The intuition of proving that claim is to apply Markov's inequality
+over $Y=\left(X-\mathbb{E}\left[X\right]\right)^{2}$ and understanding
+that $p_{r}\left(\left(x-\mathbb{E}\left[X\right]\right)^{2}\ge c^{2}\sigma^{2}\right)=p_{r}\left(\left|X-\mathbb{E}\left[X\right]\right|\ge c\cdot\sigma\right)$.
+
+\end{thm}
+
+\begin{xca}
+If you pick at random a permutation $\pi:\left[n\right]\to\left[n\right]\in S_{n}$
+How many fixed points does it have?
+
+In order to answer this question we will create a random variable
+that counts the number of fixed points in a given permutation. afterward
+we will search it's expectation. Let $X\left(\pi\right)=\sum\limits _{i=1}^{n}X_{i}\left(\pi\right)$
+where $X_{i}=\begin{cases}
+1 & \pi\text{ has a fixed point at }i\\
+0 & otherwise
+\end{cases}$ . Thus $X$ is a counter for fixed points in $\pi$. Let calculate
+the expectation of $X$: $\mathbb{E}\left[X\right]=\mathbb{E}\left[\sum_{i}X_{i}\right]$
+and from linearity of expectation $\mathbb{E}\left[X\right]=\sum\limits _{i=1}^{n}\mathbb{E}\left[X_{i}\right]$.
+Now we need to find the expectation of the indicator. $\mathbb{E}\left[X_{i}\right]=1\cdot p_{r}\left(\text{there is a fixed point at }i\right)+0\cdot p_{r}\left(otherwise\right)$.
+$p_{r}\left(\text{there is a fixed point at }i\right)=\frac{\left|\left\{ \pi|\pi\text{ has a fixed point at }i\right\} \right|}{n!}.$
+The value of $\left|\left\{ \pi|\pi\text{ has a fixed point at }i\right\} \right|$
+is $\left(n-1\right)!$ because we fixed one position and then we
+still have $n-1$ elements to choose for them a position, therefore
+$\left(n-1\right)!$ possible permutations. As a result $p_{r}\left(\text{there is a fixed point at }i\right)=\frac{\left(n-1\right)!}{n!}=\frac{1}{n}$.
+Which in turn means that $\mathbb{E}\left[X\right]=\sum\limits _{i=1}^{n}\frac{1}{n}=1$.
+The answer to our question is 1.
+\end{xca}
+
+\begin{rem}
+The above exercise is known as the disoriented secretary.
+\end{rem}
+
+
+\section{Ramsey's Theorem and the probabilistic method}
+
+First lets define $R\left(k,l\right)$: the minimum number of vertices
+in a graph that is needed in order to make either $k$ size clique
+that is coloured blue on it's edges or $l$ red clique. (clique and
+anti-clique)
+\begin{example}
+What is the number of people needed to be invited to a party in order
+to be sure that either 3 know each other or 3 do not know each other?
+$R\left(3,3\right)=6$.
+\end{example}
+
+\begin{thm}[Erdós-Szekeres 35]
+ $R\left(k,l\right)\le{k+l-2 \choose k-1}$. The theorem is without
+proof.
+
+For $R\left(k,k\right)\le{k+k-2 \choose k-1}=\binom{2k-2}{k-1}\le2^{2k}=n$,
+it implies that in every graph with $n$ vertices there exists a clique
+or an anti-clique of size $\ge\frac{1}{2}\log_{2}n$ (because $\frac{1}{2}\log_{2}n=\frac{1}{2}\log_{2}\left(2^{2k}\right)=k\log_{2}2=k$). 
+
+\end{thm}
+
+\begin{rem}
+\label{probRVreualsZero}if $X$ is a R.V that is non negative then
+$p\left[X\ge c\cdot\mathbb{E}\left[X\right]\right]\le\frac{1}{c}$.
+If X takes values in $\N\cup\left\{ 0\right\} $ and $\mathbb{E}\left[X\right]=\epsilon$
+then $P\left[X=0\right]\ge1-\epsilon$. (from Markov) 
+\end{rem}
+
+\begin{rem}
+Chebyshev inequality: $p\left[X=0\right]\le\frac{Var\left[X\right]}{\mathbb{E}\left[X\right]^{2}}$
+(proved in problem set 1).
+\end{rem}
+
+\begin{cor}
+$\forall N$ every $N$-vertex graph must have a clique or an anti-clique
+on $\ge\frac{1}{2}\log_{2}N$ vertices.
+\end{cor}
+
+\begin{thm}[Erdos '47]
+ $\exists N$-vertex graph with no clique nor anti-clique $>2\log_{2}N$.
+In fact this is true for almost all graphs.
+\end{thm}
+
+\begin{proof}
+$\Omega_{n}=\left\{ \text{all graphs on }V=\left\{ 1,2,\dots N\right\} \right\} $,
+there is a uniform distribution; $\forall G\in\Omega_{N},p_{r}\left[G\right]=\frac{1}{2^{\binom{n}{2}}}$.
+\begin{rem}
+the number of all possible graphs is $2^{\binom{n}{2}}$ because for
+each edge we have two choices and we have $\binom{n}{2}$ edges.
+\end{rem}
+
+This probability space is named $G\left(n,\frac{1}{2}\right)$. $k$
+is a parameter, $X,Y:\Omega_{n}\to\N\cup\left\{ 0\right\} $. $X\left(G\right)=\text{Number of k-cliques in }G$.
+Y is the same but for anti-cliques.
+\begin{prop}
+Suppose that $\mathbb{E}\left[X+Y\right]=o\left(1\right)$, where
+$o\left(1\right)$ is something that goes to zero when $N\to\infty$.
+If this happens then we can conclude that $p_{r}\left[X+Y=0\right]=1-o\left(1\right)$
+(remember remark \ref{probRVreualsZero}). Well that means that $X=Y=0$
+and that most $N$ - vertex graphs have no k-clique and no k-anti-clique.
+So we want to find that $\mathbb{E}\left[X+Y\right]=o\left(1\right)$.
+\begin{rem}
+Please note that $\mathbb{E}\left[X+Y\right]=2\cdot\mathbb{E}\left[X\right]$
+because they are the same R.V but for different colour.
+\end{rem}
+
+\end{prop}
+
+Lets start: We define $X=\sum\limits _{\begin{array}{c}
+S\subseteq V\\
+\left|S\right|=k
+\end{array}}X_{S}$ where $S$ are groups of $k$ vertices from $V$, where
+\[
+X_{s}=\begin{cases}
+1 & \text{S is a clique in G}\\
+0 & \text{otherwise}
+\end{cases}
+\]
+ now lets find the expectation:
+\begin{align*}
+\mathbb{E}\left[X\right] & =\sum\limits _{S}\mathbb{E}\left[X_{S}\right]=\\
+ & =\binom{n}{k}p_{r}\left[\underbrace{\left\{ 1,\dots k\right\} }_{vertices}\text{ is a clique}\right]=\\
+ & =\binom{n}{k}\cdot\left(\frac{1}{2}\right)^{\binom{k}{2}}
+\end{align*}
+notice that $\left(\frac{1}{2}\right)^{\binom{k}{2}}$ is the probability
+to form an edge $\binom{k}{2}$ times (between all vertices). Lets
+inspect the expression above again:
+\[
+=\frac{\binom{n}{k}}{\left(2\right)^{\binom{k}{2}}}
+\]
+We need to show that $\binom{n}{k}\cdot\left(\frac{1}{2}\right)^{\bin k2}=o\left(1\right)$.
+Notice that $\binom{n}{k}<n^{k}<2^{\frac{k\left(k-1\right)}{2}}\Rightarrow\binom{N}{k}\ll2^{\binom{k}{2}}$.
+Consequently the expectation strives to zero as $k$ tends to infinity.
+Lets choose $k$ in respect to $N$: 
+\begin{align*}
+N^{k} & <2^{\frac{k\left(k-1\right)}{2}}\\
+N & <2^{\frac{k-1}{2}}\\
+\log_{2}N & <\frac{k-1}{2}\\
+1+2\cdot\log_{2}N & <k
+\end{align*}
+ for $k>1+2\log_{n}N$ it holds that $\mathbb{E}\left[X+Y\right]=o\left(1\right)$
+and then $p_{r}\left[X+Y=0\right]=1-o\left(1\right)$ as wanted.
+\end{proof}
+\begin{example}
+We will inspect another view of this method: What is the probability
+that $G\sim G\left(n,p\right)$ contains a $K_{4}$? ($k_{4}$is a
+clique of 4).
+\begin{rem}
+$G\left(n,p\right);p_{r}\left[G\right]=p^{\left|E\left(G\right)\right|}\cdot\left(1-p\right)^{\binom{n}{2}-\left|E\left(G\right)\right|}$.
+Explanation: $p^{\left|E\left(G\right)\right|}$ means the probability
+to get the edges. $\left(1-p\right)^{\binom{n}{2}-\left|E\left(G\right)\right|}$
+means to not get an edge number of possible edges in the graph minus
+the number of edges we already have.
+\end{rem}
+
+\begin{thm}
+$p=n^{-\frac{2}{3}}$is the threshold probability for the occurrences
+of $k_{4}$ in a $G\left(n,p\right)$ graph.
+\begin{enumerate}
+\item for $p=o\left(n^{-\frac{2}{3}}\right)$ i.e $p\ll n^{-\frac{2}{3}}$
+``almost surely'' G contains no $k_{4}$.
+\item for $p=\omega\left(n^{-\frac{2}{3}}\right)$ i.e $p\gg n^{-\frac{2}{3}}$
+``almost surely'' G contains $k_{4}$.
+\end{enumerate}
+\begin{rem}
+``almost surely'' means: when we sample with p from the graph ,
+and the probability strives to zero as $n\to\infty$.
+\end{rem}
+
+\end{thm}
+
+$X:G\left(n,p\right)\to\N\cup\left\{ 0\right\} $, $X\left(G\right)=\text{num }k_{4}\text{s in }G$.
+$X=\sum\limits _{\left|S\right|=4}X_{s}$ where $X_{s}=\begin{cases}
+1 & \text{S is a 4-clique in G}\\
+0 & o/w
+\end{cases}$. 
+\end{example}
+
+\begin{casenv}
+\item $p=o\left(n^{-\frac{2}{3}}\right)$ and as a result 
+\begin{align*}
+\mathbb{E}\left[X\right] & =\sum\mathbb{E}\left[X_{s}\right]=\binom{n}{4}\cdot p_{r}\left[\left\{ 1,2,3,4\right\} \text{ is a clique}\right]=\\
+ & =\binom{n}{4}p^{\binom{4}{2}}=\binom{n}{4}p^{6}\le n^{4}p^{6}\\
+ & =o\left(1\right)
+\end{align*}
+As a result we recall $p_{r}\left[X=0\right]=1-\E X=1-o\left(1\right)$
+as wanted.
+\item $p=\omega\left(n^{-\frac{2}{3}}\right)$: recall that if $X:\Omega\to\N\cup\left\{ 0,1,2,\dots\right\} $
+then $p_{r}\left[X=0\right]\le\frac{var\left[X\right]}{\mathbb{E}\left[X\right]^{2}}$.
+We want to show that $var\left[X\right]\ll\mathbb{E}\left[X\right]^{2}$.
+$X$ is the same, $\mathbb{E}\left[X\right]$ is the same. Lets calculate
+the variance: 
+\begin{align*}
+var\left[X\right] & =\mathbb{E}\left[X^{2}\right]-\mathbb{E}\left[X\right]^{2}=\\
+ & =\sum_{\left|S\right|=4}\left(\mathbb{E}\left[X_{s}^{2}\right]-\mathbb{E}\left[X_{s}\right]^{2}\right)+2\cdot\sum_{\begin{array}{c}
+S\ne T\\
+\left|S\right|=\left|T\right|=4
+\end{array}}\left(\underbrace{\mathbb{E}\left[X_{s}\cdot X_{T}\right]-\mathbb{E}\left[X_{s}\right]\cdot\mathbb{E}\left[X_{T}\right]}_{cov\left(X_{s},X_{t}\right)}\right)=\\
+ & =\sum_{\left|S\right|=4}\left(\mathbb{E}\left[X_{s}\right]-\mathbb{E}\left[X_{s}\right]^{2}\right)+2\cdot\sum_{\begin{array}{c}
+S\ne T\\
+\left|S\right|=\left|T\right|=4\\
+\left|S\cap T\right|\in\left\{ 2,3\right\} 
+\end{array}}\left(\underbrace{\mathbb{E}\left[X_{s}\cdot X_{T}\right]-\mathbb{E}\left[X_{s}\right]\cdot\mathbb{E}\left[X_{T}\right]}_{cov\left(X_{s},X_{t}\right)}\right)
+\end{align*}
+First let us handle the Cov summation: Notice that there are 2 cases
+to handle $\left|S\cap T\right|=2$ and $\left|S\cap T\right|=3$,
+that is because the R.V are either independent when $\left|S\cap T\right|=1$
+or they are disjointed. when $\left|S\cap T\right|=4$ they are the
+same variable hence not in the summation.
+\begin{rem}
+Note that we indeed compute only where the covariance is no\'{t} zero,
+but we can enlarge the value of $Var\left[X\right]$ and make our
+life easier by simply computing 
+\begin{align*}
+\sum\limits _{\left|S\cap T\right|\in\left\{ 2,3\right\} }\mathbb{E}\left[X_{s}\cdot X_{T}\right]-\mathbb{E}\left[X_{s}\right]\cdot\mathbb{E}\left[X_{T}\right]\\
+<\sum\limits _{\left|S\cap T\right|\in\left\{ 2,3\right\} }\mathbb{E}\left[X_{s}\cdot X_{t}\right]
+\end{align*}
+ so we will address only the values in $\sum\limits _{\left|S\cap T\right|\in\left\{ 2,3\right\} }\mathbb{E}\left[X_{s}\cdot X_{t}\right]$.
+\end{rem}
+
+\begin{casenv}
+\item 
+\begin{align*}
+\sum\limits _{\left|S\cap T\right|=2}\mathbb{E}\left[X_{s}\cdot X_{t}\right] & =\\
+\underbrace{\binom{n}{4}}_{\left(1\right)}\cdot\underbrace{\binom{4}{2}}_{\left(2\right)}\cdot\underbrace{\binom{n-4}{2}}_{\left(3\right)}\cdot\underbrace{p^{11}}_{\left(4\right)}
+\end{align*}
+ explanation:
+\begin{enumerate}
+\item number of possibilities to choose the set $S$ (choose 4 vertices
+out of the n possible vertices).
+\item the possibilities to choose two vertices off of $S$ to be in the
+intersection $T\cap S$.
+\item all other possibilities for the 2 other vertices of $T$.
+\item 11 is the number of edges we needed to to be connected. 
+\end{enumerate}
+\item 
+\[
+\sum\limits _{\left|S\cap T\right|=3}\mathbb{E}\left[X_{s}\cdot X_{t}\right]=\binom{n}{4}\cdot\binom{4}{3}\cdot\binom{n-4}{1}\cdot p^{9}
+\]
+ The explanation is similar to case $i$.
+\end{casenv}
+\begin{align*}
+var\left[X\right] & \le\\
+ & \mathbb{E}\left[X\right]+\underbrace{\Theta\left(n^{6}p^{11}\right)+\Theta\left(n^{5}p^{9}\right)}_{\begin{array}{c}
+\text{we removed the array because }\\
+\text{it is encapsulated in the Thetas}
+\end{array}}\\
+ & <\mathbb{E}\left[X\right]^{2}=\left(n^{4}p^{6}\right)^{2}=n^{8}p^{12}
+\end{align*}
+ $var\left[X\right]\ll\mathbb{E}\left[X\right]^{2}$ which means that
+$p_{r}\left[X=0\right]\le\frac{var\left[X\right]}{\mathbb{E}\left[X\right]^{2}}\to0$
+We got what we wanted: $X\ge1$ almost surely.\\
+
+\end{casenv}
+%
+
+\section{Balls and bins}
+\begin{fact}
+$1+x\le e^{x}$ 
+\end{fact}
+
+\begin{fact}
+for a small $x$: $1+x\ge e^{x}-O\left(x^{2}\right)$ 
+\end{fact}
+
+
+\subsection{Birthday paradox}
+
+When we throw multiple balls into multiple bins ($n$ bins) we expect
+to see the first collision (a second ball into an occupied bin) in
+our $\sim\sqrt{n}$ throw. $p_{r}\left[\text{no collision}\right]=1\cdot\left(1-\frac{1}{n}\right)\cdots\left(1-\frac{k-1}{n}\right)$
+that is the first ball doesn't have a collision with probability 1\c{ }the
+second doesn't have a collision with probability $\left(1-\frac{1}{n}\right)$
+because to hit the occupied bin is $\frac{1}{n}$ and that is its
+complimentary event, and so on. 
+\begin{align*}
+p_{r}\left[\text{no collision}\right] & =1\cdot\left(1-\frac{1}{n}\right)\cdots\left(1-\frac{k-1}{n}\right)=\\
+\left(\text{fact 32.}\right) & \le1\cdot e^{-\frac{1}{n}}\cdots e^{-\frac{k-1}{n}}=\\
+ & =e^{-\left(\frac{1}{n}\sum_{i=1}^{k-1}i\right)}=e^{-\frac{1}{n}\left(\frac{k\left(k-1\right)}{2}\right)}=\\
+ & =e^{-\frac{k\left(k-1\right)}{2n}}
+\end{align*}
+ We can see from the above expression that if $k=o\left(\sqrt{n}\right)$
+then $e^{-\frac{k\left(k-1\right)}{2n}}$ the above expression as
+n tends to infinity get closer to 1 because $k$ is a lot smaller
+than $\sqrt{n}$ and as a result $\limn{e^{\frac{-k^{2}-k}{2n}}}=e^{0}$.
+On the other hand $k=\omega\left(\sqrt{n}\right)$ $e^{-\frac{k\left(k-1\right)}{2n}}=o\left(1\right)$
+. So we conclude that after $\sqrt{n}$ throws it is quite certain
+that there will be collisions.
+\begin{example}
+Suppose we pick two random subsets $A,B$ of $\left\{ 1,\dots,n\right\} $
+of cardinals (size) $k,l$. How likely is it that the two sets are
+disjoint? 
+
+Without the loss of generality (WLOG): $A=\left\{ 1\dots k\right\} $
+and B is chosen uniformly at random. $p_{r}\left[A\cap B=\emptyset\right]=\frac{\binom{n-k}{l}}{\binom{n}{l}}$
+. ($\binom{n-k}{l}$ is because we want to chose $l$ elements that
+do not collide with elements from $A$, $\binom{n}{l}$ is all possible
+sets of size $l$ - our probability space). 
+\begin{align*}
+\p{A\cap B=\emptyset} & =\frac{n-k}{n}\cdot\frac{n-k-1}{n-1}\cdot\dots\cdot\frac{n-k-l+1}{n-l+1}=\\
+ & =\left(1-\frac{k}{n}\right)\cdot\left(1-\frac{k}{n-1}\right)\cdots\left(1-\frac{k}{n-l+1}\right)\cong\\
+ & \cong e^{-\left(\frac{k}{n}+\frac{k}{n-1}+\dots+\frac{k}{n-l+1}\right)}\cong e^{-\frac{kl}{n}}
+\end{align*}
+\begin{lyxgreyedout}
+\begin{align*}
+p_{r}\left[A\cap B=\emptyset\right] & =\frac{\binom{n-k}{l}}{\binom{n}{l}}=\frac{\frac{\left(n-k\right)!}{l!\left(n-k-l\right)!}}{\frac{n!}{l!\left(n-l\right)!}}=\\
+ & =\frac{\frac{\left(n-k\right)\left(n-k-1\right)\dots\left(n-k-l\right)\left(n-k-l-1\right)\dots}{l!\left(n-k-l\right)\left(n-k-l-1\right)\dots}}{\frac{n\left(n-1\right)\dots\left(n-l\right)\left(n-l-1\right)\dots}{l!\left(n-l\right)\left(n-l-1\right)\dots}}=\\
+ & =\frac{\frac{\left(n-k\right)\left(n-k-1\right)\dots\left(n-k-l+1\right)}{l!}}{\frac{n\left(n-1\right)\dots\left(n-l\right)\left(n-l+1\right)}{l!}}=\\
+ & =\frac{\left(n-k\right)\left(n-k-1\right)\dots\left(n-k-l+1\right)}{n\left(n-1\right)\dots\left(n-l\right)\left(n-l+1\right)}=\\
+ & =\frac{n-k}{n}\cdot\frac{n-k-1}{n-1}\cdots\frac{n-k-l+1}{n-l+1}=\\
+ & =\left(1-\frac{k}{n}\right)\left(1-\frac{k}{n-1}\right)\cdots\left(1-\frac{k}{n-l+1}\right)=\\
+ & \backsimeq e^{-\left(\frac{k}{n}+\frac{k}{n-1}+\dots+\frac{k}{n-l+1}\right)}
+\end{align*}
+ please notice that $e^{-\frac{k}{n-1}}\backsimeq e^{-\frac{k}{n}}$
+hence 
+\[
+\backsimeq e^{-\left(\underbrace{\frac{k}{n}+\frac{k}{n}+\dots+\frac{k}{n}}_{l\text{ times}}\right)}=e^{-\frac{kl}{n}}
+\]
+\end{lyxgreyedout}
+{} Now, if $kl=\omega\left(n\right)$ then asymptotic almost surely
+$\left(a.a.s\right)$ the two sets intersect because $p_{r}\left[A\cap B=\emptyset\right]=e^{-\frac{kl}{n}}=o\left(1\right)$.
+On the other hand if $kl=o\left(n\right)$ then $p_{r}\left[A\cap B=\emptyset\right]=e^{-\frac{kl}{n}}=1-o\left(1\right)$.
+\end{example}
+
+
+\subsection{The coupons collector}
+\begin{claim}
+It takes roughly $n\log n$ throws of $m$ balls into $n$ bins in
+order to make sure that we have inserted at least one ball into every
+bin. 
+\end{claim}
+
+\begin{proof}
+Let $X$ be the R.V that counts the number of empty bins. $X=\sum\limits _{i=1}^{n}X_{i}$
+where $X_{i}$ is an indicator R.V for the event ``the $i$-th bin
+is empty''. The random variable $X_{i}$ are identically distributed
+and their expectation $\E{X_{i}}=\Pr\left[X_{i}=1\right]=\left(1-\frac{1}{n}\right)^{m}$
+which means that after $m$ throws a specific bin is still empty.
+By linearity of expectation\"{ }$\E X=\sum\limits _{i=1}^{n}\E{X_{i}}=n\cdot\left(1-\frac{1}{n}\right)^{m}\backsimeq n\cdot e^{\frac{-m}{n}}$. 
+\begin{casenv}
+\item if $m=\omega\left(n\log n\right)$ then $n\cdot e^{\frac{-m}{n}}=o\left(1\right)$
+\item if $m=o\left(n\log n\right)$ then $n\cdot e^{\frac{-m}{n}}=\omega\left(1\right)$ 
+\end{casenv}
+\end{proof}
+%
+\begin{proof}
+Another proof: define $T_{i}$ as the time between having seen $\left(i-1\right)$
+bins to the first time bin $i-th$ is visited. this means that $T=\sum T_{i}$.
+$\E T=\sum_{i=1}^{n}\E{T_{i}}$. 
+\begin{rem}
+$T_{i}$ is a geometrically distributed random variable $T_{i}\sim Geo\left(p\right)$.
+$\E{T_{i}}=\frac{1}{p}$.
+\end{rem}
+
+thus $T_{i}\sim Geo\left(\frac{n-i+1}{n}\right)$, the probability
+is defined as follows $n-i+1$ bins are currently empty, so we need
+any one of them over the probability space which is $n$. Now we can
+compute $\E T=\sum_{i=1}^{n}\E{T_{i}}=\sum_{i=1}^{n}\frac{n}{n-i+1}=n\sum_{i=1}^{n}\frac{1}{n-i+1}$
+notice that $\sum_{i=1}^{n}\frac{1}{n-i+1}=\left(\frac{1}{n}+\frac{1}{n-1}+\dots\frac{1}{1}\right)=\sum\limits _{i=1}^{n}\frac{1}{i}$
+and thus $\E T=n\sum\limits _{i=1}^{n}\frac{1}{i}=n\left(\log_{e}n+O\left(1\right)\right)$. 
+\end{proof}
+We would like to say that after exceeding $n\log n+O\left(n\right)$
+throws it's almost certain that there is no empty bin. We cannot use
+Markov's inequality because it isn't tight enough: 
+\[
+\Pr\left[T\ge10\cdot\E T\right]\le\frac{1}{10}\iff\Pr\left[T\ge10\cdot n\log n\right]\le\frac{1}{10}
+\]
+We can use Chebyshev's inequality
+\[
+\Pr\left[\left|T-\E T\right|\text{\ensuremath{\ge c\cdot\var T}}\right]\le\frac{1}{c^{2}}
+\]
+Notice that $\var T=\var{\sum T_{i}}$ and that the $T_{i}$ R.Vs
+are independent %
+\begin{lyxgreyedout}
+Notice that each $T_{i}$ is independent because they count number
+of tries given a static event. So we check for each$T_{i}$ how many
+tries should we do when $i$ slots are already filled.%
+\end{lyxgreyedout}
+. 
+\begin{rem}
+A geometric distributed R.V $X$ with parameter $p$ has $\var X=\frac{1-p}{p^{2}}$.
+\end{rem}
+
+Therefore 
+\[
+\var T=\var{\sum T_{i}}=\sum\var{T_{i}}=\sum_{i=1}^{n}\left(\frac{n}{n-i+1}\right)^{2}=n^{2}\sum_{j=1}\frac{1}{j^{2}}\le\frac{\pi^{2}}{6}
+\]
+ using Chebyshev's inequality: 
+\[
+\Pr\left[T>n\ln n+cn\right]\le\frac{10}{c^{2}}
+\]
+
+\begin{lyxgreyedout}
+Not sure whys that chebyshev%
+\end{lyxgreyedout}
+{} If we choose $c=\sqrt{\log n}$ we get that the probability tends
+to 0.
+
+\section{Random walks}
+
+A drunkard takes a walk, the drunkard can either take a step to the
+right or to the left. There are multiple questions that might interest
+us, such as: 
+\begin{enumerate}
+\item How far typically will the drunkard reach? $\pm O\left(\sqrt{n}\right)$. 
+\item How often will the drunkard return to the origin of the random walk?
+$\Theta\left(\sqrt{n}\right)$.
+\item We can ask the same questions above higher dimensions. 
+\end{enumerate}
+We can model the problem as having $N$ RVs $X_{1},\dots,X_{n}$ which
+are i.i.d (independent identically distributed). $\p{X_{i}=1}=\p{X_{i}=-1}=\frac{1}{2}$,
+$X:=\sum\limits _{i=1}^{N}X_{i}$ ($X$ represents our random walk
+after $N$ steps). 
+\begin{prop}
+$\p{X\ge a}\le e^{-\frac{a^{2}}{2N}}$ We will use this and prove
+it afterward. 
+\begin{example}
+$\p{X>5\sqrt{N}}\le e^{-\frac{25N}{2N}}=e^{\frac{-25}{2}}$, using
+that fact we get that $X$ is quite close to $\sqrt{N}$. In fact
+the probability of $X$ being bigger than $\sqrt{N}$ or smaller than
+$-\sqrt{N}$ tends to zero.
+\end{example}
+
+\end{prop}
+
+\begin{proof}
+$\forall t>0$, $\p{X\ge a}=\p{e^{tX}\ge e^{ta}}$ (the events $e^{tX}\ge e^{ta}$
+is identical to $X\ge a$). 
+\begin{align*}
+\p{\underbrace{e^{tX}}_{R.V}\ge e^{ta}} & \overset{\left(Markov\right)}{\le}\frac{1}{\left(\frac{e^{ta}}{\E{e^{tX}}}\right)}=e^{-ta}\E{e^{tX}}=\\
+ & =e^{-ta}\E{e^{t\sum_{i=1}^{N}X_{i}}}=e^{-ta}\E{\prod_{i=1}^{N}e^{tX_{i}}}=\\
+\left(independence\right) & =e^{-ta}\prod_{i=1}^{N}\E{e^{tX_{i}}}
+\end{align*}
+ We know that $X_{i}\left(\omega\right)\in\left\{ -1,1\right\} $,
+as a result $\E{e^{tX_{i}}}=\frac{1}{2}\cdot\left(e^{t}+e^{-t}\right)$.
+collecting everything up to now: $\p{X\ge a}\le e^{-ta}\left[\frac{e^{t}+e^{-t}}{2}\right]^{N}$.
+\begin{claim}
+$\forall t\ge0$, $\frac{e^{t}+e^{-t}}{2}\le e^{\frac{t^{2}}{2}}$.
+\begin{proof}
+$e^{u}=\sum\limits _{j=0}^{\infty}\frac{u^{j}}{j!}\Rightarrow$ 
+\begin{align*}
+e^{t} & =1+\frac{t}{1!}+\frac{t^{2}}{2!}+\dots\\
+e^{-t} & =1+\frac{(-t)}{1!}+\frac{(-t)^{2}}{2!}\dots
+\end{align*}
+ Notice that the even powers are with the same sign, and the odd powers
+cancel each other. we get that
+\[
+\frac{e^{t}+e^{-t}}{2}=\sum\limits _{j=0}^{\infty}\frac{t^{2j}}{\left(2j\right)!}\le\sum\limits _{j=0}^{\infty}\frac{\left(t^{2}\right)^{j}}{2^{j}\cdot j!}=\sum\limits _{j=0}^{\infty}\frac{\left(\frac{t^{2}}{2}\right)^{j}}{j!}=e^{\frac{t^{2}}{2}}
+\]
+ 
+\end{proof}
+now lets continue 
+\[
+\p{X\ge a}\le e^{-ta}\cdot\left[\frac{e^{t}+e^{-t}}{2}\right]^{N}\le e^{-ta}\cdot e^{\frac{t^{2}N}{2}}=e^{\frac{t^{2}N}{2}-ta}
+\]
+ choose $t=\frac{a}{N}$ and we get 
+\[
+\p{X\ge a}\le e^{\frac{t^{2}N}{2}-ta}=e^{\frac{\left(\frac{a}{N}\right)^{2}N}{2}-\frac{a}{N}a}=e^{-\frac{a^{2}}{2N}}
+\]
+
+as wanted.
+\end{claim}
+
+\end{proof}
+%
+\begin{fact}
+$\sum_{i=1}^{N}\binom{N}{i}=2^{n}$
+\end{fact}
+
+\begin{fact}
+Stirling Formula: $k!\approx\left(\frac{k}{e}\right)^{k}\cdot\sqrt{2\pi k}$ 
+\end{fact}
+
+Assuming that $N$ is even $X=\sum\limits _{i=1}^{N}X_{i}$ then the
+probability to go back to origin is $\p{X=0}=\frac{\binom{N}{N/2}}{2^{N}}$,
+where $\binom{N}{N/2}$ is all possible choosing for $N/2$ steps
+right and the the other $N/2$ steps are to the left, and $2^{N}$
+are all possible sequence of steps over $N$ walks. The probability
+after $N$ steps to be two steps to the right from the origin namely
+$\p{X=2}$ is $\frac{\binom{N}{1+N/2}}{2^{N}}$, where $1+N/2$ because
+we do $1+N/2$ steps to the right and $\left(N/2\right)-1$ steps
+to the left.
+
+A useful lemma to express with better ease expressions like above
+$\left(\p{X=0}=\frac{\binom{N}{N/2}}{2^{N}}\right)$:
+\begin{lem}
+$\forall0<\alpha<1$, $\bin N{\alpha N}=2^{1+o\left(1\right)}\cdot2^{NH\left(\alpha\right)}$
+where $H\left(\alpha\right)=-\alpha\log_{2}\alpha-\left(1-\alpha\right)\log_{2}\left(1-\alpha\right)$.
+\begin{proof}
+$1=\left(\alpha+\left(1-\alpha\right)\right)^{N}=\sum\limits _{j=0}^{N}\bin Nj\alpha^{j}\left(1-\alpha\right)^{N-j}$
+For which $j$ the term in the sum is the biggest? We want to use
+derivatives, but we can only use discrete derivation, we compare to
+the closest term and and check how close it it to zero: 
+\begin{align*}
+\bin Nj\alpha^{j}\left(1-\alpha\right)^{N-j} & \backsimeq\bin N{j+1}\alpha^{j+1}\left(1-\alpha\right)^{N-j-1}\\
+\Updownarrow\\
+\left(j+1\right)\left(1-\alpha\right) & \backsimeq\left(N-j\right)\alpha\Rightarrow j\backsimeq\alpha N
+\end{align*}
+ consequently 
+\[
+\frac{1}{N+1}\le\bin N{\alpha N}\alpha^{\alpha N}\left(1-\alpha\right)^{N-\alpha N}\le1
+\]
+ it is clear why $\bin N{\alpha N}\alpha^{\alpha N}\left(1-\alpha\right)^{N-\alpha N}\le1$
+because the largest term in $1=\left(\alpha+\left(1-\alpha\right)\right)^{N}=\sum\limits _{j=0}^{N}\bin Nj\alpha^{j}\left(1-\alpha\right)^{N-j}$
+is $\bin N{\alpha N}\alpha^{\alpha N}\left(1-\alpha\right)^{N-\alpha N}$
+. Furthermore 1 is the maximal value and the average of a sum is less
+then the largest value ($\frac{1}{N+1}$ is the average of sum valued
+1 with $N+1$ elements), hence $\frac{1}{N+1}\le\bin N{\alpha N}\alpha^{\alpha N}\left(1-\alpha\right)^{N-\alpha N}$.
+Now lets make the above term a bit prettier:
+\begin{align*}
+\frac{1}{N+1} & \le\bin N{\alpha N}\alpha^{\alpha N}\left(1-\alpha\right)^{N-\alpha N}\le1\\
+ & \Updownarrow\\
+\frac{1}{N+1}\cdot\frac{1}{\left(\alpha^{\alpha}\left(1-\alpha\right)^{1-\alpha}\right)^{N}} & \le\bin N{\alpha N}\le\frac{1}{\left(\alpha^{\alpha}\left(1-\alpha\right)^{1-\alpha}\right)^{N}}\\
+ & \Updownarrow\\
+\frac{1}{N+1}\cdot\frac{1}{2^{\log_{2}\left[\left(\alpha^{\alpha}\left(1-\alpha\right)^{1-\alpha}\right)^{N}\right]}} & \le\bin N{\alpha N}\le\frac{1}{2^{\log_{2}\left[\left(\alpha^{\alpha}\left(1-\alpha\right)^{1-\alpha}\right)^{N}\right]}}\\
+ & \Updownarrow\\
+\frac{1}{N+1}\cdot2^{-N\left[\alpha\log_{2}\left(\alpha\right)+\left(1-\alpha\right)\log_{2}\left(1-\alpha\right)\right]} & \le\bin N{\alpha N}\le2^{-N\left[\alpha\log_{2}\left(\alpha\right)+\left(1-\alpha\right)\log_{2}\left(1-\alpha\right)\right]}\\
+ & \Updownarrow\\
+2^{N\left(H\left(\alpha\right)-o\left(1\right)\right)}=\frac{2^{NH\left(\alpha\right)}}{N+1} & \le\bin N{\alpha N}\le2^{NH\left(\alpha\right)}
+\end{align*}
+ which means we get that $\bin N{\alpha N}$ is between $2^{NH\left(\alpha\right)}$
+and $2^{NH\left(\alpha\right)-\epsilon}$ ergo $\bin N{\alpha N}=2^{1+o\left(1\right)}\cdot2^{NH\left(\alpha\right)}$,
+as wanted.
+\end{proof}
+\end{lem}
+
+
+\section{More bounds}
+\begin{rem}
+we used previously $e^{tX}$ - the moment generating function. not
+that the expectation of such random variable is defined as follows:
+$\E{e^{tX}}=\sum_{j=0}^{\infty}\frac{t^{j}}{j!}\E{X^{j}}$
+\end{rem}
+
+
+\subsection{Chernoff bound}
+\begin{thm}[Chernoff Bound]
+\begin{flushleft}
+ Let $X_{1},X_{2},\dots,X_{n}$ be independent indicator R.Vs, $X=\sum X_{i}$
+$\mu=\E X$ then
+\par\end{flushleft}
+\begin{enumerate}
+\item $\forall\delta>0$, $\p{X\ge\left(1+\delta\right)\mu}\le\left[\frac{e^{\delta}}{\left(1+\delta\right)^{1+\delta}}\right]^{\mu}$
+\item $\forall0<\delta<1$, $\p{X\le\left(1-\delta\right)\mu}\le\left[\frac{e^{-\delta}}{\left(1-\delta\right)^{1-\delta}}\right]^{\mu}$
+\end{enumerate}
+\begin{proof}
+We are proving only part 1, the second part should be similar. 
+
+$\forall t>0$, $\p{X\ge\underbrace{\left(1+\delta\right)\cdot\mu}_{a}}=\p{e^{tX}\ge e^{ta}}\overset{markov}{\le}\frac{\E{e^{tX}}}{e^{ta}}$
+. Lets work on the expectation:
+\begin{align*}
+\E{e^{tX}} & =\E{e^{t\sum_{i=1}^{n}X_{i}}}=\E{\prod e^{tX_{i}}}\overset{independent}{=}\prod\E{e^{tX_{i}}}
+\end{align*}
+Notice that if $X_{1}v,\dots X_{n}$ are independent so are $e^{tX_{1}}\dots e^{tX_{n}}$.
+Because $X_{i}$ are indicators:
+\[
+\E{e^{tX_{i}}}=p_{i}\cdot e^{t\cdot1}+\left(1-p_{i}\right)e^{t\cdot0}=1+\underbrace{p_{i}\left(e^{t}-1\right)}_{x}\le e^{p_{i}\left(e^{t}-1\right)}
+\]
+ So 
+\[
+\E{e^{tX}}\le e^{\left(e^{t}-1\right)\cdot\sum p_{i}}
+\]
+ and because $\E{X_{i}}=p_{i}$ then 
+\begin{align*}
+\E{e^{tX}} & \le e^{\left(e^{t}-1\right)\cdot\sum p_{i}}=e^{\left(e^{t}-1\right)\sum\E{X_{i}}}=\\
+ & =e^{\left(e^{t}-1\right)\E{\sum X_{i}}}=e^{\left(e^{t}-1\right)\E X}=e^{\left(e^{t}-1\right)\mu}
+\end{align*}
+ So $\p{X\ge a}\le e^{\left(e^{t}-1\right)\mu}$ choose $t=\ln\left(\delta+1\right)$
+and we get
+\begin{align*}
+\p{X\ge a} & =\p{X\ge\left(\delta+1\right)\mu}\le\frac{e^{\left(e^{t}-1\right)\mu}}{e^{t\left(1+\delta\right)\mu}}=\\
+ & =\frac{e^{\left(e^{\ln\left(1+\delta\right)}-1\right)\mu}}{e^{ln\left(1+\delta\right)\cdot\left(1+\delta\right)\mu}}=\frac{e^{\left(\left(1+\delta\right)-1\right)\mu}}{e^{ln\left(1+\delta\right)\cdot\left(1+\delta\right)\mu}}=\\
+ & =\frac{e^{\delta\mu}}{\left(1+\delta\right)^{\left(1+\delta\right)\mu}}=\\
+ & \left(\frac{e^{\delta}}{\left(1+\delta\right)^{\left(1+\delta\right)}}\right)^{\mu}
+\end{align*}
+\end{proof}
+\end{thm}
+
+
+\subsection{a brief encounter with martingales and the Azuma inequality}
+
+According to Nati this isn't the standard way martingales are defined
+but this is equivalent. 
+\begin{defn}[Martingale]
+ $\Omega$ is a probability space, $X:\Omega\to\R$ is a real R.V.
+$\pi_{0}=\Omega$, $\pi_{0}\prec\pi_{1}\prec\pi_{2}\prec\dots$ are
+partitions of $\Omega$. 
+
+Notice that partition $i$ is a refined partition of $i-1$. For example
+if $\pi_{1}$ splits $\Omega$ into two halves than $\pi_{2}$ splits
+these two halves in some manner. 
+\end{defn}
+
+Now having these partitions we define the following random variables.
+$X_{i}$ will be associated with partition $\pi_{i}$. $X_{0}\left(\omega\right)=\E X$.
+for each $X_{i}$ we define $X_{i}$ over the part of the partition
+that an atomic event emerged from. For example assume that $\pi_{1}$
+is a partition of $\Omega$ into three events: $A,B,C$ if $\omega\in A$
+then $X_{1}\left(\omega\right)=$ the expectation over event $A$
+only. (for $B$ or $C$ this applies the same but their own expectation).
+Now that we understand how these random variables are defined:
+\begin{thm}[Azuma's inequality]
+ Let $\Omega$ be a probability space, $X$ a real R.V on $\Omega$,
+$\pi_{0}\prec\pi_{1}\prec\pi_{2}\prec\dots$ a sequence of refining
+partitions and $X_{0}=\E X$, $X_{1},X_{2},\dots$ the corresponding
+R.Vs. If $\forall i$ $\left|X_{i}-X_{i+1}\right|\le d_{i}$ then
+$\p{\left|X_{0}-X_{n}\right|>\Delta}\le e^{-\frac{\Delta^{2}}{2\sum_{i=1}^{N}\left(d_{i}^{2}\right)}}$.
+(Where $d_{i}$ is defined by us)
+\end{thm}
+
+Some intuition: We can think of each partition a different level of
+a tree where the leaves are the atomic events. When we calculate $X_{i}$
+for level $i$ we look from which leaf came $\omega$ and to what
+node from level $i$ that leaf is a descendant. Then we look at the
+expectation over all the leaves of that node and that is the value
+of $X_{i}\left(\omega\right)$.
+
+
+\section{The central limit theorem}
+\begin{thm}[The central limit Theorem]
+ Let $X_{1},X_{2},\dots$ be i.i.d R.V with expectation $\mu$ and
+variance $\sigma^{2}$, then 
+\[
+\frac{\sum_{i=1}^{n}\left(x_{i}\right)-n\mu}{\sigma\sqrt{n}}\overset{d}{\to}\mathcal{N}\left(0,1\right)
+\]
+ That is $\forall a<b\in\R$ $\limn{\p{a<\frac{\sum_{i=1}^{n}\left(x_{i}\right)-n\mu}{\sigma\sqrt{n}}<b}}=\frac{1}{\sqrt{2\pi}}\int\limits _{a}^{b}e^{-\frac{x^{2}}{2}}dx$. 
+\end{thm}
+
+\begin{lyxgreyedout}
+First of all note that $\E{X_{i}}=\mu$ for any $i$ and $\var{X_{i}}=\sigma^{2}$.
+now when removing from each $X_{i}$ the value of the mean we get
+that each $X_{i}$ have a mean 0 and now we can look at it like random
+walk with $\sigma$ steps. so we will divide by $\sigma$and now we
+have steps of size around $1$. so we divide by $\sqrt{n}$ which
+is the expectation of random walk.%
+\end{lyxgreyedout}
+
+
+\part{Linear algebra}
+
+\subsection{recap}
+\begin{defn}
+A vector space over field $\mathbb{F}$ is a set $V$ with two operations:
+Vector addition and scalar multiplication.
+\end{defn}
+
+\begin{defn}
+$T:V\to W$ ($W,V$ are linear spaces) is a linear map ``if it respects''
+the space's linear structure. That is $T\left(u+v\right)=T\left(u\right)+t\left(v\right)$
+and $\forall\alpha$, $T\left(\alpha u\right)=\alpha T\left(u\right)$.
+\end{defn}
+
+\begin{defn}
+Let $V$ be a f.d (finite dimension) vector space $\Rightarrow$ there
+are $v_{1}\dots v_{d}\in V$ s.t. $\forall v\in V\exists\alpha_{1}\dots\alpha_{d}$
+s.t. $v=\sum\alpha_{i}v_{i}$. The smallest such $d$ is called $dim\left(V\right)$,
+and a set $v_{1}\dots v_{d}$ -- a basis.
+\end{defn}
+
+\begin{claim}
+Let us fix a basis. Then every $v\in V$ is uniquely determined by
+the scalars $\alpha_{1}\dots\alpha_{d}$ 
+\begin{align*}
+v & \leftrightarrow\left(\alpha_{1},\dots\alpha_{n}\right)\\
+v_{1} & \leftrightarrow\left(1,0,\dots0\right)
+\end{align*}
+\end{claim}
+
+\begin{claim}
+Every linear mapping $T:V\to W$ ($W$ has a standard basis) is represented
+by a matrix $A_{k\times d}$ ($dim\left(W\right)=k$.
+\end{claim}
+
+\[
+T\left(v\right)=T\left(\alpha_{1},\dots,\alpha_{n}\right)=A\alpha
+\]
+ %
+\begin{lyxgreyedout}
+what? $A\alpha$?
+
+What are infinite dim vector spaces? Consider the space of all continuous
+functions $\left[a,b\right]\to\R$.%
+\end{lyxgreyedout}
+
+\begin{defn}
+A vector $v$ is an \textbf{eigenvector} of linear map $T$ with \textbf{eigenvalue}
+$\lambda$ of $T$ if $T\left(v\right)=\lambda\cdot v$.
+\end{defn}
+
+
+\subsubsection{\textquotedblleft Rough statements\textquotedblright{} }
+\begin{itemize}
+\item Linear maps are comprised of rotations and stretching.
+\item ``Size of a vector'': The most important example: $L_{2}$ norm.
+The size of the vector $\left|\left|\left(x_{1},\dots x_{n}\right)\right|\right|_{2}=\sqrt{\sum x_{i}^{2}}$
+.
+\item Rotation: a linear map that preserves the $L_{2}$ norm, $\forall v,\left|\left|T\left(v\right)\right|\right|_{2}=\left|\left|v\right|\right|_{2}$.
+\item When do we say that $T$ stretches the vector $v$ by $\lambda$?
+$T\left(v\right)=\lambda v$. The more standard term is: $v$ is an
+eigenvector of $T$ with eigenvalue of $\lambda$.
+\end{itemize}
+Let's make things more concrete.
+
+\section{Metric spaces}
+\begin{defn}
+A metric space is a pair $\left(X,d\right)$ where $X$ is a set and
+$d$ is a distance function $d:X\times X\to\R$ such that:
+\begin{enumerate}
+\item $d\left(x,y\right)=d\left(y,x\right)$
+\item $\forall x,y\in X$ $d\left(x,y\right)\ge0$ and equality to zero
+iff $x=y$. 
+\item triangle inequality -- $\forall x,y,z\in X$ , $d\left(x,y\right)+d\left(y,z\right)\ge d\left(x,z\right)$
+\end{enumerate}
+\end{defn}
+
+
+\section{normed spaces}
+
+``From size to distance'' (in linear spaces) $\left|\left|u\right|\right|$
+``the size of the vector'' we can define as $d\left(u,v\right):=\left|\left|u-v\right|\right|$%
+\begin{lyxgreyedout}
+like in real numbers, the size is it's abs value, and the distance
+is the subtract of two numberss inside abs value%
+\end{lyxgreyedout}
+.
+\begin{defn}
+Let $V$ be a real linear space, $\left|\left|\cdot\right|\right|:V\to R$
+is a norm if for every $u,v\in V$ and $\alpha\in\R$ it has the following
+properties:
+\begin{enumerate}
+\item $\forall v\in V,\left|\left|v\right|\right|\ge0,\left|\left|v\right|\right|=0\iff v=0$
+\item $\forall\alpha\in\R,v\in V,$ $\left|\left|\alpha v\right|\right|=\left|\alpha\right|\cdot\left|\left|v\right|\right|$
+\item triangle inequality -- $\forall u,v\in V,\left|\left|u+v\right|\right|\le\left|\left|u\right|\right|+\left|\left|v\right|\right|$
+\end{enumerate}
+\end{defn}
+
+
+\subsection{Important examples of norms:}
+
+$L_{p}$ norms, where $1\le p\le\infty$ are defined as follows: $\left|\left|\left(x_{1},\dots,x_{n}\right)\right|\right|_{p}:=\left(\sum\left|x_{i}\right|^{p}\right)^{\frac{1}{p}}$
+
+The most important norms are for $p=1,2,\infty$
+\begin{enumerate}
+\item $\left|\left|\left(x_{1},\dots,x_{n}\right)\right|\right|_{\infty}:=\max\left\{ \left|x_{i}\right|\right\} $
+\item $\left|\left|\left(x_{1},\dots,x_{n}\right)\right|\right|_{1}:=\sum\left|x_{i}\right|$
+(Manhattan distance)
+\item $\left|\left|\left(x_{1},\dots,x_{n}\right)\right|\right|_{2}:=\left(\sum\left|x_{2}\right|^{2}\right)^{\frac{1}{2}}$
+\end{enumerate}
+The fact that $L_{p}$ is a norm is not trivial. (The triangle inequality
+requires proof)
+
+\subsection{Balls}
+
+Associated with every norm $\left|\left|\cdot\right|\right|$ is its
+\uline{unit ball} on a space $V$: $B_{\left|\left|\cdot\right|\right|}:=\left\{ x\in V:\left|\left|x\right|\right|\le1\right\} $.
+\begin{itemize}
+\item The unit ball of $L_{2}$ is a round ball. 
+\item The unit ball for $L_{\infty}$ is a cube: $\left|\left|\left(x_{1},\dots x_{n}\right)\right|\right|_{\infty}\le1\iff\forall i,-1\le x_{i}\le1$.
+\item The unit ball of $L_{1}$ in 3 dims is an octahedron ($\left|x\right|+\left|y\right|+\left|z\right|\le1$
+in $\R^{3}$ ).
+\end{itemize}
+
+\subsubsection{inequalities}
+
+how many vertices, edges and inequalities do we have?
+\begin{itemize}
+\item cube: 
+\begin{align*}
+-1 & \le x_{1}\le1\\
+-1 & \le x_{2}\le1\\
+ & \vdots\\
+-1 & \le x_{n}\le1
+\end{align*}
+ So we have $2^{n}$ vertices.
+\item Cross polytope: (the $L_{1}$): $\pm e_{1},\pm e_{2},\dots$ In $\R^{3}$:
+\begin{align*}
+x+y+z & \le1\\
+-x+y+z & \le1\\
+x-y+z & \le1\\
+ & \vdots
+\end{align*}
+ we have 8 inequalities in $\R^{3}$ and thus $8$ facets.
+\end{itemize}
+\begin{fact}
+$\forall$ norm $\left|\left|\cdot\right|\right|$, its unit ball
+$\ball{}$ is :
+\begin{enumerate}
+\item centrally symmetric. ($x\in B\Rightarrow-x\in B$ $\left|\left|-x\right|\right|=\left|-1\right|\cdot\left|\left|x\right|\right|\le1$
+)
+\item convex %
+\begin{lyxgreyedout}
+if $x_{1}$ and $x_{2}$ are in $B$ then the interval defined by
+$\left\{ \lambda x_{1}+\left(1-\lambda\right)x_{2}:\lambda\in\left[0,1\right]\right\} \subseteq B$.%
+\end{lyxgreyedout}
+\item full dimensional set in $\R^{n}$ %
+\begin{lyxgreyedout}
+That is if $x\in B$ then $-x\in B$.%
+\end{lyxgreyedout}
+\end{enumerate}
+\end{fact}
+
+\begin{prop}
+if $B\subseteq\R^{n}$ and $B$ has the properties: 
+\begin{enumerate}
+\item centrally symmetric. ($x\in B\Rightarrow-x\in B$ $\left|\left|-x\right|\right|=\left|-1\right|\cdot\left|\left|x\right|\right|\le1$
+)
+\item convex %
+\begin{lyxgreyedout}
+if $x_{1}$ and $x_{2}$ are in $B$ then the interval defined by
+$\left\{ \lambda x_{1}+\left(1-\lambda\right)x_{2}:\lambda\in\left[0,1\right]\right\} \subseteq B$.%
+\end{lyxgreyedout}
+\item full dimensional set in $\R^{n}$ %
+\begin{lyxgreyedout}
+That is if $x\in B$ then $-x\in B$.%
+\end{lyxgreyedout}
+{} 
+\end{enumerate}
+then $\exists\left|\left|\cdot\right|\right|$ s.t $B=B_{\left|\left|\cdot\right|\right|}$.
+
+\end{prop}
+
+\begin{defn}[isometry]
+ Let $\left(X,\left|\left|\cdot\right|\right|\right)$ be a normed
+space, a map $T:X\to X$ is an isometry if $\forall x\left|\left|Tx\right|\right|=\left|\left|x\right|\right|$
+.
+\end{defn}
+
+Another key property of $L_{2}$ is that this norm is derived from
+an \uline{inner product}. $\left\langle x,y\right\rangle =\sum x_{i}y_{i}$.
+and $\left|\left|x\right|\right|=$$\left\langle x,x\right\rangle ^{\frac{1}{2}}$.
+
+We associate with every $x\in\R^{n}$ the map $y\to\left\langle x,y\right\rangle $
+. the map: $\left\langle x,\cdot\right\rangle \left(y\right)$
+\begin{defn}[dual norm]
+ Let $\left|\left|\cdot\right|\right|$ be a norm on $\R^{n}$, it's
+dual norm is $\left|\left|x\right|\right|^{*}=\sup\limits _{y\in\R^{n}}\frac{\left|\left\langle x,y\right\rangle \right|}{\left|\left|y\right|\right|}=\sup\limits _{\left|\left|y\right|\right|=1}\left|\left\langle x,y\right\rangle \right|$%
+\begin{lyxgreyedout}
+We can write $\max$ instead of $\sup$%
+\end{lyxgreyedout}
+{} %
+\begin{lyxgreyedout}
+it's equal because $y\cdot\alpha$ in$\frac{\left|\left\langle x,\alpha y\right\rangle \right|}{\left|\left|\alpha y\right|\right|}=\frac{\left|\left\langle x,y\right\rangle \right|}{\left|\left|y\right|\right|}$
+so the expression doesn\'{t} change for any $\alpha$ so we can multiplie
+any $y$ by some number to get $\left|\left|y\right|\right|=1$ and
+the norm stays the same%
+\end{lyxgreyedout}
+.
+\end{defn}
+
+\begin{xca}
+What is the dual norm of $L_{\infty}$?
+\begin{sol}
+$x\in\R^{n}$ ,
+\[
+\left|\left|x\right|\right|_{\infty}^{*}=\max_{\left|\left|y\right|\right|_{\infty}=1}\left|\left\langle x,y\right\rangle \right|=\left|\left|x\right|\right|_{1}
+\]
+
+\begin{lyxgreyedout}
+to start it up lets use some real vector to get a hunch : $x=\left(7,-3,5,9\right)$
+so we want $y$ with these signs to the coordinates. $y=\left(+,-,+,+\right)$
+so the best $y$ is such that $\left|\left|y\right|\right|_{\infty}=1$
+is $y=\left(1,-1,1,1\right)$. %
+\begin{lyxgreyedout}
+$L_{1}$ and $L_{\infty}$ are the dual norms of each other.%
+\end{lyxgreyedout}
+\end{lyxgreyedout}
+
+\end{sol}
+
+\end{xca}
+
+\begin{example}
+What is the dual norm of $L_{2}$? $x\in\R^{n}$. what is $\left|\left|x\right|\right|_{2}^{*}$?
+\[
+\left|\left|x\right|\right|_{2}^{*}=\max_{\left|\left|y\right|\right|_{2}=1}\left|\left\langle x,y\right\rangle \right|
+\]
+ By Cauchy Schwartz the best choice is $y=\frac{x}{\left|\left|x\right|\right|_{2}}$
+\begin{lyxgreyedout}
+$\left\langle x,y\right\rangle =\left|\left|x\right|\right|\cdot\left|\left|y\right|\right|\cdot cos\left(\alpha\right)$
+where $\alpha$ is the angle between the two, thus we want $\cos\alpha=1$
+when $x=y$ else this is smaller then it.%
+\end{lyxgreyedout}
+\[
+\left|\left|x\right|\right|_{2}^{*}=\max_{\left|\left|y\right|\right|_{2}=1}\left|\left\langle x,y\right\rangle \right|=\left\langle x,\frac{x}{\left|\left|x\right|\right|_{2}}\right\rangle =\frac{\left(\left|\left|x\right|\right|_{2}\right)^{2}}{\left|\left|x\right|\right|_{2}}=\left|\left|x\right|\right|_{2}
+\]
+\end{example}
+
+\begin{claim}
+If $1\le p,q\le\infty$, $\frac{1}{q}+\frac{1}{p}=1\Rightarrow\left|\left|x\right|\right|_{p}^{*}=\left|\left|x\right|\right|_{q}$.
+\end{claim}
+
+\begin{lyxgreyedout}
+Find $x$ such that $Ax\thickapprox b$. no such $x$ (too many constraints)
+Find $x$ such that $\left|\left|Ax-b\right|\right|$ is minimized%
+\end{lyxgreyedout}
+
+\begin{lyxgreyedout}
+
+\subsection{some reminders from previous class(?)}
+
+Norm on real vector space $V$ is a map $\left|\left|\cdot\right|\right|:V\to\R$
+if
+\begin{enumerate}
+\item $\forall x\in V$ $\left|\left|x\right|\right|\ge0$ and there\textquoteright s
+equality if and only if $x=0$
+\item Linearity: $\forall v\in V$$\lambda\in\R,\left|\left|\lambda v\right|\right|=\left|\lambda\right|\cdot\left|\left|v\right|\right|$
+\item triangle inequality: $\left|\left|x+y\right|\right|\le\left|\left|x\right|\right|+\left|\left|y\right|\right|$
+\end{enumerate}
+%
+
+\subsubsection{The geometric perspective:}
+
+corresponding to $\left|\left|\cdot\right|\right|$ is it's unit ball
+$B_{\left|\left|\cdot\right|\right|}=\left\{ x\in V|\left|\left|x\right|\right|\le1\right\} $
+\begin{fact}
+B is
+\begin{enumerate}
+\item convex %
+\begin{lyxgreyedout}
+(coming from traingle inequallity in norms)%
+\end{lyxgreyedout}
+\item centrally symmetric
+\item full dimensional subset of $V$. Means ``it contains a Euclidean''
+\begin{lyxgreyedout}
+any vector who is not zero has positive norm%
+\end{lyxgreyedout}
+\end{enumerate}
+\end{fact}
+
+on the other hand: every set $B\subseteq V$ with propeties $\left(1\right),\left(2\right),\left(3\right)$
+is the unit ball of some norm.
+\begin{example}
+Very important examples for norms are: $l_{p}$%
+\begin{lyxgreyedout}
+\"{s}mall $l_{p}$ is when we work with vectors (for sequnce spaces)
+and $L_{p}$ is for function spaces%
+\end{lyxgreyedout}
+{} norm on $\R^{n}$ $\left|\left|x\right|\right|_{p}:=\left(\sum\left|x_{i}\right|^{p}\right)^{\frac{1}{p}}$
+in perticular $p=1,2,3,\dots\infty$
+\end{example}
+
+\end{lyxgreyedout}
+
+\begin{claim}
+For $\infty\ge p\ge1$, $l_{p}$ is a norm.
+
+We prove only the triangle inequality because the other values are
+obvious. We need to show: $x,y\in\R^{n}$ $\left|\left|x+y\right|\right|_{p}\le\left|\left|x\right|\right|_{p}+\left|\left|y\right|\right|_{p}$.
+We start with Young's inequality
+\begin{prop}
+Let $p,q>0,\frac{1}{p}+\frac{1}{q}=1$ , $a,b>0$ then $a\cdot b\le\frac{1}{p}a^{p}+\frac{1}{q}b^{q}$.
+\begin{proof}
+recall that ``$log$'' is a concave function. %
+\begin{lyxgreyedout}
+take any two points $x,y$ on the curve of the function, they are
+below the curve of the log ($\forall x,y$ $1\ge\lambda\ge0$, $\lambda\log\left(x\right)+\left(1-\lambda\right)\log y\le\log\left(\lambda x+\left(1-\lambda\right)y\right)$)%
+\end{lyxgreyedout}
+{} then 
+\begin{align*}
+\log ab & =\log\left(a\right)+\log b=\frac{1}{p}\cdot p\log\left(a\right)+\frac{1}{q}\cdot q\log b\\
+ & =\frac{1}{p}\log\left(a^{p}\right)+\frac{1}{q}\log\left(b^{q}\right)\le\text{\ensuremath{\log\left(\frac{1}{p}a^{p}+\frac{1}{q}b^{q}\right)}}
+\end{align*}
+\end{proof}
+\begin{prop}[Holder's inequality]
+$\forall x,y\in\R^{n}$ $\left|\left\langle x,y\right\rangle \right|\le\left|\left|x\right|\right|_{p}\left|\left|y\right|\right|_{q}$
+if $\frac{1}{p}+\frac{1}{q}=1$ $p,q>0$.
+\begin{proof}
+WLOG (without loss of generality) $x,y\ge0$. $\sum x_{j}y_{j}\overset{?}{\le}\left(\sum\left|x_{i}\right|^{p}\right)^{\frac{1}{p}}\cdot\left(\sum\left|x_{i}\right|^{q}\right)^{\frac{1}{q}}$.
+\begin{align*}
+\frac{\left\langle x,y\right\rangle }{\left|\left|x\right|\right|_{p}\left|\left|y\right|\right|_{q}} & =\sum\limits _{j}\frac{x_{j}}{\left|\left|x\right|\right|_{p}}\frac{y_{j}}{\left|\left|x\right|\right|_{q}}\le\sum\left[\frac{1}{p}\left(\frac{x_{j}}{\left|\left|x\right|\right|_{p}}\right)^{p}+\frac{1}{q}\left(\frac{y_{j}}{\left|\left|y\right|\right|_{y}}\right)^{q}\right]=\\
+ & =\frac{1}{p}\frac{\sum x_{j}^{p}}{\left|\left|x\right|\right|_{p}^{p}}+\frac{1}{q}\frac{\sum y_{j}^{q}}{\left|\left|y\right|\right|_{q}^{q}}=\frac{1}{p}+\frac{1}{q}=1
+\end{align*}
+ we can multiply the denominator and get what we wanted.
+\end{proof}
+\end{prop}
+
+\end{prop}
+
+\begin{proof}
+What we want to show $\forall x,y\in\R^{n}$ $\left(\sum\left|x_{j}+y_{j}\right|^{p}\right)^{\frac{1}{p}}\le\left(\sum\left|x_{j}\right|^{p}\right)^{\frac{1}{p}}+\left(\sum\left|y_{j}\right|^{p}\right)^{\frac{1}{p}}$.
+$l_{p}$ is a norm: again WLOG $x,y\ge0$ then 
+\begin{align*}
+\left|\left|x+y\right|\right|_{p}^{p} & =\sum_{j}\left(x_{j}+y_{j}\right)^{p}=\sum\left(x_{j}+y_{j}\right)\left(x_{j}+y_{j}\right)^{p-1}=\\
+ & =\sum x_{j}\left(x_{j}+y_{j}\right)^{p-1}+y_{j}\left(x_{j}+y_{j}\right)^{p-1}=\\
+ & =\left[\sum x_{j}\underbrace{\left(x_{j}+y_{j}\right)^{p-1}}_{v_{j}}\right]+\left[\sum y_{j}\underbrace{\left(x_{j}+y_{j}\right)^{p-1}}_{vj}\right]
+\end{align*}
+ (we will talk about $v_{j}$ in a moment) so %
+\begin{lyxgreyedout}
+we use holder inequallity with $\left|\left\langle u,v\right\rangle \right|\le\left|\left|u\right|\right|_{p}\left|\left|v\right|\right|_{q}$%
+\end{lyxgreyedout}
+{} with holders: 
+\begin{align*}
+ & \le\left|\left|x\right|\right|_{p}\left|\left|x+y\right|\right|_{p}^{p-1}+\left|\left|y\right|\right|_{p}\cdot\left|\left|x+y\right|\right|_{p}^{p-1}=\\
+ & \left|\left|x+y\right|\right|_{p}^{p-1}\left(\left|\left|x\right|\right|_{p}+\left|\left|y\right|\right|_{p}\right)
+\end{align*}
+divide by $\left|\left|x+y\right|\right|_{p}^{p-1}$ and we get what
+we wanted.\\
+Lets get back to the missing part: If $v_{j}=\left(x_{j}+y_{j}\right)^{p-1}\Rightarrow\left|\left|v\right|\right|_{q}=\left|\left|x+y\right|\right|_{p}^{p-1}$
+explanation: $\frac{1}{q}+\frac{1}{p}=1\iff q=\frac{p}{p-1}$ 
+\begin{align*}
+\left|\left|v\right|\right|_{q} & =\left(\sum v_{j}^{q}\right)^{\frac{1}{q}}=\left(\sum\left(x_{j}+y_{j}\right)^{q\left(p-1\right)}\right)^{\frac{1}{q}}=\left(\sum\left(x_{j}+y_{j}\right)^{p}\right)^{\frac{1}{q}}=\\
+ & =\left(\sum\left(x_{j}+y_{j}\right)^{p}\right)^{\frac{p-1}{p}}=\left(\left(\sum\left(x_{j}+y_{j}\right)^{p}\right)^{\frac{1}{p}}\right)^{p-1}=\left|\left|x+y\right|\right|_{p}^{p-1}
+\end{align*}
+ Now using this $v_{j}$ we can simply use holder's inequality to
+get $\le\left|\left|x\right|\right|_{p}\left|\left|x+y\right|\right|_{p}^{p-1}+\left|\left|y\right|\right|_{p}\cdot\left|\left|x+y\right|\right|_{p}^{p-1}=$
+and finish our proof.
+\end{proof}
+\end{claim}
+
+\begin{defn}[operator norm]
+ $\left(U,\left|\left|\cdot\right|\right|_{U}\right)\overset{\psi}{\to}\left(V,\left|\left|\cdot\right|\right|_{v}\right)$
+. 
+\[
+\left|\left|\psi\right|\right|:=\sup_{u\in U}\frac{\left|\left|\psi u\right|\right|_{V}}{\left|\left|u\right|\right|_{U}}
+\]
+ If $\psi$ is linear then 
+\[
+\left|\left|\psi\right|\right|:=\sup_{u\in U}\frac{\left|\left|\psi u\right|\right|_{V}}{\left|\left|u\right|\right|_{U}}=\sup_{\begin{array}{c}
+u\in U\\
+\left|\left|u\right|\right|_{U}=1
+\end{array}}\left|\left|\psi u\right|\right|_{V}
+\]
+ 
+\end{defn}
+
+an important special case: $V=\R,\left|\left|\cdot\right|\right|_{V}=\left|\cdot\right|$.
+to every $x\in\R^{n}$ corresponds a linear map $\R^{n}\to\R,y\in\R^{n}\to\left\langle x,y\right\rangle $,
+``We think of x as a linear functional''. So the norm of the operator
+$\left\langle x,\cdot\right\rangle $: $\left|\left|x\right|\right|^{*}:=\max\limits _{\left|\left|y\right|\right|=1}\left|\left\langle x,y\right\rangle \right|$.%
+\begin{lyxgreyedout}
+Therefore if $\left|\left|\cdot\right|\right|$ is a norm on $\R^{n}$
+this induces a new norm called the dual of $\left|\left|\cdot\right|\right|$
+denoted $\left|\left|x\right|\right|^{*}:=\max\limits _{\left|\left|y\right|\right|=1}\left|\left\langle x,y\right\rangle \right|$.%
+\end{lyxgreyedout}
+\begin{lyxgreyedout}
+to understand the notations: $\left|\left|x\right|\right|^{*}:\left|\left|\left\langle x,\cdot\right\rangle \right|\right|\max\limits _{\left|\left|y\right|\right|=1}\left|\left\langle x,y\right\rangle \right|$%
+\end{lyxgreyedout}
+{} 
+\begin{defn}
+The unit ball $B^{*}$ of the dual norm is called the polar body of
+$B$ and is defined as follows:
+
+\[
+B^{*}=\left\{ y\in\R^{n}|\forall x\in B\left\langle x,y\right\rangle \le1\right\} 
+\]
+\end{defn}
+
+\begin{example}
+Question: Let $B$ be the unit ball of some norm $\left|\left|\cdot\right|\right|$.
+What can we say about the unit ball of the dual norm?
+\begin{itemize}
+\item $l_{\infty}$ Ball is $\left[-1,1\right]^{n}$ $2^{n}$ vertices $2n$
+facets.
+\item $l_{1}$ Ball is the cross polytope $\sum\left|x_{i}\right|\le1$.
+Has $2n$ vertices (the standard basis $\pm e_{i}$), and $2^{n}$
+facets $\epsilon\in\left\{ -1,1\right\} ^{n}$ $\sum\epsilon_{i}\cdot x_{i}\le1$.
+\end{itemize}
+What is the polar $B^{*}$ of the unit cube $B=\left[-1,1\right]^{n}$?
+\[
+B^{*}=\left\{ y\in\R^{n}|\begin{array}{c}
+-1\le x_{1}\le1,-1\le x_{2}\le1\dots\\
+\sum x_{i}y_{i}\le1
+\end{array}\right\} 
+\]
+ So given $y$ the ``most difficult'' $x$ to satisfy %
+\begin{lyxgreyedout}
+$x$ that maximizes this expression%
+\end{lyxgreyedout}
+. $x_{i}=\text{sign}\left(y_{i}\right)$ in which case $\sum x_{i}y_{i}=\sum\left|y_{i}\right|$.
+\end{example}
+
+
+\section{\textquotedblleft What do linear maps do\textquotedblright ?}
+
+$A$ is a matrix
+
+\subsection{Stretch}
+
+If $Av=\lambda v$ holds we say that $v$ is an eigenvector of $A$
+with eigenvalue $\lambda$. \\
+$\left(A-\lambda I\right)v=0$ i.e. $v$ is in the kernel of $\left(A-\lambda I\right)$.
+In particular $\left(A-\lambda I\right)$ is \textbf{singular}, hence
+$\det\left(A-\lambda I\right)=0$, and because $\det\left(A-\lambda I\right)$
+is polynomial in $\lambda$. ``The characteristic polynomial $p_{A}$
+of $A$'' $\Rightarrow$ Every eigenvalue is a root of $p_{A}$.
+\begin{prop}
+If A is a real $n\times n$ matrix and if $u_{1}\dots u_{n}$ are
+eigenvectors with \uline{distinct} eigenvalues then $u_{1}\dots u_{n}$
+are linearly independent.
+
+\begin{lyxgreyedout}
+This is useful in case $u_{i}$ forms a basis. $x=\sum\alpha_{i}u_{i}$
+then $Ax=\sum\alpha_{i}\lambda_{i}u_{i}$ then we are in a good situation.
+``We have good understanding of the linear operator''%
+\end{lyxgreyedout}
+\begin{proof}
+Assume to the contrary that they are linearly dependent and let $k$
+be the smallest size of a linearly dependent subset. 
+\[
+\sum\limits _{i=1}^{k}b_{i}u_{i}=0\Rightarrow A\left(\sum_{i=1}^{k}b_{i}u_{i}\right)=\left(\sum_{i=1}^{k}b_{i}\lambda_{i}u_{i}\right)=0
+\]
+furthermore we know that $\sum_{i=1}^{k}\left(b_{i}u_{i}\right)=0$
+(from our assumption) so
+\[
+0=\sum_{i=1}^{k}\left(b_{i}u_{i}\right)=\lambda_{k}\sum_{i=1}^{k}\left(b_{i}u_{i}\right)=\sum_{i=1}^{k}\left(b_{i}\lambda_{k}u_{i}\right)
+\]
+ Let us subtract the first from the second:
+\begin{align*}
+0 & =\sum_{i=1}^{k}b_{i}\left(\lambda_{i}-\lambda_{k}\right)u_{i}=\\
+ & =b_{1}\left(\lambda_{1}-\lambda_{k}\right)u_{1}+\dots+b_{k-1}\left(\lambda_{k-1}-\lambda_{k}\right)u_{k-1}+b_{k}\left(\lambda_{k}-\lambda_{k}\right)u_{k}=\\
+ & =b_{1}\left(\lambda_{1}-\lambda_{k}\right)u_{1}+\dots+b_{k-1}\left(\lambda_{k-1}-\lambda_{k}\right)u_{k-1}+0=\\
+ & =\sum_{i=1}^{k-1}b_{i}\left(\lambda_{i}-\lambda_{k}\right)u_{i}
+\end{align*}
+ We found a shorter non trivial linear dependency, which is a contradiction. 
+\end{proof}
+How should we deal with general linear transformation? we should find
+eigenvectors and if they are a basis we can use it to understand the
+matrix. but what do we do when this isn't the case? What can go wrong? 
+\end{prop}
+
+\begin{example}
+example of a matrix where the eigenvectors do not form a basis:
+\end{example}
+
+\[
+A=\left(\begin{array}{cccc}
+0 & 1 & \dots & 0\\
+0 & \ddots & \ddots & \vdots\\
+\vdots & \ddots & \ddots & 1\\
+0 & \dots & 0 & 0
+\end{array}\right)
+\]
+ 
+\[
+\det\left(\lambda I-A\right)=\left|\begin{array}{cccc}
+\lambda & -1 & \dots & 0\\
+0 & \ddots & \ddots & \vdots\\
+\vdots & \ddots & \ddots & -1\\
+0 & \dots & 0 & \lambda
+\end{array}\right|=\lambda^{n}=0
+\]
+$\lambda=0$ is the only eigenvalue.
+\[
+A\left(\begin{array}{c}
+x_{1}\\
+\vdots\\
+x_{n-1}\\
+x_{n}
+\end{array}\right)=\left(\begin{array}{c}
+x_{2}\\
+\vdots\\
+x_{n}\\
+0
+\end{array}\right)=0\cdot x
+\]
+ $x_{2}=x_{3}=\dots=x_{n}=0$ the set of eigenvectors corresponding
+to $\lambda=0$ is $\left\langle e_{1}\right\rangle $. $A^{n}=0$
+(When we reapply $A$ it maps to zero after enough times) How to deal
+with it, at least in practical situations?
+\begin{defn}
+Say that a matrix $B$ $n\times n$ is ``problem free'' if it has
+distinct eigenvalues.
+\end{defn}
+
+\begin{fact}
+``Most'' matrices are problem free. %
+\begin{lyxgreyedout}
+thats why we don\'{t} need to deal with the ones that don't%
+\end{lyxgreyedout}
+\end{fact}
+
+
+\subsection{Rotations}
+
+Linear maps which are isometries. It suffices that $l_{2}$ norms
+are preserved $\left|\left|x-y\right|\right|_{2}^{2}=\left|\left|x\right|\right|_{2}^{2}+\left|\left|y\right|\right|_{2}^{2}-2\left\langle x,y\right\rangle $
+\begin{lyxgreyedout}
+the only norm for which such things exist is $l_{2}$.%
+\end{lyxgreyedout}
+
+\begin{defn}
+A real matrix $A$ is called orthogonal if $A^{T}A=I$.
+
+\begin{lyxgreyedout}
+(This means that they are inverses too)%
+\end{lyxgreyedout}
+
+\end{defn}
+
+\begin{defn}
+A complex matrix $U$ is called unitary if $UU^{*}=I$ %
+\begin{lyxgreyedout}
+where $U^{*}=\overline{U^{T}}$?%
+\end{lyxgreyedout}
+\end{defn}
+
+\begin{claim}
+$\left\langle x,Ay\right\rangle =\left\langle A^{T}x,y\right\rangle $
+\begin{proof}
+in general $\left\langle u,v\right\rangle =\sum u_{i}v_{i}$, so
+\begin{align*}
+\left\langle x,Ay\right\rangle  & =\sum x_{i}\left(Ay\right)_{i}=\sum_{i}x_{i}\sum_{j}a_{ij}y_{j}=\sum_{i,j}a_{ij}x_{i}y_{j}=\\
+\end{align*}
+ The $a_{ij}$ of $A^{T}$.
+\[
+=\sum_{i,j}a_{ji}^{T}x_{i}y_{j}=\sum_{j}y_{j}\sum_{i}a_{ji}^{T}x_{i}=\left\langle A^{T}x,y\right\rangle 
+\]
+\begin{lyxgreyedout}
+$a_{ji}^{T}$ is like take the original matrix\c{ }transpose it and
+then look at $a_{ji}$%
+\end{lyxgreyedout}
+\end{proof}
+\end{claim}
+
+\begin{thm}
+The linear map $\R^{n}\to\R^{n}$ corresponding to a matrix $A$ is
+an isometry if and only if $A$ is orthogonal.
+\begin{proof}
+Suppose that $A$ is orthogonal. We want to show that $\forall x$
+$\left|\left|Ax\right|\right|_{2}=\left|\left|x\right|\right|_{2}$.
+need to show :
+\[
+\left\langle Ax,Ax\right\rangle \overset{?}{=}\left\langle x,x\right\rangle 
+\]
+we know that $\left\langle Ax,By\right\rangle =\left\langle B^{\top}Ax,y\right\rangle $
+so
+
+\[
+\left\langle Ax,Ax\right\rangle =\left\langle A^{\top}Ax,x\right\rangle =\left\langle Ix,x\right\rangle =\left\langle x,x\right\rangle 
+\]
+ as wanted.
+\end{proof}
+\end{thm}
+
+\begin{claim}
+An orthogonal matrix $A$ is one that satisfies $AA^{T}=I$($\iff A^{T}A=I$)
+\begin{proof}
+the proof is for $AA^{T}=I\iff A^{T}A=I$: $A$ has a right inverse,
+(namely $A^{T}$) $\Rightarrow$ it has a left inverse, say $B$ $BA=I$
+\[
+A^{T}=IA^{T}=BAA^{T}=BI=B
+\]
+ and we have what we wanted.
+\end{proof}
+\end{claim}
+
+.What does $\left(HH^{T}\right)_{i,j}$ equals to? $\left(HH^{T}\right)_{i,j}=$
+the inner product of the $i$th row of $H$ and it's $j$th row. $H^{T}H=$
+the inner product of the $i$th column of $H$ and the $j$th column.
+\begin{prop}
+A real square matrix $A$ is orthogonal iff $x\to Ax$ is an isometry,
+i.e. $\forall x\left|\left|Ax\right|\right|_{2}=\left|\left|x\right|\right|$.
+\begin{proof}
+If $A$ is orthogonal: $\left|\left|Ax\right|\right|^{2}=\left\langle Ax,Ax\right\rangle =\left\langle A^{T}Ax,x\right\rangle =\left|\left|x\right|\right|^{2}$.
+The other side ($A$ is an isometry)
+\[
+\left|\left|x+y\right|\right|^{2}=\left|\left|x\right|\right|^{2}+\left|\left|y\right|\right|^{2}+2\left\langle x,y\right\rangle 
+\]
+ we also know that $\left|\left|x+y\right|\right|^{2}=\left|\left|A\left(x+y\right)\right|\right|^{2}=\left|\left|Ax+Ay\right|\right|^{2}=\left|\left|Ax\right|\right|^{2}+\left|\left|Ay\right|\right|^{2}+2\left\langle Ax,Ay\right\rangle $
+we know that $\left|\left|Ax\right|\right|^{2}=\left|\left|x\right|\right|^{2},\left|\left|Ay\right|\right|^{2}=\left|\left|y\right|\right|^{2}$.
+So 
+\begin{align*}
+\left|\left|Ax\right|\right|^{2}+\left|\left|Ay\right|\right|^{2}+2\left\langle Ax,Ay\right\rangle  & =\left|\left|x+y\right|\right|^{2}=\left|\left|x\right|\right|^{2}+\left|\left|y\right|\right|^{2}+2\left\langle x,y\right\rangle \\
+2\left\langle Ax,Ay\right\rangle  & =2\left\langle x,y\right\rangle \\
+\left\langle Ax,Ay\right\rangle  & =\left\langle x,y\right\rangle 
+\end{align*}
+\end{proof}
+We saw: if $A$ is an isometry $\forall x,y$. $\left\langle Ax,Ay\right\rangle =\left\langle x,y\right\rangle $
+\[
+\left\langle A^{T}Ax,y\right\rangle =\left\langle x,y\right\rangle 
+\]
+$fix$ x $\forall y$ $\left\langle A^{T}Ax-x,y\right\rangle =0\Rightarrow$$A^{T}A=I$.%
+\begin{lyxgreyedout}
+because for all $y$ it happens that $A^{T}Ax=x$ which is $\left\langle A^{T}Ax-x,y\right\rangle =\left\langle x-x,y\right\rangle =0$
+this wasn\'{t} the case if $A^{T}Ax\ne x$.%
+\end{lyxgreyedout}
+
+\end{prop}
+
+
+\section{Singular value decomposition}
+
+\begin{lyxgreyedout}
+spectral: overall name that speaks on eigenvalues and eigenvectors%
+\end{lyxgreyedout}
+
+\begin{thm}[The spectral theorem for real symmetric matrices]
+ Every real symmetry matrix $A$ can be expressed as: $A=UDU^{T}$
+where $U$ is orthogonal, $D$ is diagonal on $D's$ diagonal are
+the eigenvalues of $A$. (Without proof) %
+\begin{lyxgreyedout}
+Note that $U^{T}AU=D$%
+\end{lyxgreyedout}
+\end{thm}
+
+let us remember again the operator norm:
+\begin{defn}
+\begin{lyxgreyedout}
+Again (note that you defined it back there\.{)}%
+\end{lyxgreyedout}
+{} Let there be a real matrix $A$ (not necessarily square), it's operator
+norm is $\left|\left|A\right|\right|_{op}=\max\limits _{x}\frac{\left|\left|Ax\right|\right|}{\norm x}=\max\limits _{\left|\left|x\right|\right|=1}\left|\left|Ax\right|\right|$.
+\end{defn}
+
+\begin{thm}[SVD -- Singular Value Decomposition]
+ Every real matrix $A_{m\times n}$ can be expressed as 
+\[
+A_{m\times n}=U_{m\times m}D_{m\times n}V_{n\times n}^{T}
+\]
+ where $U$ and $V$ are orthogonal, and $D$ is ``diagonal''. 
+\[
+D=\left(\begin{matrix}\sigma_{1} & \dots & 0 & 0\\
+0 & \sigma_{2} & \dots & 0\\
+\vdots &  & \ddots & \vdots\\
+0 & \dots &  & \sigma_{n}\\
+0 & 0 & \dots & 0\\
+\vdots &  &  & \vdots\\
+0 & 0 & \dots & 0
+\end{matrix}\right),m\ge n
+\]
+where $\sigma_{1}\ge\sigma_{2}\ge\dots\ge0$ $'A'$s singular values.
+\end{thm}
+
+Note that for $n\ge m$ $D=\left(\begin{matrix}\sigma_{1} & \dots & 0 & 0 & 0 & \dots & 0\\
+0 & \sigma_{2} & \dots & 0 & 0 &  & 0\\
+\vdots &  & \ddots & \vdots & 0 &  & 0\\
+0 & \dots &  & \sigma_{n} & 0 & \dots & 0
+\end{matrix}\right),m\ge n$
+
+\begin{proof}
+The proof is by induction on $m+n$. %
+\begin{lyxgreyedout}
+Base: $m=n=1$ thus $A$ is a $1\times1$ matrix. so let us use 
+\[
+I_{1}AI_{1}
+\]
+ $A$ is diagonal and it's eigenvalue is it's own value. Step%
+\end{lyxgreyedout}
+\begin{lyxgreyedout}
+We use induction on $m+n$. Main idea: We want $U^{T}AV=D$, we will
+do it in stages, not all at once. First stage : We seek orthogonal
+matrices $U_{1},V_{1}$ such that 
+\[
+U_{1}^{T}AV_{1}=\left(\begin{array}{c|ccc}
+\text{real number} & 0 & \dots & 0\\
+\hline 0\\
+\vdots &  & B\\
+0
+\end{array}\right)
+\]
+We want to apply induction to repeat this process and then the process
+should do it for us.. We take the decomposition of the orthogonal
+to those that take the key roles of $SVD$ in $B$. and by induction
+we are done. $\tilde{U}B\tilde{V}^{T}=\tilde{D}$. so we take 
+\[
+\left(\begin{array}{c|ccc}
+1 & 0 & \dots & 0\\
+\hline 0\\
+\vdots &  & \tilde{U}\\
+0
+\end{array}\right)
+\]
+ to get the wanted $U_{2}$ and $V_{2}$.%
+\end{lyxgreyedout}
+
+We will find $U_{1},V_{1}$ orthogonal s.t. 
+\[
+U_{1}^{T}AV_{1}=\left(\begin{array}{c|ccc}
+\left|\left|A\right|\right|_{op} & 0 & \dots & 0\\
+\hline 0\\
+\vdots &  & B\\
+0
+\end{array}\right)
+\]
+First lets figure out where $\left|\left|A\right|\right|_{op}$ comes
+from. $\exists v_{1},u_{1}$ , $\left|\left|v_{1}\right|\right|=\left|\left|u_{1}\right|\right|=1$
+s.t. $Av_{1}=\underbrace{\left|\left|A\right|\right|_{op}}_{\sigma_{1}}u_{1}$
+(From the definition of the operator norm%
+\begin{lyxgreyedout}
+Actually Nati didn'\'{t} show this, 
+\[
+u_{1}=\frac{Ax}{\left|\left|Ax\right|\right|},v_{1}=x
+\]
+ and $x$ is the vector that gains $\left|\left|A\right|\right|_{op}$
+so $\left|\left|v_{1}\right|\right|=1\iff v=\frac{x}{\left|\left|x\right|\right|}$
+and we get $u_{1},v_{1}$ as wanted.%
+\end{lyxgreyedout}
+). $V_{1}=\left(v_{1}|V_{2}\right)$ (we extend $v_{1}$ into an orthogonal
+matrix)%
+\begin{lyxgreyedout}
+(meaning that $\left(v_{1}|V_{2}\right)$ is an orthogonal matrix
+where it's first row is $v_{1}$)%
+\end{lyxgreyedout}
+{} and $U_{1}=\left(u_{1}|U_{2}\right)$. So 
+\begin{align*}
+U_{1}^{T}AV_{1} & =\left(\begin{array}{c}
+u_{1}^{T}\\
+\hline U_{2}^{T}
+\end{array}\right)A\left(\begin{array}{c|c}
+v_{1} & V_{2}\end{array}\right)=\\
+ & =\left(\begin{array}{c}
+u_{1}^{T}\\
+\hline U_{2}^{T}
+\end{array}\right)\left(A\begin{array}{c|c}
+v_{1} & AV_{2}\end{array}\right)=\\
+ & =\left(\begin{array}{c|c}
+u_{1}^{T}Av_{1} & u_{1}^{T}AV_{2}\\
+\hline U_{2}^{T}Av_{1} & U_{2}^{T}AV_{2}
+\end{array}\right)
+\end{align*}
+ so $u_{1}^{T}Av_{1}=\left|\left|A\right|\right|_{op}$, $U_{2}^{T}Av_{1}=0$
+because $U_{2}^{T}\cdot\left(\left|\left|A\right|\right|_{op}u_{1}\right)=0$
+because $U_{2}$ is orthogonal %
+\begin{lyxgreyedout}
+$u_{1}$ is some basis vector from the orthogonal matrix which means
+that $\left\langle u_{1},u_{i}\right\rangle =0$%
+\end{lyxgreyedout}
+. Currently: we found orthogonal matrices $U_{1},V_{1}$ s.t 
+\[
+U_{1}^{T}AV=\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & w_{1}\\
+\hline  & 0 & \\
+ & \vdots &  & B\\
+ & 0 & 
+\end{array}\right)
+\]
+ and we want to show that $w_{1}=0$. The plan: Show that if $w_{1}\ne0$
+then we can find a vector that $A$ extends by a vector $>\sigma_{1}$
+\begin{lyxgreyedout}
+(in contradiction)%
+\end{lyxgreyedout}
+. Observe that if a matrix is multiplied by an orthogonal matrix either
+from left or from the right, the operator norm does not change.
+\[
+\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & w_{1}\\
+\hline  & 0 & \\
+ & \vdots &  & B\\
+ & 0 & 
+\end{array}\right)\cdot\left(\begin{array}{c}
+\sigma_{1}\\
+\hline \\
+w_{1}^{^{T}}\\
+\\
+\end{array}\right)=\left(\begin{array}{c}
+\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}\\
+\\
+\vdots\\
+\\
+\end{array}\right)
+\]
+ This extends by a factor $\ge\sqrt{\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}}\ge\sigma_{1}$.
+What we conclude from that: 
+\[
+\sigma_{1}=\left|\left|A\right|\right|_{op}=\left|\left|U_{1}^{T}AV_{1}\right|\right|_{op}\ge\frac{\left|\left|\left(\begin{array}{c}
+\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}\\
+\\
+\vdots\\
+\\
+\end{array}\right)\right|\right|}{\sqrt{\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}}}\ge\sqrt{\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}}\underbrace{>}_{\text{*}}\sigma_{1}
+\]
+\end{proof}
+\begin{itemize}
+\item From the assumption that $w_{1}\ne0$ so we got a contradiction.
+\end{itemize}
+Hence $w_{1}=0$ and we got what we wanted. now we can apply this
+idea using induction. Finishing by induction: We found $U_{1},V_{1}$
+orthogonal s.t 
+\[
+U_{1}^{T}AV_{1}=\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & B\\
+ & 0 & 
+\end{array}\right)
+\]
+ and $B=\tilde{U}\tilde{D}\tilde{V}^{T}$. So 
+\begin{align*}
+A & =U_{1}\left(\begin{array}{ccc|ccc}
+ & 1 &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & \tilde{U}\\
+ & 0 & 
+\end{array}\right)\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & \tilde{D}\\
+ & 0 & 
+\end{array}\right)\left(\begin{array}{ccc|ccc}
+ & 1 &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & \tilde{V}\\
+ & 0 & 
+\end{array}\right)V_{1}^{T}\\
+U_{1}^{T}AV & =\left(\begin{array}{ccc|ccc}
+ & 1 &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & \tilde{U}\\
+ & 0 & 
+\end{array}\right)\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & \tilde{D}\\
+ & 0 & 
+\end{array}\right)\left(\begin{array}{ccc|ccc}
+ & 1 &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & \tilde{V}\\
+ & 0 & 
+\end{array}\right)
+\end{align*}
+\begin{lyxgreyedout}
+That we get in this process 
+\[
+\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & w_{1}\\
+\hline  & 0 & \\
+ & \vdots &  & B\\
+ & 0 & 
+\end{array}\right)\to\left(\begin{array}{ccc|c|cc}
+ & \sigma_{1} &  & w_{1}\\
+\hline  & 0 &  & \sigma_{2}\\
+\hline  & \vdots &  &  & C\\
+ & 0 &  & 
+\end{array}\right)
+\]
+and $\sigma_{1}\ne\sigma_{2}$ because in the next step we find $\left|\left|B\right|\right|_{op}$
+and not $\left|\left|A\right|\right|_{op}$ again. So we get $\left|\left|A\right|\right|_{op},\left|\left|B\right|\right|_{op},\left|\left|C\right|\right|_{op}\dots$%
+\end{lyxgreyedout}
+
+Suppose that indeed $A=UDV^{T}$ as in the theorem, how to interpret
+the numbers $\sigma_{1}\ge\sigma_{2}\ge\dots\ge0$? 
+\begin{align*}
+AA^{T} & =UD\underbrace{V^{T}V}_{I}D^{T}U^{T}=\\
+ & =UDD^{T}U^{T}
+\end{align*}
+\[
+DD^{T}=\left(\begin{matrix}\sigma_{1}^{2} & \dots & 0 & 0\\
+0 & \sigma_{2}^{2} & \dots & 0\\
+\vdots &  & \ddots & \vdots\\
+0 & \dots &  & \sigma_{n}^{2}
+\end{matrix}\right)_{m\times m}
+\]
+ Based on the spectral theorem for real symmetric matrices (and note
+that $AA^{T}$ is r.s%
+\begin{lyxgreyedout}
+real symmetric%
+\end{lyxgreyedout}
+) we conclude that $\sigma_{1}^{2},\dots,\sigma_{n}^{2},\underbrace{0,\dots,0}_{m-n}$
+are the eigenvalues of the (Positive semi-definite) real matrix $AA^{T}$.
+
+We take another look at the proof of the SVD theorem to make sure
+it is understood by everyone.
+\begin{thm}[SVD]
+ Every real $m\times n$ matrix $A$ can be expressed as $A=UDV^{T}$
+where $U_{m\times m}$ is an orthogonal matrix, $V_{n\times n}$ is
+orthogonal and $D$ is ``diagonal'' and on the diagonal of $D$
+$\sigma_{1}\ge\dots\ge\sigma_{\min\left\{ m,n\right\} }\ge0$
+\end{thm}
+
+When we look at $U^{T}AV$ we get a ``diagonal'' matrix.
+
+When we prove this statement we want to find $U_{1}AV_{1}^{T}$ such
+that they give us 
+\[
+U_{1}^{T}AV_{1}=\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  & 0 & \dots & 0\\
+\hline  & 0 & \\
+ & \vdots &  &  & B\\
+ & 0 & 
+\end{array}\right)
+\]
+ and by induction we can get for $B$ orthogonal matrices that get
+as what we need. so how do we do it? first we find$u_{1},v_{1}$ such
+that $Av_{1}=\sigma u_{1}$and $\left|\left|v_{1}\right|\right|=1=\left|\left|u_{1}\right|\right|$.
+Now if $U_{1}$ and $V_{1}$ are defined as in the proof we get
+\[
+U_{1}^{T}AV_{1}=\left(\begin{array}{ccc|ccc}
+ & \sigma_{1} &  &  & w\\
+\hline  & 0 & \\
+ & \vdots &  &  & B\\
+ & 0 & 
+\end{array}\right)
+\]
+How large can we make $\sigma$? it can be as large as $\left|\left|A\right|\right|_{op}$
+- the biggest such $\sigma$. and we get 
+\[
+U_{1}^{T}AV_{1}=\left(\begin{array}{ccc|ccc}
+ & \left|\left|A\right|\right|_{op} &  &  & w\\
+\hline  & 0 & \\
+ & \vdots &  &  & B\\
+ & 0 & 
+\end{array}\right)
+\]
+ our claim is that for $\sigma=\left|\left|A\right|\right|_{op}$
+then $w$ is 0. else we get $\left|\left|A\right|\right|_{op}>\sigma$
+which is impossible. So we lets choose some specific vector to get
+a contradiction 
+\[
+\left(\begin{array}{c}
+\left|\left|A\right|\right|_{op}\\
+\hline w^{T}
+\end{array}\right)
+\]
+Which leads to:
+\[
+\sigma_{1}=\left|\left|A\right|\right|_{op}=\left|\left|U_{1}^{T}AV_{1}\right|\right|_{op}\ge\frac{\left|\left|\left(\begin{array}{c}
+\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}\\
+\\
+\vdots\\
+\\
+\end{array}\right)\right|\right|}{\sqrt{\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}}}\ge\sqrt{\sigma_{1}^{2}+\left|\left|w_{1}\right|\right|^{2}}\underbrace{>}_{\text{*}}\sigma_{1}
+\]
+ so $w=0$. and we're done.
+
+Question: Why does the sub matrix $B$ has a smaller operator norm?Working
+with $B$ is the same as working with matrix $A$ but with a row filled
+with zeros, thus it has a smaller or equal operator norm.
+
+Note $A=UDV^{T}\iff A=\sum\limits _{i=1}^{\min\left\{ m,n\right\} }\sigma_{i}u_{i}\otimes v_{i}$
+meaning the outer product of $u_{i}$and $v_{i}$ where $u_{i}$ is
+the ith column of $U$ and $v_{i}$ is the ith column %
+\begin{lyxgreyedout}
+column because we have there $V^{T}$%
+\end{lyxgreyedout}
+of $V$. 
+\[
+UDV^{T}=\left(\begin{matrix}| &  & |\\
+u_{1} & \dots & u_{m}\\
+| &  & |
+\end{matrix}\right)D\left(\begin{matrix}- & v_{1} & -\\
+ & \vdots\\
+- & v_{n} & -
+\end{matrix}\right)
+\]
+
+
+\subsection{another operator norm}
+\begin{xca}
+How to evaluate how ``close'' is matrix $B$ to matrix $A$?
+\begin{sol}
+two answers:
+\begin{enumerate}
+\item $\left|\left|A-B\right|\right|_{op}$
+\item $\left|\left|A-B\right|\right|_{2}=\left|\left|A-b\right|\right|_{\text{Frobenius}}=\sqrt{\sum\left(a_{ij}-b_{ij}\right)^{2}}$
+\end{enumerate}
+\end{sol}
+
+\end{xca}
+
+$\left|\left|A\right|\right|_{frobenius}=\sqrt{\sum a_{ij}^{2}}$
+note that $\left|\left|A\right|\right|_{fr}^{2}=trace\left(AA^{T}\right)$.
+because:
+\begin{align*}
+\left|\left|A\right|\right|_{fr}^{2} & =trace\left(AA^{T}\right)=\sum_{i}\left(AA^{T}\right)_{ii}\\
+\end{align*}
+ 
+\[
+\left(AA^{T}\right)_{ii}=\left|\left|a_{i}\right|\right|^{2}
+\]
+ where $a_{i}$ is the ith row of $A$ so 
+\[
+\left|\left|a_{i}\right|\right|^{2}=\sum_{j}a_{ij}^{2}
+\]
+ %
+\begin{lyxgreyedout}
+\[
+trace\left(AA^{T}\right)=\sum_{i,j}a_{ij}^{2}
+\]
+\end{lyxgreyedout}
+
+\begin{claim}
+Let $A$ be a real matrix, $U$ an orthogonal matrix, note that 
+\[
+\left|\left|A\right|\right|_{fr}=\left|\left|AU\right|\right|_{fr}
+\]
+\begin{proof}
+$ $ 
+\[
+\left|\left|AU\right|\right|_{fr}^{2}=tr\left(\left(AU\right)\left(AU\right)^{T}\right)=tr\left(AUU^{T}A^{T}\right)=tr\left(AIA^{T}\right)=tr\left(AA^{T}\right)=\left|\left|A\right|\right|_{fr}^{2}
+\]
+\end{proof}
+\end{claim}
+
+\begin{thm}
+Let $A_{m\times n}$ be a real matrix and let $k<m,n$. For every
+$B_{m\times n}$ matrix of rank $\le k$ there holds $\left|\left|A-B\right|\right|_{op}\ge\sigma_{k+1}$
+where $\sigma_{1}\ge\dots\ge0$ are the singular values of $A$. Equality
+holds for$B=UD^{\left(k\right)}V^{T}$, where $A=UDV^{T}$ and 
+\[
+D^{\left(k\right)}=\left(\begin{array}{cccccc}
+\sigma_{1} & 0 & \dots &  & \dots & 0\\
+0 & \ddots &  &  &  & \vdots\\
+\vdots &  & \sigma_{k}\\
+ &  &  & 0\\
+ &  &  &  & \ddots & \vdots\\
+\vdots &  &  &  &  & 0\\
+0 &  &  &  &  & 0
+\end{array}\right)
+\]
+ 
+\[
+B=\sum_{i=1}^{k}\sigma_{i}u_{i}\otimes v_{i}
+\]
+(We can\'{t} do better then than $\left|\left|A-B\right|\right|_{op}\ge\sigma_{k+1}$)
+\end{thm}
+
+Note this: $A-B_{k}=U\left(\begin{array}{ccccc}
+0\\
+ & \ddots\\
+ &  & 0\\
+ &  &  & \sigma_{k+1}\\
+ &  &  &  & \ddots
+\end{array}\right)V^{T}\Rightarrow$$\left|\left|A-B\right|\right|_{op}=\sigma_{k+1}$
+\begin{proof}
+\begin{lyxgreyedout}
+all Lecture page 31%
+\end{lyxgreyedout}
+{} What do we need to show? for $C$ matrix such that $\text{rank}\left(C\right)\le k\Rightarrow\left|\left|A-C\right|\right|_{op}\ge\sigma_{k+1}$.
+\begin{lyxgreyedout}
+to show this we need to show some vector $z$ such that $\left|\left|\left(A-C\right)z\right|\right|\ge\sigma_{k+1}$%
+\end{lyxgreyedout}
+Lets start: $\exists z,\left|\left|\left(A-C\right)z\right|\right|_{2}\ge\sigma_{k+1}$
+where $\left|\left|z\right|\right|_{2}=1$. How can we find such a
+vector? Plan: We will select $z$ in such a way that $Cz=0$ and then
+$\left|\left|\left(A-C\right)z\right|\right|=\left|\left|Az-Cz\right|\right|=\left|\left|Az\right|\right|$
+- lets do just that: Since $\text{rank}\left(C\right)\le k$ the kernel
+of $C$ intersects (not in $\bar{0}$) every linear subspace $W$
+of $\dim W\ge k+1$. Let $W=span\left\{ v_{1}\dots v_{k+1}\right\} $
+(the columns of $V$).
+\[
+z=\sum_{i=1}^{k+1}\alpha_{i}v_{i};Cz=0;\left|\left|z\right|\right|_{2}=1
+\]
+ 
+\begin{align*}
+\left(A-C\right)z & =Az-Cz=Az=\sum_{i}\sigma_{i}\left(u_{i}\otimes v_{i}\right)z=\\
+ & =\sum\sigma_{i}u_{i}\left\langle v_{i},z\right\rangle =\sum^{m}\sigma_{i}u_{i}\left\langle v_{i},z\right\rangle \\
+\left(1\right) & =\sum_{i=1}^{k+1}\sigma_{i}u_{i}\left\langle v_{i},z\right\rangle =\sum_{i=1}^{k+1}\sigma_{i}\left\langle v_{i},z\right\rangle u_{i}=
+\end{align*}
+\begin{enumerate}
+\item everything beyond $k+1$ equals zero. because $v_{1}\dots v_{m}$are
+orthonormal then $\left\langle v_{i},z\right\rangle =\left\langle v_{i},\sum_{j}^{k}\alpha_{j}v_{j}\right\rangle $
+equals 0 for every $j\ne i$.
+\end{enumerate}
+Because the $u_{i}$'s are orthogonal:
+\begin{align*}
+\left|\left|\left(A-C\right)z\right|\right|^{2} & =\sum_{i=1}^{k+1}\sigma^{2}\left\langle v_{i},z\right\rangle ^{2}\ge\sigma_{k+1}^{2}\underbrace{\sum\limits _{i=1}^{k+1}\left\langle v_{i},z\right\rangle ^{2}}_{(*)}\\
+ & =\sigma_{k+1}^{2}\cdot1
+\end{align*}
+
+\begin{itemize}
+\item because it's an orthogonal basis.%
+\begin{lyxgreyedout}
+To my understanding because it\'{s} an orthonormal basis%
+\end{lyxgreyedout}
+\end{itemize}
+\end{proof}
+%
+\begin{defn}
+A Real symmetric matrix is said to be positive semi-definite (PSD)
+if all it's eigenvalues are non negative.
+\end{defn}
+
+\begin{defn}
+A Real symmetric matrix is said to be positive definite (PD) if all
+it's eigenvalues are positive.
+\end{defn}
+
+\begin{thm}
+The following are equivalent (TFAE) regarding a real symmetric matrix
+$A$
+\begin{enumerate}
+\item $A$ is PSD.
+\item $A=MM^{T}$ for some real $M$.
+\item $\forall x,xAx^{T}\ge0$
+\end{enumerate}
+\end{thm}
+
+\begin{proof}
+$ $
+\end{proof}
+\begin{itemize}
+\item[$1\Rightarrow2$:]  recall the spectral theorem for real symmetric matrices: it is possible
+to express $A=U\Lambda U^{T}$ where $U$ is orthogonal $\Lambda$
+is diagonal, the diagonal terms in $\Lambda$ are $A$'s eigenvalues
+and the row of $U$ are the corresponding eigenvectors. Let $M=U\sqrt{\Lambda}$
+($\sqrt{\Lambda}$ = The diagonal matrix whose $i$ths entry is $\sqrt{\lambda_{i}}$.)
+$MM^{T}=U\sqrt{\Lambda}\sqrt{\Lambda}U^{T}=U\Lambda U^{T}=A$. As
+wanted.
+\item[$2\Rightarrow3$:]  Since $A=MM^{T}$ $xAx^{T}=xMM^{T}x=\left|\left|xM\right|\right|_{2}^{2}\ge0$,
+As wanted.
+\item[$3\Rightarrow1$:]  Let $v$ be an eigenvector with eigenvalue $\lambda$. We know that
+$vAv^{T}\ge0$ but on the other hand 
+\[
+0\le vAv^{T}=\lambda\left\langle v,v\right\rangle =\lambda\left|\left|v\right|\right|_{2}^{2}
+\]
+\begin{lyxgreyedout}
+Notice that the rows are revresed: (full explanation for the equation)
+\[
+0\le vAv^{T}=v\left(\lambda v^{T}\right)=\lambda\left\langle v,v\right\rangle =\lambda\left|\left|v\right|\right|_{2}^{2}
+\]
+\end{lyxgreyedout}
+{} so $\lambda\ge0$ because $\left|\left|v\right|\right|_{2}^{2}\ge0$.
+\end{itemize}
+\begin{cor}
+The collection of all $n\times n$ PSD matrices form a \textbf{cone}
+$PSD_{n}$. Namely if $A,B\in PSD_{n}\Rightarrow A+B\in PSD_{n}$
+and if $t>0\Rightarrow tA\in PSD_{n}$.%
+\begin{lyxgreyedout}
+We can use the 3 property we proved to show that.%
+\end{lyxgreyedout}
+\end{cor}
+
+
+\subsection{The variational definition of eigenvalues of real symmetric matrices}
+\begin{thm}[Rayleigh-Ritz]
+ Let $A$ be real symmetric matrix and let $\lambda_{1}\ge\lambda_{2}\ge\dots\ge\lambda_{n}$
+be it's eigenvalues. Then 
+\[
+\lambda_{1}=\max\frac{xAx^{T}}{\left|\left|x\right|\right|_{2}^{2}}=\max\limits _{\left|\left|x\right|\right|_{2}=1}\left(xAx^{T}\right)
+\]
+$\lambda_{2}=\max\limits _{x\perp x_{1}}\frac{xAx^{T}}{\left|\left|x\right|\right|_{2}^{2}}$,
+$\lambda_{3}=\max\limits _{x\perp x_{1}\perp x_{2}}\frac{xAx^{T}}{\left|\left|x\right|\right|_{2}^{2}}$,
+and so on. 
+\end{thm}
+
+To prove that we will use some analysis:
+\begin{rem}
+Recall that $\left(\frac{f}{g}\right)^{'}=0\iff fg'=f'g$ we'll have
+$f=\left(xAx^{T}\right)$ and $g=\left|\left|x\right|\right|^{2}$
+and we want to get the maximum of that.
+\end{rem}
+
+\begin{rem}
+$\left(xA\right)_{\nu}=\sum\limits _{s}a_{s\nu}x_{s}$ and $xAx^{T}=\sum_{\alpha,\beta}x_{\alpha}a_{\alpha,\beta}x_{\beta}$.
+\end{rem}
+
+We will show that if $x$ maximizes $\frac{xAx^{T}}{\left|\left|x\right|\right|_{2}^{2}}$
+then $x$ is an eigenvector. First lets derive $\left|\left|x\right|\right|_{2}^{2}$:
+$\frac{\partial}{\partial x_{i}}\left|\left|x\right|\right|_{2}^{2}=2x_{i}$.
+Now from the previous remark:
+\[
+\frac{\partial}{\partial x_{i}}xAx^{T}=\frac{\partial}{\partial x_{i}}\left(\sum\limits _{\alpha,\beta}a_{\alpha,\beta}x_{\alpha}x_{\beta}\right)=2\left(Ax\right)_{i}
+\]
+ twice is because the row can either come from $a_{ij}x_{i}x_{j}$
+or from $a_{si}x_{s}x_{i}$. for $x$ to maximize the Rayleigh quotient
+$\frac{xAx^{T}}{\left|\left|x\right|\right|^{2}}$ a necessary condition
+is that $\forall i$ $\underbrace{\left(Ax\right)_{i}}_{f'}\cdot\underbrace{\left|\left|x\right|\right|^{2}}_{g}=\underbrace{\left(xAx^{t}\right)}_{f}\underbrace{x_{i}}_{g'}$
+notice that $\left|\left|x\right|\right|^{2},\left(xAx^{T}\right)$
+are numbers, and 
+\[
+\underbrace{\left(Ax\right)_{i}}_{f'}\cdot\underbrace{\left|\left|x\right|\right|^{2}}_{g}=\underbrace{\left(xAx^{t}\right)}_{f}\underbrace{x_{i}}_{g'}\iff\left(Ax\right)\left|\left|x\right|\right|^{2}=\left(xAx^{T}\right)x
+\]
+so we've seen that $\left(Ax\right)\underbrace{\left|\left|x\right|\right|^{2}}_{number}=\underbrace{\left(xAx^{T}\right)}_{number}x$.
+We've seen that if $x$ maximizes $\frac{xAx^{T}}{\left|\left|x\right|\right|_{2}^{2}}$
+then $x$ is an eigenvector.
+
+\begin{proof}[proof of Rayleigh - Ritz:]
+ (We prove only for $\lambda_{1}$, the next steps ($\lambda_{2}\dots$)
+need to use Lagrange multipliers. %
+\begin{lyxgreyedout}
+The concept is that he shows here that if x maxsimizes this (f is
+the nominator and $g$ is the denominator of what we want) so if $x$
+maximises it then it is an eigenvalue!! So if we maximise this thing
+we should find the biggest lambda! (maximal x is always eigenvector
+so we use maximal eigenvalue to get the maximum of $\frac{xAx^{T}}{\left|\left|x\right|\right|_{2}^{2}}$)%
+\end{lyxgreyedout}
+) Using the spectral theorem: $A=V\Lambda V^{T}\Rightarrow$$xAx^{T}=xV\Lambda V^{T}x^{T}$
+We think of it as $y\Lambda y^{T}=\sum\lambda_{i}y_{i}^{2}$ where
+$y=xV^{T}$ So 
+\[
+=\underbrace{\sum\lambda_{i}\left(Vx\right)_{i}^{2}}_{\text{positive items}}\le\left(\max\lambda_{i}\right)\cdot\sum\left(Vx\right)_{i}^{2}=\lambda_{1}\sum\left(Vx\right)_{i}^{2}=\lambda_{1}\left|\left|Vx\right|\right|^{2}=\lambda_{1}\left|\left|x\right|\right|^{2}
+\]
+ if $Ax=\lambda_{1}x$ then $\frac{xAx^{T}}{\left|\left|x\right|\right|^{2}}=\lambda_{1}$%
+\begin{lyxgreyedout}
+for $\lambda_{2}$: The same thing but if $x$ is orthogonal to the
+previous $x$ then the equations zeros out.%
+\end{lyxgreyedout}
+\end{proof}
+%
+\begin{thm}[Rayliegh-Ritz 2]
+ Let $A$ be a real symmetric matrix with eigenvalues $\lambda_{1}\ge\lambda_{2}\ge\dots\ge\lambda_{n}$
+. Then$\lambda_{n}=\min\frac{xAx^{T}}{\left|\left|x\right|\right|^{2}};$$\lambda_{n-1}=\min\limits _{x\perp x_{n}}\frac{xAx^{T}}{\left|\left|x\right|\right|^{2}}$.
+(With no proof)
+\end{thm}
+
+How do we derive the second theorem from the first? we look at the
+minus of the same thing.
+\begin{thm}[Courant-Fischer]
+ $A_{n\times n}$ real symmetric, with eigenvalues $\lambda_{1}\ge\lambda_{2}\ge\dots\ge\lambda_{n}$.
+Then $\forall i$ 
+\[
+\lambda_{i+1}=\min_{\begin{array}{c}
+F\\
+\dim F=i
+\end{array}}\max_{x\perp F}\left\{ \frac{xAx^{T}}{\left|\left|x\right|\right|^{2}}\right\} 
+\]
+ and $\max\limits _{\dim F=j}\min\limits _{x\perp F}\frac{xAx^{T}}{\left|\left|x\right|\right|^{2}}=\lambda_{n-j}$.
+\begin{lyxgreyedout}
+Why is there an optimum for all these subspaces? (There's infinite
+amount of subspaces) Because of compactness.%
+\end{lyxgreyedout}
+\end{thm}
+
+\begin{thm}[The Interlacing theorem]
+Let $A$ be a real symmetric matrix with eigenvalues $\lambda_{1}\ge\dots\ge\lambda_{n}$.
+Let $B$ be the matrix that results by erasing the i-th row and the
+i-th column of $A$. %
+\begin{lyxgreyedout}
+B is real symmetric too. and has $n-1$ eigenvalues.%
+\end{lyxgreyedout}
+{} Let $\mu_{1}\ge\dots\ge\mu_{n-1}$ be the eigenvalues of $B$. So
+$\lambda_{1}\ge\mu_{1}\ge\lambda_{2}\ge\mu_{2}\ge\dots\ge\lambda_{n-1}\ge\mu_{n-1}\ge\lambda_{n}$.
+\begin{lyxgreyedout}
+This is derived from Rayleigh -- Ritz. We need to connect $A$ to
+$B$. so the way to think about this is that we can pretendt that
+$B$ was never born and we keep working with $A$. we insist that
+the $i'th$ coordinate of $x$ is 0. Doing so we get what we get $B$.%
+\end{lyxgreyedout}
+\end{thm}
+
+
+\section{Perron -- Frobenius Theorems}
+\begin{thm}[Perron]
+ Let $A$ be a square positive matrix %
+\begin{lyxgreyedout}
+positive means its real.%
+\end{lyxgreyedout}
+(i.e $\forall i,j$ $a_{i,j}>0$) Then $A$ has a positive eigenvalue
+$\rho>0$ s.t. for every other eigenvalue $\mu$ (in general complex)
+$\rho>\left|\mu\right|$. The eigenvector corresponding to $\rho$
+is positive, no other eigenvector is positive.
+\end{thm}
+
+The proof's stages:
+\begin{enumerate}
+\item $\rho>0$ corresponding eigenvector $>0$.
+\item $\forall\mu\ne\rho,\,\,\rho>\left|\mu\right|$.
+\item $\rho$ is a simple eigenvalue. (Has an algebraic multiplicity 1 --
+Note that we don't actually show algebraic multiplicity 1) 
+\item no other positive eigenvector (We don't prove this)
+\end{enumerate}
+\begin{lyxgreyedout}
+we want a theorem for non negative matrices, rather then strictly
+positive matrix. to show that $A^{k}$ is positive we switch every
+non zero number to 1. it still holds that if this new matrix is positive
+so is $A^{k}$. now that $A$ is zeros or 1s we know that $A$ is
+a the adjacency matrix of a directed graph. $Au=\lambda u$ then $A^{k}u=\lambda^{k}u$.
+If we knew persons theorem and we know that $A^{k}>0$ we can derive
+the same conclusions for Perron's Theorem to a non negative matrix.
+$A^{k}\ge0$.%
+\end{lyxgreyedout}
+
+\begin{proof}[proof of Perron's Theorem]
+\begin{lyxgreyedout}
+We want to think about it as an optimization problem.%
+\end{lyxgreyedout}
+Let us observe: if $v\ge0,v\ne0\Rightarrow Av>0$. Let $S\subseteq\mathbb{R}^{n}$
+be defined as: 
+\[
+S=\left\{ u\in\R^{n}:\left|\left|u\right|\right|_{2}=1,u\ge0\right\} 
+\]
+\begin{lyxgreyedout}
+this is a compact set%
+\end{lyxgreyedout}
+
+We define $\forall u\in S$, 
+\[
+L\left(u\right):=\max\left\{ b>0:\begin{array}{c}
+\left(Au\right)_{i}\ge bu_{i},\\
+\forall i\,\,u_{i}\ne0
+\end{array}\right\} =\min_{\begin{array}{c}
+i\\
+u_{i}\ne0
+\end{array}}\frac{\left(Au\right)_{i}}{u_{i}}
+\]
+ %
+\begin{lyxgreyedout}
+The coordinate that holds be to become bigger is the $i$ that makes
+this$\frac{\left(Au\right)_{i}}{u_{i}}$ the minimum%
+\end{lyxgreyedout}
+
+It can be shown that $L\left(u\right)$ is compact%
+\begin{lyxgreyedout}
+The edge of a set is a point that contains around it points in the
+set and points outside of the set.
+
+A close set is a set such it contains it's edge.
+
+Compact set:
+\begin{enumerate}
+\item Let there be a metric space $X$. A compact set $Y\subseteq X$ is
+called compact if for any series $y_{n}\in Y$ There is a converging
+sub series of $y_{n}$ such that it converge into a point in $Y$.
+\item Every closed set $Z\subseteq Y$ is compact.
+\item a compact set is bound.
+\item The image of a compact set by a function on that set is also compact.
+\item Any non empty compact set contains a maximum and a minimum.
+\item A close and bound set in $\R^{n}$ is compact.
+\end{enumerate}
+\end{lyxgreyedout}
+, hence $\rho:=\max\limits _{u\in S}L\left(u\right)$. Let $v\in S$
+be a vector realizing $Av\ge\rho v$%
+\begin{lyxgreyedout}
+from the L$\left(u\right)$ statement%
+\end{lyxgreyedout}
+. %
+\begin{lyxgreyedout}
+we want to show that this is an eigenvalue. but we saw that we can
+get a bigger value by contradiction.%
+\end{lyxgreyedout}
+We want to show $Av=\rho v$, if it is -- were done, else we assume
+by contradiction that $Av-\rho v>0$, it follows that %
+\begin{lyxgreyedout}
+non negative and non zero vector multiplied by a positive matrix is
+positive.%
+\end{lyxgreyedout}
+$A\left(Av-\rho v\right)>0$. Because that is a positive vector $\exists\epsilon>0$
+s.t. $A\left(Av-\rho v\right)>\epsilon Av$, Let $c>0$ s.t. $cAv$
+is a unit vector, actually $cAv\in S$ so%
+\begin{lyxgreyedout}
+from this: $Av-\rho v>0$ we expand the term:
+\begin{align*}
+AAv-Apv & >\epsilon Av\\
+cAAv-Acpv & >\epsilon cAv\\
+AcAv & >\epsilon cAv+Acpv\\
+A\left(cAv\right) & >\left(p+\epsilon\right)cAv
+\end{align*}
+ Notice that $cAv$ is a vector in $S$ for which we defined $\rho=\max\limits _{u\in S}L\left(u\right)$
+which will lead us to a contradiction. HELL YES!%
+\end{lyxgreyedout}
+\[
+A\left(cAv\right)>\left(\rho+\epsilon\right)cAv
+\]
+{} This is contrary to the maximality of $\rho$.
+\begin{claim}
+If $\mu\ne\rho$ is an eigenvalue of $A$ then $\rho>\left|\mu\right|$. 
+\begin{proof}
+Let $Ay=\mu y\iff\forall i\,\,\underbrace{\left(Ay\right)_{i}}_{=\sum\limits _{j}a_{i,j}y_{j}}=\mu y_{i}$
+So $\left|\sum\limits _{j}a_{ij}y_{j}\right|=\left|\mu\right|\left|y_{i}\right|$
+then from triangle inequality 
+\[
+\left|\mu\right|\cdot\left|y_{i}\right|=\left|\sum a_{ij}y_{j}\right|\le\sum\left|a_{i,j}\right|\left|y_{j}\right|=\sum a_{i,j}\left|y_{j}\right|
+\]
+. Denote $z_{i}=\left|y_{i}\right|$ so $\sum a_{i,j}z_{i}\ge\left|\mu\right|\cdot z_{i}$
+meaning:
+\[
+Az\ge\left|\mu\right|z
+\]
+ From this it follows that $\rho\ge\left|\mu\right|$. %
+\begin{lyxgreyedout}
+$\rho$ is defined as the largest number such that $Av\ge\rho v$
+so $\mu$ cannot be bigger then $\rho$.%
+\end{lyxgreyedout}
+\begin{lyxgreyedout}
+z should be normalized and then $z\in S$ and as a result $\rho$
+is the maximal eigenvalue.%
+\end{lyxgreyedout}
+\end{proof}
+\end{claim}
+
+\begin{claim}
+$\rho$ has a geometric multiplicity i.e. the linear space of eigenvectors
+with eigenvalue $\rho$ is $1-dimensional$
+\begin{proof}
+suppose that $Au=\rho u$. We can write $u=\phi+i\psi$ and each part
+will be an eigenvector separately. This means we can just assume that
+$u$ is a real vector. Generally $u$ may be complex, but then the
+vectors $Re\left(u\right),Im\left(u\right)$ are also eigenvectors
+with eigenvalue $\rho$. WLOG $u$ is real.%
+\begin{lyxgreyedout}
+We should apply this for both vectors - to the imaginary vector too
+and we get the same contradiction.%
+\end{lyxgreyedout}
+
+Let us assume by contradiction that $Av=\rho v,Au=\rho u$. $\exists\epsilon$
+(might be negative too) s.t. $v+\epsilon u\ge0$ with at least one
+zero coordinate. because $v,u$ are eigenvectors of $\rho$: $A\left(v+\epsilon u\right)=\rho\left(v+\epsilon u\right)$.
+(This is a contradiction because $A\left(v+\epsilon u\right)$ can't
+have an entry that is zero because a positive matrix multiplied by
+a non negative vector creates a positive vector -- can't have a cell
+with zero in it like the vector $\rho\left(v+\epsilon u\right)$ and
+from this we conclude that there can't be another vector $u$ such
+that $Au=\rho u$.)
+
+(To my understanding we did not show in this proof that the algebraic
+multiplicity is 1)%
+\begin{lyxgreyedout}
+There cant be an entry with zero and thus the equation is a contradiction
+- not sure whats going on. not sure what happened here%
+\end{lyxgreyedout}
+
+\end{proof}
+\end{claim}
+
+ Additional item in Perron\'{s} Theorem: $A$ positive square matrix
+with $\rho$ as before...
+\[
+\limn{\frac{A}{\rho}}^{n}=\frac{x_{r}\otimes x_{\ell}}{\left\langle x_{r},x_{\ell}\right\rangle }
+\]
+ ($\otimes$ means outer-product) Where $x_{r},x_{\ell}$, are the
+right and left eigenvectors of $A$ corresponding to $\rho$.%
+\begin{lyxgreyedout}
+We divide each eigenvalue by $\rho^{n}$%
+\end{lyxgreyedout}
+
+\end{proof}
+%
+To pass from Perron to Frobenius: if $A^{^{k}}>0$ for some $k\in\N$
+then $A$ satisfies the conclusions of Persons theorem.
+
+Questions: Given $A\ge0$ when does $\exists k$ s.t. $A^{k}>0$ ?
+$\iff$ Given a directed graph $G$ under what conditions does $\exists k\in\N$
+s.t. $\forall x,y\in V$ $\exists$ directed $x\to y$ of length $k$
+.
+\begin{thm}
+(\textcolor{red}{This wasn't stated in class explicitly}): (Perron
+- Frobenius) If $A$ is non negative and there exists a $k\in\N$
+such that $A^{k}>0$ then Perron's statement holds for this matrix
+too.
+\end{thm}
+
+\begin{defn}
+We say that directed graph $G=\left(V,E\right)$ has period $p$ if
+it is possible to split $V=V_{1}\cup V_{2}\dots\cup V_{p}$ s.t if
+$x\to y\in E$ iff $\exists i$ such that $x\in V_{i},y\in V_{i+1\mod p}$.
+\end{defn}
+
+\begin{claim}
+This is the case provided
+\begin{enumerate}
+\item $G$ is strongly connected.
+\item Aperiodic. %
+\begin{lyxgreyedout}
+If it's periodic we know that $k$ moves us to some group.%
+\end{lyxgreyedout}
+\end{enumerate}
+\end{claim}
+
+
+\section{finite Markov chains}
+
+This is a system ($M$) that can reside in any one of $n$ states.
+It moves at every time step from state to state, and if it in presently
+resides in state $i$ then with probability $p_{i,j}$ it will be
+in state $j$ at the next time unit. $P=\left(p_{i,j}\right)$ is
+called the transition matrix of the chain. $P$ is a stochastic matrix,
+i.e. $\forall i,j$ $p_{i,j}\ge0$ each row sums to one ($\forall i\,\,\sum_{j}p_{ij}=1$).
+\begin{defn}
+We say that Markov chain is ergodic if the directed graph is strongly
+connected and aperiodic.
+\end{defn}
+
+
+\subsubsection{informal chatter}
+
+$P_{i,j}^{t}=$ probability that starting from state $i$ we will
+be at state $j$ after $t$ units of time.
+
+Let us restrict ourselves to deal with ergodic Markov chains.
+
+Since the underlying directed graph of $M$ (markov chain) is strongly
+connected and aperiodic the Perron -- Frobenius theorem applies.
+(This matrix contains one positive eigenvector, other eigenvalues
+are strictly smaller then the corresponding eigenvalue) $P\cdot\one=\one\Rightarrow\one$
+is an eigenvector corresponding to eigenvalue $1$. By $P.F$ (Perron
+-- Frobenius) $\one$ and the eigenvalue $1$ are the eigenvector
+and eigenvalue pair given by the theorem $\Rightarrow$ all other
+eigenvalues $\lambda$ of $p$ satisfies $\left|\lambda\right|<1$.
+
+Let $u$ be the probability vector(where $u_{i}$ = is the probability
+that the system starts at state $i$, and$u\ge0$,$\sum u_{i}=1$):
+so 
+\[
+uP\one=u\one=\left\langle u,\one\right\rangle =1
+\]
+$\left(uP\right)_{\alpha}=\sum_{i}u_{i}p_{i\alpha}=$probability that
+the chain is in state $\alpha$ at the next time unit.
+
+$\left(uP^{2}\right)_{\beta}=\left(\left(uP\right)\cdot P\right)_{\beta}=$
+prob that the chain will be in state $\beta$ in two units from now.
+
+What do we want to know using Markov chains?
+\begin{enumerate}
+\item what is the long-run behavior of the chain.
+\item How soon does it get there.
+\end{enumerate}
+%
+From $P.F$ we know that there is a positive \uline{left} eigenvector
+$\pi$ corresponding to eigenvalue $1$, $\pi P=\pi$. Let us normalize
+$\pi$ so that $\left\langle \pi,\one\right\rangle =1$.
+\begin{thm}[from Perron -- frobenious]
+ $\limn{\left(\frac{A}{p}\right)^{n}}=\frac{x_{r}\otimes x_{\ell}}{\left\langle x_{r},x_{\ell}\right\rangle }$
+where $\rho$ is the eigenvalue from perron--frobenious.$x_{r},x_{\ell}$
+are the right and left eigenvectors of $\rho$.
+\end{thm}
+
+\begin{proof}
+in the case of Markov Chains $A=P,\rho=1$. $x_{r}=\one,x_{\ell}=\pi$$\Rightarrow$
+$\limn{\frac{P^{n}}{\rho^{n}}}=\one\otimes\pi=\begin{pmatrix}- & \pi & -\\
+- & \pi & -\\
+ & \vdots\\
+- & \pi & -
+\end{pmatrix}$. If $\limn{P^{n}}$ exists let us denote it by $Q$, thus $QP=Q$
+$\Rightarrow$ Every row of $Q$ is a left eigenvector of $P$ with
+eigenvalue $1$. %
+\begin{lyxgreyedout}
+(This gives us the matrix above)%
+\end{lyxgreyedout}
+. Why does the limit exist? The set of all $m\times n$ stochastic
+matrices is compact %
+\begin{lyxgreyedout}
+This a simplex closed and bounded%
+\end{lyxgreyedout}
+$\Rightarrow$ every infinite sequence of stochastic matrices has
+a convergent sub-sequence. As we saw only $Q$ can be a limit point
+of matrices in the sequence. %
+\begin{lyxgreyedout}
+All stochastic matrices is a compact set and we have a sequence so
+it has a convergent sequence. Every stochastic matrix will converge
+and as a result we know that $Q$ is the only limit? something like
+that.%
+\end{lyxgreyedout}
+\end{proof}
+%
+
+\subsection{Random Walks on Graphs}
+
+$G=\left(V,E\right)$ an undirected graph. $States=V$. Transitions
+matrix defined is normalized in row $i$ by $\frac{1}{\deg\left(v_{i}\right)}$.
+\begin{prop}
+If $G$ is a connected non-bipartite undirected graph, then the limit
+distribution of the random walk on $G$ is $\left(\cdots\frac{d\left(x\right)}{2\left|E\right|}\cdots\right)=\pi$.
+$\pi P\overset{}{=}\pi$.
+\end{prop}
+
+
+\subsubsection{Expander graphs}
+
+Expander graphs walks on them, etc.
+
+(informal definition) These are graphs with no bottlenecks. $G=\left(V,E\right)$
+d-regular graph. $h\left(G\right):=\min\limits _{\begin{array}{c}
+\emptyset\ne S\subseteq V\\
+\left|S\right|\le\frac{\left|V\right|}{2}
+\end{array}}\frac{e\left(S,\bar{S}\right)}{\left|S\right|}$ %
+\begin{lyxgreyedout}
+i think the function $e$ counts the number of edges between two sets
+of nodes.
+
+Why do we normalize by the size of $S$?%
+\end{lyxgreyedout}
+
+We want $d-regular$ graph with a large edge expansion.
+\begin{defn}
+(TAKEN FROM A PREVIOUS YEAR) Let $\delta\ge0$, a graph $G=\left(V,E\right)$
+is $\delta$-edge expanding if for every $S$ of size at most $\frac{\left|V\right|}{2}$
+it holds that $e\left(S,\overline{S}\right)\ge\delta\cdot\left|S\right|$.
+\end{defn}
+
+\begin{defn}
+The edge expansion of a graph $h\left(G\right)$ is the minimal expansion
+of a vertices set. I.e. $h\left(G\right)=\min\limits _{\begin{array}{c}
+\emptyset\ne S\subset V\\
+\left|S\right|\le\frac{\left|V\right|}{2}
+\end{array}}\frac{e\left(S,\overline{S}\right)}{\left|S\right|}$
+\end{defn}
+
+\uline{Question:} Given $d\ge3$ does there exists $\delta>0$
+and infinitely many $d-reg$ graphs $G=G_{n}$ %
+\begin{lyxgreyedout}
+familiy of $G_{n}$ for $n=d+1\to\infty$%
+\end{lyxgreyedout}
+with $h\left(G_{n}\right)\ge\delta$?
+
+\begin{lyxgreyedout}
+G=Gn - a family for the rest of these claims%
+\end{lyxgreyedout}
+
+\begin{thm}
+\begin{lyxgreyedout}
+\end{lyxgreyedout}
+Yes, actually \uline{most} $d-reg$ graphs %
+\begin{lyxgreyedout}
+family%
+\end{lyxgreyedout}
+{} have this property.
+\end{thm}
+
+For your personal information: To decide whether $h\left(G\right)>\alpha$
+is a $co-NP-HARD$ problem.
+\begin{thm}
+Let $G$ %
+\begin{lyxgreyedout}
+take a graph - not a family%
+\end{lyxgreyedout}
+{} be a $d-regular$ graph and let $d=\lambda_{1}\ge\lambda_{2}\ge\dots\ge\lambda_{n}$
+be the eigenvalue of adjacency matrix. so %
+\begin{lyxgreyedout}
+$\Lambda=\max\lambda_{2},-\lambda_{n}$. This is what he wrote then
+erased from the board.%
+\end{lyxgreyedout}
+{} %
+\begin{lyxgreyedout}
+Note that there must be a negative eigenvalues because the trace of
+a graph's matrix is $0$ (on the diagonal is zeros)%
+\end{lyxgreyedout}
+{} $\frac{d-\lambda_{2}}{2}\le h\left(G\right)\le\sqrt{d^{2}-\lambda_{2}^{2}}$.
+\end{thm}
+
+Constructing expander graphs is qualitatively equivalent to constructing
+$d-regular$ graphs with $\lambda_{2}$ bounded away from $d$. %
+\begin{lyxgreyedout}
+building this kind of graph familiy such that $h\left(G_{n}\right)$
+is far from zero. equivalent to build a familty of $d-reg$ graphs
+where $\lambda_{2}$ is bounded away from $d$. where bounded away
+means that there is some small area around $d$ where lambda cannot
+reach.%
+\end{lyxgreyedout}
+
+\begin{defn}
+If $\sigma,\tau$ are two prob distributions on a finite set $S$,
+we define their distance 
+\[
+d_{TV}\left(\sigma,\tau\right)=\sum_{x\in S}\left|\sigma\left(x\right)-\tau\left(x\right)\right|
+\]
+
+Please Note that in the recitation we defined it as follows:
+\[
+d_{TV}\left(\sigma,\tau\right)=\frac{1}{2}\sum_{x\in S}\left|\sigma\left(x\right)-\tau\left(x\right)\right|=\frac{1}{2}\norm{\sigma-\tau}_{1}
+\]
+\end{defn}
+
+Let $G$ be a regular graph, Let $\sigma_{0}=\left(1,0,\dots,0\right)$,
+$\sigma_{t}=$ distribution of the random walker at time $t$.
+
+$Q:$ given $\epsilon>0$, for which time $t$ does it hold that $d_{TV}\left(\sigma_{t},uniform\right)<\epsilon$?
+Let $\mathcal{G}=\left(G_{n}\right)$ be a family of $d-regular$
+graphs, then the following are equivalent
+\begin{enumerate}
+\item $h\left(G_{n}\right)$ is bounded away from zero
+\item $d-\lambda_{2}$ is bounded away from zero.
+\item mixing time is $O\left(\log n\right)$
+\end{enumerate}
+Let $A$ be a positive matrix $\rho=$ spectral radius of $A$. $\limn{\frac{A}{\rho}}^{n}=\frac{x_{R}\otimes x_{L}}{\left\langle X_{R},X_{L}\right\rangle }$
+where $x_{R},x_{L}$ are the right and left eigenvectors of $\rho$.
+We will prove the case of $A$ a stochastic matrix.
+\begin{proof}
+$ $
+\begin{lem}
+Let $G$ be a strongly connected aperiodic directed graph and let
+$A$ be it's adjacency matrix. Then $\exists k$ s.t $A^{k}>0$. (Without
+proof).
+\end{lem}
+
+We will prove the case of a positive stochastic matrix $\then$ same
+for the stochastic ergodic case.
+
+Let $A$ be a positive stochastic matrix and let $\alpha>0$ be the
+smallest entry in $A$. Let $v$ be a probability vector $v\ge0$,
+$\left\langle v,\one\right\rangle =1$. Let $M,m$ be the largest
+and smallest coordinates of $v$. Let $M',m'$ be the max/min of $Av$.
+\begin{align*}
+M' & \le\alpha m+\left(1-\alpha\right)M\\
+m' & \ge\alpha M+\left(1-\alpha\right)m
+\end{align*}
+\begin{lyxgreyedout}
+We are multiplying a row in $A$ by a vector. We engineer a vector
+that sums to one and gets the biggest number. what do we do? alpha
+will do the least damage when it is multiplied by $m$, now after
+we do $\alpha m$ we add $\left(1-\alpha\right)M$ and we ignore all
+other values, %
+\end{lyxgreyedout}
+{} so 
+\[
+M'-m'\le\left(1-2\alpha\right)\left(M-m\right)
+\]
+and $A^{n}v=A^{n-1}\left(Av\right)=A^{n-2}A\left(Av\right)$ $\then$
+$M'^{\left(n\right)}-m'^{\left(n\right)}\le\left(1-2\alpha\right)^{n}\left(M-m\right)$
+\[
+\limn{M'^{\left(n\right)}-m'^{\left(n\right)}}=0
+\]
+ then 
+\[
+\limn{A^{n}v}=c\cdot\one
+\]
+ for some $c>0$. $v=e_{i}\then$ The col of $\limn{A^{n}}$ is a
+constant vector. Therefore $\limn{A^{n}}=\begin{pmatrix}- & u & -\\
+- & u & -\\
+ & \vdots\\
+- & u & -
+\end{pmatrix}$ and we've seen that if there such limit it equals to $=\begin{pmatrix}- & \pi & -\\
+- & \pi & -\\
+ & \vdots\\
+- & \pi & -
+\end{pmatrix}$ %
+\begin{lyxgreyedout}
+(from 106)%
+\end{lyxgreyedout}
+. $c=\left\langle u,v\right\rangle =\left\langle \pi,v\right\rangle $
+for each $e_{i}$, $c$ is different.
+\end{proof}
+%
+Edge extension of $G$: $h\left(G\right):=\min\limits _{\begin{array}{c}
+\emptyset\ne S\subseteq V\\
+\left|S\right|\le\frac{\left|V\right|}{2}
+\end{array}}\frac{e\left(S,\overline{S}\right)}{\left|S\right|}$. $G$ is $d-regular$ with eigenvalues $d=\lambda_{1}\ge\lambda_{2}\ge\dots\ge\lambda_{n}$.
+\begin{lyxgreyedout}
+The graph is connected iff $\lambda_{1}>\lambda_{2}$%
+\end{lyxgreyedout}
+
+\begin{thm}
+\begin{lyxgreyedout}
+page 42 in ``AllLectures''%
+\end{lyxgreyedout}
+Let $G$ be a $d-regular$ connected non-bipartite graph with eigenvalues
+$d=\lambda_{1}\ge\lambda_{2}\ge\dots\ge\lambda_{n}$ then $\frac{d-\lambda_{2}}{2}\le h\left(G\right)\le\sqrt{d^{2}-\lambda_{2}}$.
+\begin{proof}
+we are only proving the bottom bound: $\lambda_{2}=\max\limits _{x\perp\one}\frac{xAx^{T}}{\norm x^{2}}$
+\begin{lyxgreyedout}
+$x\perp\one$ is beause the first eigenvector is $\one$ . and we
+use the Rayleigh rits where $\lambda_{2}=\max\limits _{x\perp x_{1}}\frac{xAx^{T}}{\norm x^{2}}$%
+\end{lyxgreyedout}
+.We look at some partition of $V$: $S,\overline{S}$. What do we
+know about the problem that we can use? We know that the graph is
+$d-reg$ and we know the partition $S,\overline{S}$. So we will define
+$x$ as follows:
+\[
+x_{i}=\begin{cases}
+\left|\overline{S}\right| & i\in S\\
+-\left|S\right| & i\in\overline{S}
+\end{cases}
+\]
+this vector $x$ holds that $x\perp\one$ ($\left\langle x,\one\right\rangle =\sum x_{i}\cdot1=\left|\overline{S}\right|\cdot\left(-\left|S\right|\right)+\left|S\right|\cdot\left|\overline{S}\right|=0$)%
+\begin{lyxgreyedout}
+This is because we have $\left|\overline{S}\right|$ times $\left(-\left|S\right|\right)$
+in entries in $x$ and $\left|S\right|$ times $\left|\overline{S}\right|$
+entries in x.%
+\end{lyxgreyedout}
+. Now we need to calculate $\max\limits _{x\perp\one}\frac{xAx^{T}}{\norm x^{2}}$.
+First: 
+\begin{align*}
+\norm x^{2} & =\sum_{i=1}^{n}x_{i}^{2}=\\
+ & =\left|S\right|\left|\overline{S}\right|^{2}+\left|S\right|^{2}\left|\overline{S}\right|=\left|S\right|\left|\overline{S}\right|\left(\left|\overline{S}\right|+\left|S\right|\right)=n\left|S\right|\left|\overline{S}\right|
+\end{align*}
+ 
+\begin{align*}
+xAx^{T} & =\sum a_{ij}x_{i}x_{j}=
+\end{align*}
+ this is like summing where $a_{ij}=1$ (where $i$ is a neighbour
+of $j$) so 
+\[
+=\sum\limits _{i\sim j}x_{i}x_{j}=\underbrace{2\cdot e\left(S\right)\cdot\left|\overline{S}\right|^{2}}_{\left(1\right)}+\underbrace{2\cdot e\left(\overline{S}\right)\cdot\left|S\right|^{2}}_{\left(2\right)}-\underbrace{2e\left(S,\overline{S}\right)\left|S\right|\left|\overline{S}\right|}_{\left(3\right)}
+\]
+\end{proof}
+\begin{enumerate}
+\item $i,j$ both are vertices in $S$ hence $x_{i}\cdot x_{j}=\left|\overline{S}\right|\cdot\left|\overline{S}\right|$
+and we count them $2\cdot e\left(S\right)$ times. 
+\item same explanation as above but for $i,j$ vertices in $\overline{S}$.
+\item $i\in S$, $j\in\overline{S}$, $x_{i}\cdot x_{j}=\left|\overline{S}\right|\cdot\left(-\left|\overline{S}\right|\right)$.
+and we count them $2\cdot e\left(S,\overline{S}\right)$ times.
+\end{enumerate}
+Another important observation is $d\cdot\left|S\right|=2\cdot e\left(S\right)+e\left(S,\overline{S}\right)$
+because this is a d-regular graph - we count for each vertex the number
+of times it is touched by the the edges in $S$ plus the edges that
+connect to$S$ from $\overline{S}$. (from the other side $d\left|\overline{S}\right|=2e\left(\overline{S}\right)+e\left(S,\overline{S}\right)$)
+So %
+\begin{lyxgreyedout}
+\begin{align*}
+xAx^{T} & =2\cdot e\left(S\right)\cdot\left|\overline{S}\right|^{2}+2\cdot e\left(\overline{S}\right)\cdot\left|S\right|^{2}-2e\left(S,\overline{S}\right)\left|S\right|\left|\overline{S}\right|=\\
+* & =2\left(\frac{1}{2}\left(d\left|S\right|-e\left(S,\overline{S}\right)\right)\left|\overline{S}\right|^{2}+\frac{1}{2}\left(d\left|\overline{S}\right|-e\left(S,\overline{S}\right)\right)\left|S\right|-e\left(S,\overline{S}\right)\left|\overline{S}\right|\cdot\left|S\right|\right)=\\
+* & =d\left|S\right|\left|\overline{S}\right|\left(\left|\overline{S}\right|+\left|S\right|\right)-e\left(S,\overline{S}\right)\left(\left|\overline{S}\right|^{2}+2\left|\overline{S}\right|\left|S\right|+\left|S\right|^{2}\right)=\\
+ & =d\left|S\right|\left|\overline{S}\right|n-e\left(S,\overline{S}\right)n^{2}
+\end{align*}
+( {*} )were taken from allLectures.%
+\end{lyxgreyedout}
+{} 
+\[
+xAx^{T}=\dots=d\left|S\right|\left|\overline{S}\right|n-e\left(S,\overline{S}\right)n^{2}
+\]
+
+so $\lambda_{2}\ge\frac{xAx^{T}}{\norm x^{2}}$ lets assign what we
+calculated: $\lambda_{2}\ge\frac{d\left|S\right|\left|\overline{S}\right|n-e\left(S,\overline{S}\right)n^{2}}{n\cdot\left|S\right|\left|\overline{S}\right|}$
+since $\left|\overline{S}\right|\ge\frac{1}{2}n$ 
+\[
+\lambda_{2}\ge\frac{d\left|S\right|\left|\overline{S}\right|n-e\left(S,\overline{S}\right)n^{2}}{n\cdot\left|S\right|\left|\overline{S}\right|}\ge d-2\frac{e\left(S,\overline{S}\right)}{\left|S\right|}
+\]
+organize this a bit more to get: 
+\[
+\frac{e\left(S,\overline{S}\right)}{\left|S\right|}\ge\frac{d-\lambda_{2}}{2}
+\]
+We saw that $\forall S\,\;\left|S\right|\le\frac{n}{2}$ then $\frac{e\left(S,\overline{S}\right)}{\left|S\right|}\ge\frac{d-\lambda_{2}}{2}$.
+This means that this is true for the minimum too $h\left(G\right)=\min\limits _{\begin{array}{c}
+\emptyset\ne S\subseteq V\\
+\left|S\right|\le\frac{\left|V\right|}{2}
+\end{array}}\frac{e\left(S,\overline{S}\right)}{\left|S\right|}\ge\frac{d-\lambda_{2}}{2}$. 
+\end{thm}
+
+\begin{thm}
+Fix $d$, let $G=G_{n}$ be an infinite family of $d-regular$ graphs.
+then the following are equivalent:
+\begin{enumerate}
+\item $h\left(G_{n}\right)$ is bounded away from zero. %
+\begin{lyxgreyedout}
+\begin{lyxlist}{00.00.0000}
+\item [{what}] is the meaning of bounded away from zero?
+\end{lyxlist}
+\end{lyxgreyedout}
+\item The spectral gap $\lambda_{1}-\lambda_{2}$ is bounded away from zero. 
+\item The random walk on $G_{n}$ convergence in logarithmic time.
+\end{enumerate}
+\begin{lyxgreyedout}
+In terms of apllication this is a huge thing. in all things ofenumaration
+- checking different models this means that these things a re practical.
+this means we don't have to wait.%
+\end{lyxgreyedout}
+\begin{proof}
+\textcolor{red}{I Had a big problem taking notes in this part, I'll
+try and fix this proof as soon as possible} ($2\then3$, What was
+mostly intuition and not formal)$A$ is the matrix of the graph (a
+stochastic matrix) so $A=\frac{1}{d}A_{G}$. We know that 
+\[
+\frac{A}{d}^{N}\to\text{\ensuremath{\begin{pmatrix}\\
+ & \frac{1}{n}\\
+\\
+\end{pmatrix}}}
+\]
+Now assume we have some distribution, and we want to understand $\left(\frac{A_{G}}{d}\right)^{N}v\to\frac{1}{n}\one$.
+We know nothing about $v$. We will express $v$ with the basis of
+eigenvectors. $v=c_{1}\cdot\one+\sum c_{i}v_{i}$. where $\frac{A_{G}}{d}v_{i}=\lambda_{i}v_{i}$.
+so what is $c_{1}$? $c_{1}=\left\langle v,\one\right\rangle $ and
+because $v$ is a probability vector $c_{1}=\frac{1}{\sqrt{n}}$ .
+thus $\frac{d}{\sqrt{n}}$ normalizes what happen when we apply $A^{N}$
+to $v$? $A^{N}v=c_{1}\cdot A\one+\sum c_{i}Av_{i}$something that
+goes exponentially fast to zero. And we stopped here.%
+\begin{lyxgreyedout}
+\begin{proof}
+We are proving that $2\then3$.
+\[
+\left(\frac{A}{d}\right)^{n}v\to\frac{1}{n}\one
+\]
+we want to write $v$ as $v=c_{i}\frac{1}{\sqrt{n}}\one+\sum c_{i}v_{i}$.
+where $c_{i}=\left\langle v,v_{i}\right\rangle $. Because $v$ is
+a prob vector $c_{1}=\frac{1}{\sqrt{n}}..$ when $A^{n}v$ we get
+that $\one$ stays the same, and all the other vectors other then
+$\one$ tends to zero.
+\end{proof}
+Question given $d$ how large can the spectral be? $\iff$how small
+can $\lambda_{2}$ be?%
+\end{lyxgreyedout}
+\end{proof}
+\end{thm}
+
+Question: given $d$ how large can the spectral gap be? $\iff$ how
+small can $\lambda_{2}$ be?
+\begin{thm}[Alon Boppana bound]
+ %
+\begin{lyxgreyedout}
+Pg 109 in Ayelet's sum%
+\end{lyxgreyedout}
+$\lambda_{2}\ge2\sqrt{d-1}-o_{n}\left(1\right)$ .
+
+a hint was given but not an actual proof.
+\end{thm}
+
+\begin{thm}
+$\lambda_{2}\ge\sqrt{d}$
+\begin{proof}
+Let $A$ be the adjacency matrix of $G$%
+\begin{lyxgreyedout}
+G is d regular and have eigenvalues and stuff%
+\end{lyxgreyedout}
+. Then $tr\left(A^{2}\right)=\sum\lambda_{i}^{2}$, $\lambda_{1}=d$
+so the first in the sum is $\lambda_{1}^{2}=d^{2}$ so $\sum_{i=1}\lambda_{i}=d^{2}+\sum_{i=2}\lambda_{i}^{2}$
+. We know that $\lambda_{2}\ge\lambda_{3}\ge\lambda_{4}\dots\ge\lambda_{n}$
+thus $\sum_{i=1}\lambda_{i}=d^{2}+\left(n-1\right)\cdot\lambda_{2}^{2}$
+on the other hand 
+\[
+tr\left(A^{2}\right)=n\cdot d
+\]
+because $A^{2}$ in the $i,j$ entry counts how many paths of size
+2 there are between $i$to $j$ ($d$ paths). so there are $n$ times
+$d$ paths. so
+\[
+tr\left(A^{2}\right)=nd\le d^{2}+\left(n-1\right)\lambda_{2}^{2}
+\]
+ we conclude: $d-o\left(d\right)=\frac{nd-d^{2}}{n-1}\le\lambda_{2}^{2}$
+\end{proof}
+\end{thm}
+
+
+\part{Optimization}
+
+\section{basics}
+
+An optimization problem is defined by a domain $\Omega$ and $f:\Omega\to\R$.
+$\max\limits _{x\in\Omega}f\left(x\right)$.
+
+\begin{lyxgreyedout}
+$\Omega$ can be all the spanning trees in a graph.%
+\end{lyxgreyedout}
+
+\begin{defn}
+Linear programming $\Omega\subseteq\R^{n}$ is defined by a finite
+list of linear equations and inequalities, and $f$ is linear: $x\to\left\langle c,x\right\rangle $.
+\begin{lyxgreyedout}
+We can look at bit omega as a space that we cut from $\R^{n}$ with
+planes and halfspaces. forexample in $\R^{2}$ we cut the space with
+linear lines.The resulting omega will be some ``polygon''.%
+\end{lyxgreyedout}
+\begin{lyxgreyedout}
+What does it mean to optimize a linear function? we want to maximize
+$\left\langle c,x\right\rangle =\gamma$ we actually looking at the
+last lines that still stays in the ``polygon''.%
+\end{lyxgreyedout}
+\end{defn}
+
+$H$ set of the form $H=\left\{ x\in\R^{n}|\left\langle a,x\right\rangle =\alpha\right\} $
+is called a hyperplane. (in $\R^{2}$ it is a line, in $\R^{3}$ it
+is a plane). == affine subspace of dimension $n-1$.
+
+corresponding to $H$ are two open half spaces $H^{+}=\left\{ x\in\R^{n}\big|\left\langle a,x\right\rangle >\alpha\right\} $,
+$H^{-}=\left\{ x\in\R^{n}\big|\left\langle a,x\right\rangle <\alpha\right\} $
+.
+\begin{itemize}
+\item The $\Omega$s that will interest us, are, therefore intersections
+of a finite number of half-spaces. Such sets are called polyhedra
+(plural of polyhedron)
+\end{itemize}
+A bounded polyhedron is called a polytope (peon in Hebrew).
+
+LP is, then, the problem of maximizing a linear function over a polytope.
+
+\subsection{feeding cows}
+
+you can feed a cow
+
+\[
+A=\begin{array}{ccccc}
+ & \text{protein} & \text{fat} & \text{vitimin A} & \dots\\
+\text{grass} & 7\\
+\text{grains}\\
+\vdots
+\end{array}
+\]
+
+\begin{itemize}
+\item $0\le x_{i}\to$ How many units of each food type $i$ do we give
+the cow.
+\item $c_{i}=$ cost of one unit of food type $i$.
+\item $b_{j}$ is the minimum amount of component $j$ (a food nutrition
+like protein) that the cow needs
+\end{itemize}
+The farm want to find a non negative vector $x$ indicating from each
+type of food what to give to the cow such that: $\min\limits _{x}\left\langle c,x\right\rangle $
+(get $x$ for the least possible price) and $Ax\ge b$ (the cow receives
+enough of every nutrient).
+
+\section{examples}
+
+\subsection{separating points}
+
+\subsubsection{linear separation}
+
+Given $P\subseteq\R^{n}$ finite, $N\subseteq\R^{n}$ finite.(Assume
+we have two groups of points and we denote $P$ as the points with
+label $+$ and $N$ the points with the negative label)
+
+We have a few questions regarding these groups:
+\begin{enumerate}
+\item Is there a hyperplane that separates $P$ from $N$? $\exists H\quad s.t\;P\subseteq H^{+},N\subseteq H^{-}$
+?
+\begin{itemize}
+\item Does there exist $\left(c_{1}\dots c_{n}\right)=c$ such that $\forall j\left\langle c,v_{j}\right\rangle >0$,
+$\forall i\left\langle c,u_{i}\right\rangle <0$ where $u_{i}\in P$
+and $v_{j}\in N$.
+\end{itemize}
+\item If such hyperplane exists how large can it's margin be?(The distance
+from the separating line and the closest point)
+\begin{itemize}
+\item This is similar to $1$ but we want to find $\epsilon$ subjected
+to $\forall i\left\langle c,v_{i}\right\rangle \ge\epsilon$ and $\forall j\left\langle c,u_{j}\right\rangle \le-\epsilon$ 
+\end{itemize}
+\item Feasibility: given a system of linear, equations and inequalities,
+is there an $x$ that satisfies all of them?
+\begin{itemize}
+\item (feasibility and optimizations are highly the same question 1 is a
+feasibility question. )%
+\begin{lyxgreyedout}
+When we want to optimize we first need to know if it is even possible
+to answer the question.%
+\end{lyxgreyedout}
+{} 
+\end{itemize}
+\end{enumerate}
+\begin{lyxgreyedout}
+
+\subsubsection{answer to question1}
+
+do there exist $\left(c_{1}\dots c_{n}\right)=c$ such that $\left\langle c,v_{j}\right\rangle >0$
+$\forall j\,\,\,\left\langle c,u_{i}\right\rangle <0\forall i$. $u_{i}\in P$,$v_{j}\in N$.
+we want $H=\left\{ x\big|\sum c_{i}x_{i}=1\right\} $. So we want
+\[
+\max_{\begin{array}{c}
+\forall i\left\langle c,v_{i}\right\rangle \ge\epsilon\\
+\forall j\left\langle c,u_{j}\right\rangle \le-\epsilon
+\end{array}}\epsilon
+\]
+\end{lyxgreyedout}
+
+
+\subsubsection{Polynomial separation}
+
+Assume we have points from two groups But they sit in a space that
+we cannot split the groups with a straight line, rather we need a
+polynomial like $y=ax^{2}+bx+c$. This is not a linear function. how
+can we use linear programming to get such a function
+
+The points in the group $+$ are $\left(x_{i},y_{i}\right)$ for $i=1\dots n$.
+The points in group $-$ will be denoted as $\left(u_{i},v_{i}\right)$
+for $i=1\dots m$. The pluses should be below the polynomial we choose.
+Writing this formally we would want the following:
+\begin{itemize}
+\item $\forall i=1\dots n\,\;y_{i}\le ax_{i}^{2}+bx_{i}+c$
+\item $\forall i=1\dots m\,\;v_{i}\ge au_{i}^{2}+bu_{i}+c$
+\end{itemize}
+We can also ask for the biggest margin -- we want to maximize some
+distance $\epsilon$ subject to these constraints. Stating this formally:
+\begin{itemize}
+\item $\forall i=1\dots n\,\;y_{i}+\epsilon\le ax_{i}^{2}+bx_{i}+c$
+\item $\forall i=1\dots m\,\;v_{i}-\epsilon\ge au_{i}^{2}+bu_{i}+c$
+\end{itemize}
+You should notice that these constraints are still linear. That is
+$a,b,c$ are still linear, and $u_{i}$ and $x_{i}$ are simply constant
+numbers. Hence each constraint is linear in the variables. Now pushing
+these constraints into a linear programming solver should output some
+$a,b,c$ coefficients to get a polynomial of the form $y=ax^{2}+bx+c$.
+
+\begin{lyxgreyedout}
+A question was why use only $\epsilon$ in the y-axis. A better way
+is to show that the distance is an actual distance and not only on
+the y-axis as we show, but that is a lot more complicated.%
+\end{lyxgreyedout}
+
+
+\subsection{Humongous circle }
+
+\begin{lyxgreyedout}
+get the drawwing about 9 mins to the lecture%
+\end{lyxgreyedout}
+remember that a polyhedron is defined by a list of lines. For every
+$i=1\dots n$ we have $y=a_{i}x+b_{i}$, consider a polygon that lies
+above $\ell_{1}\dots\ell_{k}$ and below $\ell_{k+1}\dots\ell_{n}$.
+What is the largest circle we can draw inside this polygon? Linear
+programming can help us solve this question too. \\
+Our variables are going to be: $\underbrace{\left(u,v\right)}_{\text{circle center}},\underbrace{R}_{\text{radius}}$.
+Our objective function is $\max R$. The distance between the point
+$\left(u,v\right)$ and the line $\ell=y=ax+b$ is $\frac{\left|v-au-b\right|}{\sqrt{1+a^{2}}}$.
+We want to find for each line $\ell$ that its distance to $\left(u,v\right)$
+is bigger or equal then $R$ (otherwise the circle isn't bounded by
+the polygon). Let us define the problem with the tools of linear programming:
+$\max R$ is subjected to $\forall i=1\dots n$ 
+\[
+\frac{v-a_{i}u-b_{i}}{\sqrt{1+a_{i}^{2}}}\le R
+\]
+
+\[
+\frac{v-a_{i}u-b_{i}}{\sqrt{1+a_{i}^{2}}}\ge-R
+\]
+Notice that we dropped the absolute value and changed it into two
+inequalities -- why? Because absolute value isn't linear. In this
+problem too the constraints are still linear. ($u,v,R$ are the variables
+and the rest is just numbers from the lines definitions)
+
+\subsection{Interpolation}
+
+input: $\left(x_{1},y_{1}\right),\left(x_{2},y_{2}\right),\dots,\left(x_{n},y_{n}\right)$.
+We want to find a line $y=ax+b$ such that $\sum\limits _{i=1}^{n}\left(ax_{i}+b-y_{i}\right)^{2}$
+(least squares method) is minimal. This is not linear! we cannot solve
+this using linear programming :(
+
+least squares is sensitive to outliers -- we square the error, and
+introduce the least squares method to this sensitivity. One way to
+mitigate the issue of outliers is to use this formula: $\sum\limits _{i=1}^{n}\left|ax_{i}+b-y_{i}\right|$.
+this isn't yet linear too.
+
+What we will do instead is to minimize $e_{1}+e_{2}+\dots+e_{n}$
+($e_{i}$ should be equal to $\left|ax_{i}+b-y_{i}\right|$ -- Michael
+will convince us that this will happen) subject to:
+
+$\forall i=1\dots n\quad ax_{i}+b-y_{i}\le e_{i}$, $ax_{i}+b-y_{i}\ge-e_{i}$,
+and $e_{1}\dots e_{n}\ge0$. In any feasible solution $a,b,e_{1},\dots,e_{n}$:
+$\sum_{i=1}^{n}e_{i}\ge\sum_{i=1}^{n}\left|ax_{i}+b-y_{i}\right|$.
+\begin{lyxgreyedout}
+basically he minimize it such that $e_{i}$ is a variable that by
+minimization becomes the value of the norm 1. pretty cool! if we find
+$e_{i}$ they must equal because the constraints force them to do
+that!%
+\end{lyxgreyedout}
+{} But in optimal solution we have equality, because if we get $e_{i}>\left|ax_{i}+b-y_{i}\right|$
+then just take the solution $e_{i}'=\left|ax_{i}+b-y_{i}\right|$
+and find a solution that is smaller, and still follows the constraints.
+
+\subsection{Integer linear programming (ILP)}
+
+\begin{lyxgreyedout}
+This is similar to linear programming but we can only have an integer
+solutions %
+\end{lyxgreyedout}
+An integer linear program is: $\max c^{T}x$ subject to $Ax\le b$
+and $x\in\Z^{n}$. Linear program can be solved in linear time. Integer
+linear programing is $NP-HARD$.
+
+\subsubsection{reducing $3-SAT$ to ILP:}
+
+Suppose we have $\bigwedge_{i=1}^{m}\left(\ell_{i}^{1}\lor\ell_{i}^{2}\lor\ell_{i}^{3}\right)$
+each $\ell_{i}^{j}$ is either $x_{i}^{j}$ or its negation $\overline{x_{i}^{j}}$.
+We will write a linear program that is feasible if and only if $3-SAT$
+is feasible: $\forall i=1\dots m$ $Z_{i}^{1}+Z_{i}^{2}+Z_{i}^{3}\ge1$
+$\forall i,j$ such that $\ell_{i}^{j}=x_{i}^{j}$ then $Z_{i}^{j}=x_{i}^{j}$
+.$\forall i,j$ such that $\ell_{i}^{j}=\overline{x_{i}^{j}}$ then
+$Z_{i}^{j}=1-x_{i}^{j}$.\.{ }$\forall_{i,j}x_{i}^{j}\in\left\{ 0,1\right\} $
+\begin{lyxgreyedout}
+For each literal we introduce a new x variable.%
+\end{lyxgreyedout}
+. This definition shows us that if we want to solve $3-SAT$ we can
+solve the linear programming or the other way around - they are equivalent.
+$x_{i}^{j}$ is true if and only if $x_{i}^{j}$ equals 1 in the linear
+programming solution.
+
+\begin{lyxgreyedout}
+x has two indices because there%
+\end{lyxgreyedout}
+
+
+\subsubsection{Maximum weight matching:}
+
+A set of $n$ workers, $m$ tasks (each worker can do only one task
+and each task can be done by one worker) to each task a benefit $c_{i,j}\in\R$
+(worker $i$ task $j$).want: find a matching between workers and
+tasks that maximizes total benefit. 
+\[
+\max\sum_{i,j}x_{ij}c_{ij}
+\]
+ subjected to
+\begin{itemize}
+\item $\forall i=1\dots n\quad x_{i1}+x_{i2}+\dots+x_{im}\le1$ each worker
+have only one task.
+\item $\forall j=1\dots m\quad x_{1j}+x_{2j}+\dots+x_{nj}\le1$ each task
+has only one worker.
+\item $x_{i,j}\in\left\{ 0,1\right\} $ the matching must be true or false.
+\end{itemize}
+The actual problem fits to $ILP$ like a glove, but we can try and
+solve this using regular linear programming where $x_{i,j}\in\left[0,1\right]$
+rather than $x_{i,j}\in\left\{ 0,1\right\} $.
+
+\section{Formalizing linear programming}
+\begin{defn}
+A linear program is in \uline{canonical} form $\max c^{T}x$ subject
+to $Ax\le b$
+\end{defn}
+
+\begin{defn}
+The \uline{standard} form for linear programming: $\max c^{T}x$
+subject to $AX=b$ and $x\ge0$. %
+\begin{lyxgreyedout}
+the advantage of this form is that it's easier to prove things about
+it. we will show how to move from canonical form to standard form.%
+\end{lyxgreyedout}
+\end{defn}
+
+how do we move from canonical form to standard form? (This can be
+done efficiently)
+
+First we transform all inequalities to equalities:
+\begin{itemize}
+\item $\forall i,$ replace $\left\langle a_{i},x\right\rangle \le b_{i}$
+($a_{i}$ is the $i$th row in $A$) with $\left\langle a_{i},x\right\rangle +s_{i}=b_{i}$.
+\item For every $x_{i}$, replace it with $y_{i}-z_{i}$. ($y_{i},z_{i}$
+are two new variables we introduce).%
+\begin{lyxgreyedout}
+the difference between two numbers can be any number we want.%
+\end{lyxgreyedout}
+{} %
+\begin{lyxgreyedout}
+We need the variables to be non negative, so what we did is that every
+real number can be expressed between two negative numbers. meaning
+now we only have non negative variables. nice.%
+\end{lyxgreyedout}
+\end{itemize}
+\begin{lyxgreyedout}
+so now we maximise as follows: $\max c^{T}\left(y-z\right)$ subjected
+to $Ax=\left(b-s\right)$%
+\end{lyxgreyedout}
+
+From now on to the end of the lecture we talk on $LP$ problems in
+standard form.
+
+\subsubsection{basic feasible solution}
+
+We have $Ax=b$, we will assume that $A\in M_{m\times n}\left(\R\right)$
+where $m\le n$ and $rank\left(A\right)=m$ %
+\begin{lyxgreyedout}
+because otherwise there is no solution right?%
+\end{lyxgreyedout}
+. 
+\begin{defn}
+The set of feasible solutions is $P=\left\{ x\in\R^{n}:Ax=b,x\ge0\right\} $
+\end{defn}
+
+\begin{defn}
+For $x\in P$ the set of feasible solutions, $support\left(x\right)=\left\{ i\in\left[n\right]:x_{i}\ne0\right\} $. 
+\end{defn}
+
+For a subset of $B\subseteq\left\{ 1\dots n\right\} $ $A_{B}$ is
+the sub-matrix of $A$ with columns indexed by $B$. example of $A=\begin{pmatrix}1 & 2 & 3\\
+4 & 5 & 6
+\end{pmatrix}$ indexed by $1,3$: $A_{\left\{ 1,3\right\} }=\begin{pmatrix}1 & 3\\
+4 & 6
+\end{pmatrix}$.
+\begin{defn}
+$x\in P$ ($P$ is the set of feasible solution) is a \uline{basic
+feasible solution} (BFS) if $\exists B\subseteq\left\{ 1\dots n\right\} $
+such that:
+\begin{enumerate}
+\item $B\supseteq support\left(X\right)$
+\item $A_{B}$ is non-singular. (invertible) %
+\begin{lyxgreyedout}
+in particular $A_{B}$ must be square to be invertible. (so $A_{B}$
+must be of size $m\times m$ if youre not sure why check how $A_{B}$
+is defined - it won't be square if $B$ is not of size m.)%
+\end{lyxgreyedout}
+\end{enumerate}
+\end{defn}
+
+\begin{lem}
+$x\in P$ is basic iff the columns of $A_{support\left(x\right)}$
+are linearly independent.
+\begin{proof}
+$ $
+\end{proof}
+\begin{itemize}
+\item[$\then$] Assume that $x$ is basic: then $\exists B\supseteq support\left(x\right)$
+such that $A_{B}$ is non-singular, $A_{B}$ contains $A_{support\left(x\right)}$
+as a sub matrix so it's columns are linearly independent.
+\item[$\Leftarrow$] Assume that $A_{support\left(x\right)}$ has linearly independent
+columns. By assumption $rank\left(A\right)=m$ so we can extend $support\left(x\right)$
+to a set $B\supseteq support\left(x\right)$ such that $A_{B}$ is
+non-singular.
+\end{itemize}
+\end{lem}
+
+\begin{thm}
+\label{thm:consider-the-:LP126}consider the $LP$: $\max c^{T}x$
+subject to $Ax=b,x\ge0$.
+\begin{enumerate}
+\item If there is a feasible solution and the objective function is bounded
+from above, then there is an optimal solution.
+\item If an optimal solution exists then there is an optimal solution that
+is also basic.
+\end{enumerate}
+\end{thm}
+
+
+\subsubsection{Algorithm for LP:}
+
+Suppose that $B\subseteq\left\{ 1\dots n\right\} $ such that $A_{B}$
+is non-singular. Then there exists a unique $x_{B}=A_{B}^{-1}b$.
+Every $BFS$ has this form because if $x$ is a $BFS$ then $\exists B\supseteq supp\left(x\right)$
+such that $A_{B}$ non-singular. $Ax=b\then\sum\limits _{i\in supp\left(x\right)}a_{i}x_{i}=b$
+($a_{i}$ is the $i$th column of $m$) $\then$ $\underbrace{x}_{x_{B}}=\underbrace{A_{B}^{-1}b}_{\in\R^{m}}$.
+$x_{B}=\begin{cases}
+x_{i} & i\in B\\
+0 & i\notin B
+\end{cases}$. The algorithm: given matrix $A$ look at all non-singular matrices
+and compute $x_{B}=A_{B}^{-1}b$. (This is really not efficient)
+\begin{proof}[proof for \thmref{consider-the-:LP126}]
+ Suppose $x_{0}\in P$. We will find a BFS $x\in P$ such that $c^{T}x\ge c^{T}x_{0}$
+(Note that we seek maximal solutions). Let $S=\left\{ v\in P:c^{T}v\ge c^{T}x_{0}\right\} $
+This is not an empty set because $x_{0}$ is in that set. Let $x\in S$
+have the smallest number of non-zero entries (smallest possible support)
+We will show that $A_{supp\left(x\right)}$ has linearly independent
+columns (and so $x$ is a BFS). Suppose, for a contradiction that
+$A_{supp\left(x\right)}$ does not have linearly independent columns
+$\then$ $\exists0\ne y\in\R^{n}$ such that $Ay=0$, and $supp\left(y\right)\subseteq supp\left(x\right)$
+(We take a non zero independent column from $A_{supp\left(x\right)}$
+and extend it with zeros)%
+\begin{lyxgreyedout}
+The support of $y$ is contained because $y$ is defined such that
+$A_{supp\left(x\right)}$ is linearily independant and $y$ is the
+product of that%
+\end{lyxgreyedout}
+.We can say that $\forall t\in\R$, $A\left(x+ty\right)=Ax=b$. We
+can use $t$ to change one of $x's$ values to zero (because $supp\left(y\right)\subseteq supp\left(x\right)$).
+So for small enough $t$ we get $A\left(x+ty\right)=b$ and also $x+ty\ge0$
+(because $supp\left(y\right)\subseteq supp\left(x\right)$). \\
+Suppose that $c^{T}y\ge0$ and also $\exists j$ (explanation why
+is provided by the end of the proof), such that $y_{j}<0$ which means
+$j$ is in the support of $x$ this implies that $x_{j}>0$( we are
+in standard form). If this happens let $t>0$ be the largest value
+such that $x+ty\ge0$ so $support\left(x+ty\right)\subsetneq supp\left(x\right)$
+(there is at least one more zero in the entries of $x+ty$). 
+\[
+c^{T}\left(x+ty\right)=\underbrace{c^{T}x}_{\ge c^{T}x_{0}}+t\underbrace{c^{T}y}_{\ge0}\ge c^{T}x_{0}
+\]
+This is a contradiction (we found a vector $x+ty$ which has a smaller
+support than $x$ -- contradiction). We are good as long as we can
+assume $c^{T}x$ and that $y_{j}<0$ how can we assume that? \\
+We can always assume that $c^{T}y$ is non negative. If $c^{T}y<0$
+then replace $y$ with $-y$. Now we may assume that $c^{T}y\ge0$.
+We need to show why $y_{j}<0$ for some $j$:
+\begin{itemize}
+\item If $c^{T}y\ge0$ and $y$ doesn't have negative coordinates then $\forall t\ge0$
+$x+ty\ge0$. So if $c^{T}y>0$ then $\lim\limits _{t\to\infty}c^{T}\left(x+ty\right)=\infty$
+which is a contradiction to the bounding of the objective. We know
+need to address $c^{T}y=0$:
+\item If $c^{T}y=0$ and $y\ge0$($y$ is not trivial) then take $-y\le0$
+($-y$ has a negative coordinate because $y$ is not trivial), $c^{T}\left(-y\right)\ge0$
+and we are back to the first assumption which gave us what we wanted.
+\end{itemize}
+\end{proof}
+%
+We showed that Its enough to look at basic feasible solutions.
+
+\begin{lyxgreyedout}
+
+\subsection{polyhedrons}
+
+$\max c^{T}x$ $Ax=b$ $x\ge0$.
+
+What we should do is inspect a vertex and then inspect it's neighbours
+if we cannot improve by hoping -> were done.%
+\end{lyxgreyedout}
+
+\begin{lyxgreyedout}
+We are showing again some of the properties we've seen with Michael.
+
+Linear programming is the problem of maximizing a linear function
+over a domain that is defined by finitely many linear equations and
+inequalities. (Polyhedron and if it is bounded it is known as a polytope).
+\begin{defn}
+Canonical form of an LP:
+\begin{align*}
+\max\left\langle c,x\right\rangle \\
+ & Ax\le b
+\end{align*}
+\end{defn}
+
+If we want to reduce a linear program to the canonical form we need
+to come up with something that will remove equations: 
+\[
+\left\langle a,x\right\rangle =\alpha\iff\left\langle a,x\right\rangle \ge\alpha\text{ and }\left\langle a,x\right\rangle \le\alpha
+\]
+
+\begin{defn}
+Standard form of an LP: 
+\begin{align*}
+\max\left\langle c,x\right\rangle \\
+ & Ax=b\\
+ & x\ge0
+\end{align*}
+\end{defn}
+
+We only look at standard form.%
+\end{lyxgreyedout}
+
+Some reminders:
+\begin{defn}
+Canonical form of an LP:
+\begin{align*}
+\max\left\langle c,x\right\rangle \\
+ & Ax\le b
+\end{align*}
+
+Standard form of an LP: 
+\begin{align*}
+\max\left\langle c,x\right\rangle \\
+ & Ax=b\\
+ & x\ge0
+\end{align*}
+If we want to reduce a linear program to the canonical form we need
+to come up with something that will remove equations: 
+\[
+\left\langle a,x\right\rangle =\alpha\iff\left\langle a,x\right\rangle \ge\alpha\text{ and }\left\langle a,x\right\rangle \le\alpha
+\]
+\end{defn}
+
+\begin{defn}
+$x$ is a feasible solution if it satisfies $Ax=b$ and $x\ge0$
+\end{defn}
+
+\begin{defn}
+$support\left(x\right)=\left\{ i\big|x_{i}>0\right\} $%
+\begin{lyxgreyedout}
+This is equivalent because because $x\ge0$ in the standard form%
+\end{lyxgreyedout}
+\end{defn}
+
+\begin{defn}
+$x$ is a basic feasible solution (BFS) if the set of columns $\left\{ a_{i}\big|i\in supp\left(x\right)\right\} $
+is a linearly independent set.
+\end{defn}
+
+\begin{thm}
+If the system $Ax=b,x\ge0$ is feasible (there is a non negative $x$
+such that $Ax=b$) and if $\left\langle c,x\right\rangle $ is bounded
+from above $\then$ There exists an optimal solution to the LP 
+\begin{align*}
+\max\left\langle c,x\right\rangle \\
+ & Ax=b\\
+ & x\ge0
+\end{align*}
+ that is a basic feasible solution.
+\end{thm}
+
+\begin{lyxgreyedout}
+If you haven't watched the lecture, help yourself to minute 13:19
+of lecture dated at 141.1.2020 ``At least you have a tree, you can
+hang yourself from it.'' biggest joke of the century.%
+\end{lyxgreyedout}
+
+
+\subsubsection{Talking about simplex algorithms}
+
+Some intuition:
+
+In this table the rows represent equivalent things:
+
+\begin{tabular}{|c|c|}
+\hline 
+Geometry & Linear algebra\tabularnewline
+\hline 
+\hline 
+vertex of the polytope & BFS\tabularnewline
+\hline 
+supporting hyperplane & defining inequality\tabularnewline
+\hline 
+an edge $=$ two neighboring vertices & two neighboring bases\tabularnewline
+\hline 
+\end{tabular}
+
+\begin{lyxgreyedout}
+$\iff$ A linear function defined on a polytope takes it's maximum
+at a vertex. (if $x$ is basic then $x$ is a vertex in the polytope)
+
+moving from neighbour to another neighbour in linear algebra we have
+some basis, we take another vector -- add it to to the basis and
+take some other column vector out of the basis of the matrix. (like
+in the geometric intuition)%
+\end{lyxgreyedout}
+
+If a solution is locally optimal then we are in an optimum. (We work
+in a convex world so if we reach some local optimum we reached a global
+one). A linear function defined on a polytope takes it's maximum at
+a vertex. (if $x$ is basic then $x$ is a vertex in the polytope).
+So if we choose a vertex and we can't improve by moving to some of
+our neighboring vertices we got an optimum. We can assume that moving
+from neighbor to another neighbor in linear algebra is done as follows:
+Choose some base of column from $A$ which are independent. Form a
+basis of the column space from these vectors. Add a vector (which
+breaks the independence) and remove some vector to gain independent
+basis back.
+
+\begin{lyxgreyedout}
+Many versions of the simplex were shown to take exponential time at
+worst case, we still dont know how good they are.%
+\end{lyxgreyedout}
+
+A lot of simplex versions do not reach a solution in polynomial time.
+Associated with every polytope there is a graph. If the graphs diameter
+is big the simplex algorithm might take a long time reaching a solution. 
+
+In practice we can assume that LP is a solved problem and use it.
+
+\subsubsection{coming back to feasible questions}
+
+We don't always want to maximize. When we ask questions such as 
+\begin{align*}
+\max\left\langle c,x\right\rangle \\
+ & Ax\le b\\
+ & x\ge0
+\end{align*}
+We might as well ask: is $Ax\le b,x\ge0$ even feasible? without maximizing
+we can search: 
+\begin{align*}
+Ax & \le b\\
+x & \ge0\\
+\left\langle c,x\right\rangle  & \ge\text{some number}
+\end{align*}
+We seek feasibility of $Ax\le b$, and $\left\langle c,x\right\rangle $
+with some number. %
+\begin{lyxgreyedout}
+if we can do it - we enlarge that by some factor and try again. if
+we are bounded we can go down.%
+\end{lyxgreyedout}
+
+\begin{lyxgreyedout}
+The above part is a way to write this in the sum: When we ask question's
+such as 
+\begin{align*}
+\max\left\langle c,x\right\rangle \\
+ & Ax\le b\\
+ & x\ge0
+\end{align*}
+ is $Ax\le b,x\ge0$ even feasible? without maximizing we can do a
+simply search: 
+\begin{align*}
+Ax & \le b\\
+x & \ge0\\
+\left\langle c,x\right\rangle  & \ge\text{some number}
+\end{align*}
+ we can do a binary search to find it. we seek feasibility of $Ax\le b$,
+and $\left\langle c,x\right\rangle $ with some number. if we can
+do it - we enlarge that by some factor and try again. if we are bounded
+we can go down.%
+\end{lyxgreyedout}
+
+
+\section{Linear programming duality}
+
+building up some intuition:
+\begin{enumerate}
+\item Any linear combinations of linear equations and non-negative combinations
+of linear inequalities is valid.%
+\begin{lyxgreyedout}
+\begin{align*}
+3x+5y-z & =3\\
+2x-3y+7z & =8\\
+ & \Downarrow\\
+5x+2y+6z & =11
+\end{align*}
+\end{lyxgreyedout}
+\item This is \uline{all} you can derive from the above data. you can
+square, you can take log, you can try many things but there is nothing
+more you can derive.
+\end{enumerate}
+%
+Let's say we have 
+\begin{align*}
+\max\left\langle c,x\right\rangle \\
+ & Ax\le b\\
+ & x\ge0
+\end{align*}
+Lets rephrase this. What is the largest $T$ for which the system
+$Ax\le b,x\ge0,\left\langle c,x\right\rangle \ge T$ is feasible.
+
+Assuming the intuition from above, this means that if for some given
+$T$ 
+\begin{align*}
+Ax & \le b\\
+x & \ge0\\
+\left\langle c,x\right\rangle  & \ge T
+\end{align*}
+ is infeasible, then we should be able to derive $0>1$ using only
+allowed linear combinations.
+\begin{thm}[Strong LP Duality]
+\label{thm:DualLP}If the following LP is bounded 
+\begin{align*}
+\max\left\langle c,x\right\rangle \\
+ & Ax\le b\\
+ & x\ge0
+\end{align*}
+ Then the Dual LP (DLP) 
+\begin{align*}
+\min\left\langle y,b\right\rangle \\
+ & yA\ge c\\
+ & y\ge0
+\end{align*}
+\begin{lyxgreyedout}
+$b$ and $c$ changed rows, larger is replaced with smaller , the
+only thing that remains is the non negativity.%
+\end{lyxgreyedout}
+is also bounded and the moreover the optima are equal. Moreover every
+$x,y$ feasible for LP and DLP respectively satisfy that $\left\langle c,x\right\rangle \le\left\langle b,y\right\rangle $.
+\end{thm}
+
+Let $x$ be a feasible solution for LP. Let $y$ be a feasible solution
+for DLP. Let us calculate $yAx$. \label{weak-LP-duality-proof}
+
+$Ax\le b,y\ge0$ so $yAx\le\left\langle y,b\right\rangle $. %
+\begin{lyxgreyedout}
+multiply from the left by $y^{T}$: $y^{T}Ax\le y^{T}b=\left\langle y,b\right\rangle $%
+\end{lyxgreyedout}
+on the other side $yA\ge c,x\ge0$ so $\left\langle c,x\right\rangle \le yAx$.
+we get 
+\[
+\left\langle c,x\right\rangle \le yAx\le\left\langle y,b\right\rangle \then\left\langle c,x\right\rangle \le\left\langle y,b\right\rangle 
+\]
+
+
+\subsection{Feeding a dual cow}
+
+We are back to the cow feeding problem
+
+cow feed table:
+
+\[
+A=\begin{array}{ccccc}
+ & \text{protein} & \text{fat} & \text{vitimin A} & \dots\\
+\text{grass} & 7 & \cdot & \cdot & \cdot\\
+\text{grains} & \cdot & \cdot & \cdot & \cdot\\
+\vdots & \vdots &  & \vdots & \ddots
+\end{array}
+\]
+ We will work with $A^{T}$ :
+\begin{itemize}
+\item The LP:
+\begin{align*}
+xA & \ge b\\
+x & \ge0\\
+\min & \left\langle c,x\right\rangle 
+\end{align*}
+ the wishes of the farmer - minimal price a farmer wants to pay on
+feeding his cows.
+\item DLP 
+\begin{align*}
+Ay & \le c\\
+y & \ge0\\
+\max & \left\langle b,y\right\rangle 
+\end{align*}
+Optimization problem of the producer of pills. The producer wants
+to generate artificial food for cows and to check how much to charge
+their costumers. $y$ is the vector prices per pill. $\max\left\langle b,y\right\rangle $
+captures the price the farmer needs to pay if he switches to pills.
+$Ay\le c$ express the requirement that this way of feeding is price-competitive
+with the traditional ways of feeding cows.
+\end{itemize}
+\begin{lyxgreyedout}
+the problem of the dualist%
+\end{lyxgreyedout}
+{} 
+
+\thmref{DualLP} states that we can solve each problem by looking
+at the dual problem, which means that the pill maker should be able
+to solve the farmers problem and get the maximal price he can try
+and squeeze out of farmers.
+\begin{lem}[Farkas]
+ Let $A_{m\times n}$ be a real matrix and let $b\in\R^{m}$. Then
+the system $Ax=b$, $x\ge0$ has no solution (i.e infeasible) iff
+there exists a vector $y\in\R^{m}$ such that $yA\ge0$ and $\left\langle b,y\right\rangle <0$.
+\end{lem}
+
+\begin{proof}
+One part of the proof is very easy: If such $y\in\R^{m}$ exists,
+let us multiply by it on the left: $yAx=\left\langle b,y\right\rangle <0$
+and we know $yAx=\left\langle yA,x\right\rangle \ge0$ because $yA\ge0$
+and $x\ge0$. %
+\begin{lyxgreyedout}
+Page 54 AllLectures%
+\end{lyxgreyedout}
+{} We will be back here later. The full proof will be in another part
+of the summary (as was done in class)
+\end{proof}
+%
+Farkas' Lemme follows from separation theorem among convex sets. Two
+convex and closed sets that are disjoint - there is a hyperplane that
+separates the points between them.
+
+Why is the Farkas Lemma a separation theorem? $C=\left\{ Ax\big|x\ge0\right\} =$
+the cone generated by the columns of $A$. The assumption says $b\notin C$.
+\begin{lem}[Projection Lemma]
+ \label{lem:Projection}Let $C\subseteq\R^{m}$ be convex and closed.
+\begin{enumerate}
+\item $\forall b\in\R^{m}$ there is a unique $z\in C$ that is closest
+to $b$. (i.e. $\min\limits _{z\in c}\norm{b-z}$) $z$ is called
+the projection of $b$ on $c$.
+\item $z$ is characterized by the following condition: For every $x\in C$
+there holds $\left\langle x-z,b-z\right\rangle \le0$.
+\end{enumerate}
+\end{lem}
+
+\begin{proof}
+$ $
+\begin{enumerate}
+\item Existence follows by compactness. Uniqueness $\then$ convexity
+\item First want to show: if $\forall x\in C$ $\left\langle x-z,b-z\right\rangle \le0$
+$\then$$z$ is the minimizer.
+\begin{align*}
+\norm{x-b}_{2}^{2} & =\norm{\left(x-z\right)+\left(z-b\right)}_{2}^{2}=\\
+ & =\norm{x-z}^{2}+\norm{z-b}^{2}+2\left\langle x-z,z-b\right\rangle \ge\\
+ & \ge\norm{z-b}^{2}+2\underbrace{\left\langle x-z,z-b\right\rangle }_{\ge0}
+\end{align*}
+ If $z$ is such that $\left\langle x-z,b-z\right\rangle \le0$ then
+$z$ is the minimizer. (We compare $\norm{x-b}$ with $\norm{z-b}$
+and we get $\norm{x-b}\ge\norm{z-b}+nonNegativeItem$. This means
+that $z$ is the unique minimizer). The proof stops here without being
+completed.
+\end{enumerate}
+\end{proof}
+Duality. ``We can do with duality a lot of wonderful things''. ``Everything
+that is implied by a finite system of linear equations and inequalities
+can be derived in the standard way: Any linear combinations of equations
+and any non negative linear combination of inequalities''.
+\begin{itemize}
+\item LP: 
+\begin{align*}
+\max\left\langle c,x\right\rangle \\
+ & Ax\le b\\
+ & x\ge0
+\end{align*}
+\item and $DLP$:
+\begin{align*}
+\min\left\langle b,y\right\rangle \\
+ & yA\ge c\\
+ & y\ge0
+\end{align*}
+\end{itemize}
+Another way to represent $DLP$ and $LP$: In the upcoming theorem
+we will discuss about this:
+\begin{itemize}
+\item $LP_{2}$:
+\begin{align*}
+\max\left\langle c,x\right\rangle \\
+ & Ax=b\\
+ & x\ge0
+\end{align*}
+\item $DLP_{2}$:
+\begin{align*}
+\min\left\langle b,y\right\rangle \\
+ & yA\ge c
+\end{align*}
+There is no requirement for $y\ge0$%
+\begin{lyxgreyedout}
+Why is the symmetry broken in the second representation? We asked
+in the second representation whether $\left\langle c,x\right\rangle =t$
+is feasible. by Farkas lemma it is unsatisfiable if it can be refuted
+in a specific way.%
+\end{lyxgreyedout}
+\begin{lyxgreyedout}
+if feasibilty for the LP fails, then we can combine them however we
+want?%
+\end{lyxgreyedout}
+\end{itemize}
+\begin{thm}
+For every feasible $y$ (for DLP) and any feasible $x$ (for LP) there
+holds $\left\langle c,x\right\rangle \le\left\langle b,y\right\rangle $.
+If the LP is feasible and bounded then the optima of the LP and the
+DLP are equal.
+\end{thm}
+
+\begin{lyxgreyedout}
+If we wish to show these theorem in prespective of NP, NP intersects
+co-NP.%
+\end{lyxgreyedout}
+\begin{lyxgreyedout}
+
+\subsubsection{Farkas$\protect\then$LP duality}
+\begin{lem}[Farkas]
+ The system $Ax=b,x\ge0$ has no solution (infeasible) if and only
+if $\exists y$ s.t. $yA\ge0$, $\left\langle y,b\right\rangle \le0$.
+\end{lem}
+
+Because $yAx=\left\langle y,b\right\rangle <0$ and $yA\ge0$ and
+$Ax\ge0$.%
+\begin{lyxgreyedout}
+\begin{proof}[Strong LP Duality \thmref{DualLP}]
+ This is an incomplete proof,
+
+Rather than solving $LP_{2}$ we deal with the question: is the system
+\begin{align*}
+\left\langle c,x\right\rangle  & =\lambda\\
+ & Ax=b\\
+ & x\ge0
+\end{align*}
+$\begin{pmatrix}A\\
+c
+\end{pmatrix}x=\begin{pmatrix}b\\
+\lambda
+\end{pmatrix}$ feasible? By Farkas it's infeasible if and only if there exists a
+$y$ such that $\tilde{y}\begin{pmatrix}A\\
+c
+\end{pmatrix}\ge0$, $\left\langle \tilde{y},\begin{pmatrix}b\\
+\lambda
+\end{pmatrix}\right\rangle <0$ where $\tilde{y}=\left(y,-1\right)$. %
+\begin{lyxgreyedout}
+the last coordinate of $\tilde{y}$ is non negative since otherwise
+the promal linear program is infeasible. We can assume that the last
+coordinate is $-1$ otherwise we can simply devide $\tilde{y}$ with
+$-\tilde{y}_{m+1}$ and denote $y=\left(\tilde{y_{1}}\dots\tilde{y_{m}}\right)$.
+In this case $\left\langle \tilde{y},\begin{pmatrix}b\\
+\lambda
+\end{pmatrix}\right\rangle =\left\langle y,b\right\rangle -\lambda$ and the the inequality $\left\langle \tilde{y},\begin{pmatrix}b\\
+\lambda
+\end{pmatrix}\right\rangle <0$ can be written as $\left\langle y,b\right\rangle <\lambda$.%
+\end{lyxgreyedout}
+\[
+\tilde{y}\begin{pmatrix}A\\
+c
+\end{pmatrix}\ge0\iff\underline{yA-c\ge0}
+\]
+{} 
+\[
+\underline{yb-\lambda<}0\iff\left\langle \tilde{y},\begin{pmatrix}b\\
+\lambda
+\end{pmatrix}\right\rangle <0
+\]
+\begin{lyxgreyedout}
+Notice that we got that it is infeasible when $y^{T}A\ge c$ and $yb<\lambda=\left\langle c,x\right\rangle $%
+\end{lyxgreyedout}
+. %
+\begin{lyxgreyedout}
+there is such a $y$, multipling that $y$ with a negative doesn't
+break our inner product negativity.%
+\end{lyxgreyedout}
+{} %
+\begin{lyxgreyedout}
+What we proved is that farkas lemma implies the strong duality. We
+now showed that the critical $\lambda$ that moves the $lp$ to not
+be possible is bigger then $yb$.%
+\end{lyxgreyedout}
+\begin{lyxgreyedout}
+I think this helps because we showed that there is no solution when
+we surpass the dual.%
+\end{lyxgreyedout}
+{} We saw that Farkas implies strong duality.%
+\begin{lyxgreyedout}
+because $\lambda$ is greater then the maximum of the LP if and only
+if there is a vector $y$ such that $y^{T}A\ge c$ and $\left\langle y,b\right\rangle <b$.
+If we relax the constraint $\left\langle y,b\right\rangle <\lambda$
+to be $\left\langle y,b\right\rangle \le\lambda$ then there will
+be a single critical value of $\lambda$ for which both systems have
+a solution. This critical $\lambda$ is the maximum of the original
+LP as well as the minimum of the dual linear program.%
+\end{lyxgreyedout}
+\end{proof}
+\end{lyxgreyedout}
+\end{lyxgreyedout}
+
+\begin{lem}[Farkas]
+ The system $Ax=b,x\ge0$ has no solution (infeasible) if and only
+if $\exists y$ s.t. $yA\ge0$, $\left\langle y,b\right\rangle \le0$.
+\end{lem}
+
+\begin{proof}
+First: If such $y\in\R^{m}$ exists, let us multiply by it on the
+left: $yAx=\left\langle b,y\right\rangle <0$ and we know $yAx=\left\langle yA,x\right\rangle \ge0$
+because $yA\ge0$ and $x\ge0$. %
+\begin{lyxgreyedout}
+Page 54 AllLectures%
+\end{lyxgreyedout}
+{} Second part:
+\begin{rem}
+recall infeasibility of 
+\begin{align*}
+\max\left\langle c,x\right\rangle \\
+ & Ax=b\\
+ & x\ge0
+\end{align*}
+means $b\notin C$ where $C$ is the cone generated by the columns
+of $A$. What the lemma says is that there is a hyperplane through
+the origin that separates $b$ from $C$. $H=\left\{ x\big|\left\langle x,y\right\rangle =0\right\} $.
+$\left\langle y,b\right\rangle <0\iff b\in H^{-}$, $yA\ge0\iff\forall i\left\langle y,a_{i}\right\rangle \ge0$
+$\iff$ $\forall ia_{i}\in H^{+}$. The hyperplane $H$ strongly separates
+$b$ from the cone $C$. (we are using the separation theorem which
+will be shown next)
+\end{rem}
+
+\end{proof}
+%
+
+\subsection{Separation theorem}
+
+More generally, We have separation lemma:
+\begin{lem}[Separation lemma]
+ Let $C\subseteq\R^{m}$ be closed and convex and $b\notin C$, Then
+there is a hyperplane separating $b$ from $C$.
+\end{lem}
+
+\begin{proof}
+If $z\in C$ is \uline{the} closest point to $b$, then we can
+take $H=\left\{ x\big|\left\langle x-z,b-z\right\rangle =0\right\} $.
+\begin{lyxgreyedout}
+$x-z$ is orthogonal to $b-z$ so $H$ is a family of lines. 
+\[
+\left\langle x,b-z\right\rangle =\left\langle z,b-z\right\rangle 
+\]
+\end{lyxgreyedout}
+\begin{lyxgreyedout}
+This hyperplane touch $C$ in point $z$.%
+\end{lyxgreyedout}
+{} It holds that $\left\langle b-z,b-z\right\rangle =\norm{b-z}^{2}>0$
+since $b\notin C$ (which means $z\ne b$). On the other hand for
+$x\in C$ it holds that $\left\langle x-z,b-z\right\rangle \le0$
+(from the projection lemma \ref{lem:Projection} ). Which means $b\in H^{+}$
+and $C\subseteq H^{-}$.
+\end{proof}
+\begin{lyxgreyedout}
+Note that $\left\langle x-z,z-b\right\rangle $ is the opposite $\left\langle x-z,z-b\right\rangle $
+(minus one multiplication)%
+\end{lyxgreyedout}
+\begin{lyxgreyedout}
+$\norm{x-z}\ne0$ because $x\ne z$.%
+\end{lyxgreyedout}
+
+\begin{lyxgreyedout}
+Projection $\then$ separation: If we let $x=b$, $\left\langle x-z,b-z\right\rangle =\norm{b-z}^{2}>0$$\then$
+$b\in H^{+}$. By the projection lemma $\forall x\in C$ there holds
+$\left\langle x-z,b-z\right\rangle \le0$ $\then$ $C\subseteq H^{-}$.%
+\end{lyxgreyedout}
+
+Final missing step for the Farkas lemma proof is: Why $H$ goes through
+the origin? $H=\left\{ x\big|\left\langle x-z,b-z\right\rangle =0\right\} $.
+We know that $b\in H^{+}$ (if $x=z\then0$ $x=0$ means $\left\langle x-z,b-z\right\rangle \le0$
+\begin{lyxgreyedout}
+Not sure why, todo%
+\end{lyxgreyedout}
+
+
+\subsubsection{The correct order}
+
+Projection lemma $\then$ Separation lemma. Specialize $C=$ convex
+cone $\then$ Farkas $\then$ Strong duality (The proof for strong
+duality will be shown a bit later).
+
+\section{The Ellipsoid algorithm}
+
+There exists a bounded and convex body $P$ in $\R^{n}$. Problem:
+decide whether $P=\emptyset$ or not. Assumptions about $P$: $P\subseteq B\left(0,R\right)$
+(ball with radius $R$ around the origin ) if $P\ne\emptyset$$\then$
+$P$ contains a ball of radius $r$.
+
+We assume that these programs exist:
+\begin{itemize}
+\item Efficient Membership oracle: $x\in P$?
+\item Efficient separation oracle: $H$ separating $x$ from $P$.
+\end{itemize}
+\begin{lyxgreyedout}
+We assume that $R,r$ are known to us.%
+\end{lyxgreyedout}
+
+\begin{defn}
+An ellipsoid is the image of the unit ball under affine transformation.
+\end{defn}
+
+$B\left(0,1\right)=\underbrace{\sum x_{i}^{2}}_{\left\langle x,x\right\rangle }\le1$
+
+In other words an ellipsoid $E$ with \uline{center} at $c$ is
+given by: $E=\left\{ x\big|\left(x-c\right)M\left(x-c\right)^{T}\le1\right\} $
+where $M$ is a positive definite matrix.
+
+We know by assumption $P$ is hiding somewhere inside a some enormous
+ball. We can ask whether $0\in P$ if the answer is yes -> game over.
+if the answer is no? we go to the separation oracle to separate $P$
+from our origin.
+
+step $k$ of the algorithm: We have an ellipsoid $E_{k}$ with center
+$c_{k}$. we ask is $c_{k}\in P$ using our membership oracle, if
+the answer is yes - game over $P\ne\emptyset$. Else we take a separating
+hyperplane using our separation oracle. Previously we knew that $P\subseteq E_{k}$
+now we know $P\subseteq E_{K}^{+}$ the half ellipsoid which we cut
+using the hyperplane. Now we create a new ellipsoid which will contain
+$E_{k}^{+}$.
+\begin{defn}
+a half-ellipsoid is the intersection of an ellipsoid $E$ with a half-space
+$H^{+}$ through $c$ the center of $E$.
+\end{defn}
+
+\begin{prop}
+For every half-ellipsoid $E^{+}\subseteq\R^{n}$ there exist an ellipsoid
+$E'$ such that $E^{+}\subset E'$ and $vol\left(E'\right)\le\left(1-\frac{1}{2n^{2}}\right)Vol\left(E\right)$
+\begin{lyxgreyedout}
+this isn't the exact constant $1-\frac{1}{2n^{2}}$ it might be different
+but that's okay.%
+\end{lyxgreyedout}
+\end{prop}
+
+The algorithm keeps on going until we find membership or we reach
+an ellipsoid which has a smaller volume then a ball of radius $r$
+(because $P$ should contain a ball of radius $r$).
+
+\begin{lyxgreyedout}
+The idea is to keep on running the ellipsoid and we cut the volume
+really fast. if we get to a volume which is really small - smaller
+then $r$ we can conclude that $P$ can't be inside something which
+it should hold (a ball of radius $r$.)%
+\end{lyxgreyedout}
+\begin{lyxgreyedout}
+An affine transformation $x\to Ax+b$ multiplies all volumes by $\left|detA\right|$.
+therefore it suffices to prove the proposition when $E=B\left(0,1\right)$
+. $E^{+}=E\cap\left\{ x\big|x_{1}>0\right\} $. %
+\begin{lyxgreyedout}
+We apply a reverse transformation such that we move the ellipsoid
+back to the unit ball and we can calculate it there and then put it
+back.%
+\end{lyxgreyedout}
+
+\begin{lyxgreyedout}
+Ayelet's 3 last pages%
+\end{lyxgreyedout}
+
+We want to use this ellipsoid as a tool to solve linear programming
+- for feasibility. %
+\begin{lyxgreyedout}
+Complete from video, There is a missing segment here 15:37%
+\end{lyxgreyedout}
+
+\uline{Q}: is there a strongly polynomial algorithm for $LP$?
+$LP$ is in $P$ (polynomial time) because ellipsoid can solve it
+in polynomial time. we don't know if there is algorithm $LP$. This
+is still an open question and we don't know this. in practice this
+is okay. neat.
+
+The Cone of PSD matrices:
+
+Membership oracle: $M\in PSD$ ? we can do that easily.
+
+Separation oracle: $\sum a_{ij}m_{ij}<0$ and $\sum a_{ij}q_{ij}\ge0$
+$\forall Q\in PSD$.%
+\end{lyxgreyedout}
+
+
+\section{Last Lecture}
+\begin{itemize}
+\item We will talk about strong duality from Farkas.
+\item We will talk about the ellipsoid algorithm once more.
+\item We will show that determinant is volume of a matrix
+\end{itemize}
+
+\subsection{Farkas $\protect\then$ Strong LP duality}
+\begin{thm}[Strong LP duality]
+ Suppose that both LP and DLP are feasible, and define a non empty
+polytope (=bounded set) $\then$ their optima are equal.
+\begin{itemize}
+\item LP:
+\begin{align*}
+\max\left\langle c,x\right\rangle \\
+ & Ax=b\\
+ & x\ge0
+\end{align*}
+\item DLP:
+\begin{align*}
+\min\left\langle b,y\right\rangle \\
+ & yA\ge c
+\end{align*}
+\end{itemize}
+\end{thm}
+
+\begin{proof}
+$ $
+
+Easy part: under these assumptions $x,y$ feasible for LP/DLP respectively.
+$\left\langle c,x\right\rangle \le\left\langle b,y\right\rangle $.
+\ref{weak-LP-duality-proof}%
+\begin{lyxgreyedout}
+easy to show this. also we've seen it.%
+\end{lyxgreyedout}
+
+hard part: Let $y_{0}$ be an optimal solution for a DLP%
+\begin{lyxgreyedout}
+. if we can find an $x$ such it solve LP and the two solutions are
+equal we are done%
+\end{lyxgreyedout}
+. Let us assume %
+\begin{lyxgreyedout}
+by contradiction?%
+\end{lyxgreyedout}
+{} that for every LP--feasible $x$, it holds that $\left\langle c,x\right\rangle <\left\langle b,y_{0}\right\rangle $.
+This means that there is no $x\ge0$ such that $Ax=b$ and $\left\langle c,x\right\rangle =\left\langle b,y_{0}\right\rangle $,
+in other words $\nexists x\ge0$ such that $\tilde{A}x=\tilde{b}$,
+$\tilde{A}=\begin{pmatrix}A\\
+c
+\end{pmatrix},\tilde{b}=\begin{pmatrix}b\\
+\left\langle y_{0},b\right\rangle 
+\end{pmatrix}$. By Farkas, %
+\begin{lyxgreyedout}
+it isn't feasible if and only if there is such vector%
+\end{lyxgreyedout}
+{} there is a vector $w$ which shows that no such $x$ exists. i.e
+$w$ such that $w\tilde{A}\ge0$ and $\left\langle w,\tilde{b}\right\rangle <0$.
+Three cases to check: The last coordinate of $w$ is $\left\{ -1,0,1\right\} $
+\begin{lyxgreyedout}
+i assume we can normalize the vector to get such last coordinate.%
+\end{lyxgreyedout}
+\begin{lyxgreyedout}
+(we normalize $w$ with a positive value such that the last entry
+of $w$ is either $\left\{ 1,-1,0\right\} $)%
+\end{lyxgreyedout}
+:
+\begin{itemize}
+\item $w=\begin{pmatrix}z\\
+-1
+\end{pmatrix}$: $w\tilde{A}\ge0\iff zA\ge c$. This means that $\left\langle z,b\right\rangle <\left\langle y_{0},b\right\rangle $
+(from $\left\langle w,\tilde{b}\right\rangle <0$ ). We found a $z$
+that it is better then $y_{0}$.
+\item If $w=\begin{pmatrix}z\\
+1
+\end{pmatrix}$ then $zA\ge-c$ (from $w\tilde{A}\ge0$) this means that $\left\langle z+y_{0},b\right\rangle =\left\langle z,b\right\rangle +\left\langle y_{0},b\right\rangle <0$.
+($\left\langle \begin{pmatrix}z\\
+1
+\end{pmatrix},\begin{pmatrix}b\\
+y_{0},b
+\end{pmatrix}\right\rangle <0\iff\left\langle z,b\right\rangle +\left\langle y_{0},b\right\rangle <0$) 
+\begin{claim*}
+For some $\epsilon>0$ small enough: $\left(1+\epsilon\right)y_{0}+\epsilon z$
+is a better solution than $y_{0}$ (for DLP).
+\begin{proof}
+Lets look at: 
+\[
+\left(\left(1+\epsilon\right)y_{0}+\epsilon z\right)A=y_{0}A+\underbrace{\epsilon\left(y_{0}+z\right)A}_{\ge0}\ge c
+\]
+ because $y_{0}A\ge c$ and $zA\ge-c$ so $\left(y_{0}+z\right)A\ge0$,
+Now 
+\[
+\left\langle \left(1+\epsilon\right)y_{0}+\epsilon z,b\right\rangle <\left\langle y_{0},b\right\rangle 
+\]
+which means we can construct a vector which is a combination of $y_{0}$
+and $z$ to get a better solution (smaller). We need to see that $\left\langle \epsilon y_{0}+\epsilon z,b\right\rangle <0$
+to show that. \\
+
+\begin{lyxgreyedout}
+My take on trying to simplifying it: We know that $\left\langle z+y_{0},b\right\rangle =\left\langle z,b\right\rangle +\left\langle y_{0},b\right\rangle <0$
+so $\left\langle z+y_{0},b\right\rangle <0\iff\epsilon\left\langle z+y_{0},b\right\rangle <0$
+for $\epsilon>0$. Now 
+\[
+\left\langle \left(1+\epsilon\right)y_{0}+\epsilon z,b\right\rangle =\left\langle y_{0}+\epsilon z+\epsilon y_{0},b\right\rangle =\epsilon\underbrace{\left\langle z+y_{0},b\right\rangle }_{<0}+\underbrace{\left\langle y_{0},b\right\rangle }_{<0}
+\]
+ which means we improve the solution $y_{0}$ because $\left(1+\epsilon\right)y_{0}+\epsilon z$
+is smaller then simply $y_{0},b$ .%
+\end{lyxgreyedout}
+\end{proof}
+\end{claim*}
+\item what happens when the last coordinate is $0$? $w=\begin{pmatrix}z\\
+0
+\end{pmatrix}$ $zA\ge0,\left\langle z,b\right\rangle <0$ this means that the DLP
+is unbounded. Explanation: Assume $m$ is positive, $\left(y+mz\right)A\ge c$,
+$\left\langle y+mz,b\right\rangle <\left\langle y_{0},b\right\rangle $
+which is a better solution. %
+\begin{lyxgreyedout}
+We can make $m$ as big as we want.. 
+\[
+\left\langle \begin{pmatrix}mz\\
+0
+\end{pmatrix},\begin{pmatrix}b\\
+\left\langle y_{0},b\right\rangle 
+\end{pmatrix}\right\rangle =\left\langle mz,b\right\rangle <0
+\]
+\end{lyxgreyedout}
+\end{itemize}
+\begin{lyxgreyedout}
+We showed a contradiction. %
+\end{lyxgreyedout}
+
+\end{proof}
+%
+
+\subsection{Back to the ellipsoid algorithm}
+\begin{enumerate}
+\item An ellipsoid is the image of a ball ($\ell_{2}$ ball) under an affine
+transformation.
+\item We consider %
+\begin{lyxgreyedout}
+David: ``should be bounded'', David later: ``Welp it is bounded,
+it is surrounded by a ball''%
+\end{lyxgreyedout}
+{} a convex body (fully dimensional) $P\subseteq\R^{n}$. $P\subseteq B\left(0,R\right)$,
+guarantee:
+\begin{enumerate}
+\item if $p\ne0$ $\then$ it contains a ball of radius $r$.
+\item Oracles: We can answer efficiently the queries:
+\begin{enumerate}
+\item Membership: $x\overset{?}{\in}P$.
+\item Separation: $H$ that separates $x$ from $P$.
+\end{enumerate}
+\end{enumerate}
+\item We consider ellipsoid $E_{k}$ with centers $x_{k}$ $E_{0}=B\left(0,R\right)$
+, $x_{0}=0$
+\item Step: Query $x_{k}\overset{?}{\in}P$, In case the answer is yes $\then P\ne\emptyset$.
+Else : Let $\tilde{H}$ be a separating hyperplane, $H||\tilde{H}$
+goes through $x_{k}$. %
+\begin{lyxgreyedout}
+We took the parallel hyperplane that goes through $x_{k}$..%
+\end{lyxgreyedout}
+$E_{k}^{+}=E_{k}\cap H^{+}$.
+\end{enumerate}
+\begin{lyxgreyedout}
+We never work with the ellipsoid we work with matrices over the ball..%
+\end{lyxgreyedout}
+
+\begin{lem}
+If $E\subseteq\R^{n}$ is an ellipsoid with center $x$, and $H$
+as hyperplane through $x$ Let $E^{+}=E\cap H^{+}$ $\then$ $\exists$
+Ellipsoid $E'\supset E^{+}$ where $vol\left(E'\right)<\left(1-\frac{1}{2n^{2}}\right)vol\left(E\right)$.
+\end{lem}
+
+This means that the ellipsoids we find shrink exponentially.
+
+\subsubsection{personal note}
+
+The ellipsoid can be used in order to find a feasible solution to
+the LP problem: Once we find feasibilty we know from strong duality
+that the optimal solution is achievable when the DLP and LP solutions
+intersect. Lets find the feasible solution for the following problem:
+$Ax=b,x\ge0$ and $y^{T}A\ge c^{T}$, $c^{T}x=y^{T}b$. $x,y$ that
+are feasible also uphold the best solution for the LP and DLP problem. 
+
+Using the ellipsoid method we should be able to find a feasible solution
+(a member of the group) to a linear programming problem using a separation
+and membership oracle. 
+
+With that knowledge about the ellipsoid method we advance to the next
+subject.
+
+\section{semi-definite programming}
+
+Having a method of finding feasible solutions we face a new type of
+optimization problems, lets dive in:
+
+\begin{lyxgreyedout}
+We are in $n^{2}$ dim space, in there there is a cone of the positive
+semi definite matrices. What do we do here? What do we want to check?%
+\end{lyxgreyedout}
+
+$PSD_{n}:=$ Cone of (symmetric) $n\times n$ positive semi-definite
+matrices.
+
+This cone has good separation and membership oracles. 
+\begin{itemize}
+\item Membership, Given $n\times n$ matrix $A$ we can ask whether $A\overset{?}{\in}PSD_{n}$
+and find a solution fast by finding all non-negative eigenvalues.
+\item Separation, Suppose that $A\notin PSD_{n}$ $\then$ $\exists x$
+such that $xAx^{T}=\sum\overbrace{x_{i}x_{j}}^{\text{coefficients}}\cdot\overbrace{a_{ij}}^{\text{variable}}<0$%
+\begin{lyxgreyedout}
+$xAx=\sum\limits _{i,j}x_{i}x_{j}a_{ij}<0$ so this is negative. The
+variables are $a_{i,j}$ and $x_{i},x_{j}$ are the coefficients for
+the separator.%
+\end{lyxgreyedout}
+{} where $\forall B\in PSD_{n}$, $xBx^{T}\ge0$. $x$ determine the
+coefficients of $A$, and thus define a separator. For any point $C$
+in the space, if $xCx=\sum\left(x_{i}x_{j}\right)\cdot c_{ij}\ge0$
+(similar to $\left\langle x,c\right\rangle \ge0$) then $C\in PSD_{n}$
+else $xCx<0$, $C\notin PSD$. Therefore $x$ defines a separator.
+(How can we find such an $x$? We find a negative eigenvalue for $A$)
+\end{itemize}
+consequences of Ellipsoid Algorithm:
+\begin{enumerate}
+\item Efficiently decide whether a finite list of linear inequalities is
+feasible. (find feasible solution for LP in polynomial time)
+\item In addition require that a matrix made up of our variables in $PSD$.
+\begin{lyxgreyedout}
+$X$ is a matrix in $PSD_{n}$list of linear equations and inequalities
+in $x_{ij}$ optimize some fin function in the $x_{ij}$.%
+\end{lyxgreyedout}
+{} In otherwords we can now solve questions as follows: given $X\in PSD$
+and a list of linear equations and inequalities in $x_{i,j}$ , optimize
+some linear function in the $x_{i,j}$.
+\end{enumerate}
+Lets see what we can do with such a tool
+
+
+\subsection{approximation of Max cut}
+
+Given a graph $G$ find the bi-partition $V\left(G\right)=A\cup B$
+such that $e\left(A,B\right)$ is maximized (NP--Hard).
+
+\subsubsection{Goemans--williamson algorithm}
+
+Gives a $0.868$ approximation to max cut using semi-definite programming.
+Max cut for $G=\left(V,E\right),V=\left\{ 1\dots n\right\} $ can
+be defined as
+
+\[
+maxCut\left(G\right)=\max_{x:v\to\left\{ -1,1\right\} }\sum_{i,j\in E}\frac{1-x_{i}x_{j}}{2}
+\]
+
+Lets map the vertices into unit vectors. 
+\[
+\text{v-maxCut}\left(G\right)=\max_{\begin{array}{c}
+x_{1}\dots x_{n}\\
+\norm{x_{i}}=1
+\end{array}}\sum_{i,j\in E}\frac{1-\left\langle x_{i},x_{j}\right\rangle }{2}
+\]
+ %
+\begin{lyxgreyedout}
+we are allowed to use any unit vectors that we want, So $v-maxCut\left(G\right)=\max_{\begin{array}{c}
+x_{1}\dots x_{n}\\
+\norm{x_{i}}=1
+\end{array}}\sum_{i,j\in E}\frac{1-\left\langle x_{i},x_{j}\right\rangle }{2}$ is bigger then $\max_{x:v\to\left\{ -1,1\right\} }\sum_{i,j\in E}\frac{1-x_{i}x_{j}}{2}$%
+\end{lyxgreyedout}
+{} Obviously $\text{v-maxCut}\left(G\right)\ge\text{maxCut}\left(G\right)$
+\begin{thm}
+$ $
+\begin{enumerate}
+\item $1.13\cdot\text{maxCut}\left(G\right)\ge\text{v-maxCut}\left(G\right)$.
+\item $\text{v-maxCut}\left(G\right)$ can be efficiently computed.(Using
+semi-definite programming)
+\end{enumerate}
+\end{thm}
+
+we construct a matrix $A=\begin{pmatrix}-x_{1}-\\
+\vdots\\
+-x_{n}-
+\end{pmatrix},Y=AA^{T}$ so $Y\in PSD$. Each $x_{i}$ vector is a unit vectors. so $\forall i\quad y_{ii}=1$.
+What we want is 
+\[
+\max\sum_{i,j\in E}\frac{1-y_{ij}}{2}
+\]
+ And we can do this using semi-definite programming. %
+\begin{lyxgreyedout}
+meaning we maximize $y_{ij}$ in a PSD matrix%
+\end{lyxgreyedout}
+. %
+\begin{lyxgreyedout}
+We want to maximize this because $y_{i,j}=\left\langle x_{i},x_{j}\right\rangle $%
+\end{lyxgreyedout}
+
+Two issues remain:
+\begin{enumerate}
+\item why is $\text{v-maxCut}\left(G\right)\le1.13\text{maxCut}\left(G\right)$
+?
+\item How do we actually partition $V\left(G\right)$?
+\end{enumerate}
+Given $Y$ we can recover the $x's$. Actually given optimal $x_{i}$'s
+that solve this, we can efficiently find a partition that is $\ge0.868\cdot maxCut\left(G\right)$.
+
+step two of the algorithm after we found $Y$. Pick a random hyperplane
+through the origin, and partition $v$ accordingly. (We select a random
+vector and take an inner product with all the vectors $x_{i}$'s)
+People we're able to remove the randomness but we're not going to
+get into that.
+
+\begin{lyxgreyedout}
+if $\left\langle x_{i},x\right\rangle \le0$ it's in partition $A$,
+else $\left\langle x_{i},x\right\rangle >0$ its in partition $B$.%
+\end{lyxgreyedout}
+
+Suppose that $x_{i},x_{j}$ form an angle of $\theta\iff\left\langle x_{i},x_{j}\right\rangle =\cos\theta$.
+What is the probability that a random hyperplane through the origin
+separates $x_{i},x_{j}$, The answer is $\frac{\theta}{\pi}$ %
+\begin{lyxgreyedout}
+$\left(\frac{\theta}{180}\right)$%
+\end{lyxgreyedout}
+\begin{lyxgreyedout}
+plot the two points and the angle between them and the origin, Now
+we want to ask what is the chance that we get a line in between them%
+\end{lyxgreyedout}
+. $\then$ $\E{\text{size of the cut we create}}=\sum\limits _{i,j\in E}\frac{\theta_{i,j}}{\pi}$.
+\begin{claim}
+We create a cut that is $\ge0.868\text{maxCut}\left(G\right)$. Actually
+we show that our cut (in expectation) is 
+\[
+\ge0.868\text{v-maxCut}\left(G\right)\ge0.868\text{maxCut}\left(G\right)
+\]
+ Our claim is that $\sum\frac{\theta_{i,j}}{\pi}\ge0.868\sum\frac{1-\left\langle x_{i},x_{j}\right\rangle }{2}$.
+Actually: $\forall\pi\ge\theta\ge0\quad$ $\frac{\theta}{\pi}\ge0.868\left(\frac{1-\cos\theta}{2}\right)$.
+\end{claim}
+
+
+\subsection{Determinant is volume}
+\begin{defn}
+Let $x_{1}\dots x_{m}$ be vectors in $\R^{n}$ the parallelepiped
+$\left(Makbilon\right)$ that they generate is $P=\left\{ \sum_{i=1}^{m}t_{i}x_{i}\big|\forall i\quad1\ge t\ge0\right\} $
+\begin{lyxgreyedout}
+Looks like diamond, or the sim's diamond in $\R^{3}$%
+\end{lyxgreyedout}
+\begin{lyxgreyedout}
+in convex hull we demand that the $t_{i}$s sum into $1$.%
+\end{lyxgreyedout}
+
+Why do we consider it? This is the image of the unit cube under a
+linear map given by the matrix whose rows are $x_{1}\dots x_{m}$
+\end{defn}
+
+\begin{thm}
+The volume $vol\left(P\right)$ of the parallelepiped formed by $x_{1}\dots x_{m}\in\R^{n}$
+is given by $vol^{2}\left(P\right)=\det AA^{T}$ %
+\begin{lyxgreyedout}
+$\det A=\det A^{T}$ and $\det AB=\det A\cdot\det B$%
+\end{lyxgreyedout}
+where $A$ is the matrix with rows $x_{1}\dots x_{m}$.
+\end{thm}
+
+\begin{proof}
+By induction on $m$. For $m=1$ the matrix is just a vector, and
+$\left\langle x,x\right\rangle =\norm x^{2}$.
+
+$A=\begin{pmatrix}-x_{1}-\\
+-x_{2}-\\
+\vdots\\
+-x_{m}-
+\end{pmatrix}$ all we need to do is to express $x_{1}=a+b$ where $a\perp span\left\{ x_{2}\dots x_{m}\right\} $
+and $b\in span\left\{ x_{2}\dots x_{m}\right\} $ as a result the
+height is exactly $a$. $\begin{pmatrix}-a+b-\\
+-x_{2}-\\
+\vdots\\
+-x_{m}-
+\end{pmatrix}=\left(\begin{array}{c}
+a+b\\
+\hline M
+\end{array}\right)$. 
+\begin{align*}
+\det AA^{T} & =\det\left(\begin{array}{cc}
+\norm{a+b}^{2} & \left(a+b\right)M\\
+\left(a+b\right)M^{T} & MM^{T}
+\end{array}\right)=\\
+ & =\det\left(\begin{array}{cc}
+\norm a^{2} & 0\\
+0 & MM^{T}
+\end{array}\right)\overset{I.H}{=}\norm a^{2}\cdot vol^{2}\left(x_{2},\dots x_{m}\right)
+\end{align*}
+
+\end{proof}
+%
+Thanks for reading and a special thanks for everyone who contributed.
+\end{document}
