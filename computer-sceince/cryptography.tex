@@ -359,20 +359,20 @@ then be used to generate some proof of authenticity. Using $HMAC$
 a new value over a shared counter: $Hmac\left(i\right)$ and will
 send it to the verifier. verifier can authenticate it. and then they
 both advance $i$ by $1$. }
-\begin{rem}
+\begin{remark}
 We can improve it by sending both $i$ and the output of the $HMAC$
 over $i$, this way the verifier can check if $i$ is greater than
 its counter $i'$, so they do not have to be matching counters at
 all times.
-\end{rem}
+\end{remark}
 
-\begin{rem}
+\begin{remark}
 This verification protocol changes state only upon an attempt to login.
 A user that does not login frequently, might be compromised if an
 attacker gained the latest token. The attacker can sell the obtain
 token to anyone which should give access once unless the user logins
 again. 
-\end{rem}
+\end{remark}
 
 
 \subsubsection{TOPT: time base OTP }
@@ -559,11 +559,11 @@ and $V\left(y\right)$ interact with each other, $V\left(y\right)$
 always outputs accept.
 \end{definition}
 
-\begin{rem}
+\begin{remark}
 So a sigma protocol, is any prover verifier challenge where the prover
 knows some witness to y and want to prove that $y$ is in the language
 to the verifier?
-\end{rem}
+\end{remark}
 
 If the output is accept we call the conversation $\left(t,c,z\right)$
 an accepting conversation for $y$.

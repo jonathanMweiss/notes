@@ -1,11 +1,11 @@
 \chapter{Probability}
 
 \section{Probability recap}
-\begin{defn}
+\begin{definition}
 Probability space (merchav midgam)
 
 a set $\Omega$ and a probability measure $p_{r}$. 
-\end{defn}
+\end{definition}
 
 
 \subsubsection*{Simplest case:}
@@ -13,12 +13,12 @@ a set $\Omega$ and a probability measure $p_{r}$.
 Finite discrete probability space $\left|\Omega\right|<\infty$ individual
 element $\omega\in\Omega$ we associate non negative number $p_{r}\left(\omega\right)\ge0$
 s.t $\sum\limits _{\omega\in\Omega}p_{r}\left(\omega\right)=1$.
-\begin{defn}
+\begin{definition}
 Events (meora)
 
 We call $A\subseteq\Omega$ an event. The probability of an event
 is: $p_{r}\left(A\right)=\sum\limits _{\omega\in A}p_{r}\left(\omega\right)$. 
-\end{defn}
+\end{definition}
 
 
 \subsubsection*{Obvious extension: }
@@ -30,13 +30,13 @@ $\Omega=\left\{ x_{1},x_{2},\dots\right\} $ and $p_{1}.p_{2}\dots\ge0,\sum p_{i}
 
 $\Omega=\left[0,1\right],0<\alpha<\beta<1,A=\left[\alpha,\beta\right]$.
 $p_{r}\left(A\right)=\beta-\alpha$
-\begin{defn}
+\begin{definition}
 Independent events (meoraot bilti tloolim)
 
 Let $\left(\Omega,p_{r}\right)$ be a probability space\c{ }and let
 $A,b\subseteq\Omega$ be two events. We say that events $A$ and $B$
 are independent if $p_{r}\left(A\cap B\right)=p_{r}\left(A\right)\cdot p_{r}\left(B\right)$
-\end{defn}
+\end{definition}
 
 \begin{example}
 intuition for random variables
@@ -52,9 +52,9 @@ and find the event. $A\cap B=\left\{ \left(2,H\right),\left(4,H\right),\left(6,H
 thus $p_{r}\left(A\cap B\right)=\frac{3}{\left|\Omega\right|}=\frac{3}{12}=\frac{1}{4}$
 \end{example}
 
-\begin{defn}
+\begin{definition}
 Conditioning (hatnaya)
-\begin{defn}
+\begin{definition}
 conditioning on the event $A$ is defined as follows: $p_{r}\left(B|A\right)=\frac{p_{r}\left(A\cap B\right)}{p_{r}\left(A\right)}$.
 In case of independence between the events it is simple to deduce
 that $p_{r}\left(B|A\right)=p_{r}\left(B\right)$: 
@@ -62,23 +62,23 @@ that $p_{r}\left(B|A\right)=p_{r}\left(B\right)$:
 p_{r}\left(B|A\right)=\frac{p_{r}\left(A\cap B\right)}{p_{r}\left(A\right)}=\frac{p_{r}\left(A\right)\cdot p_{r}\left(B\right)}{p_{r}\left(A\right)}=p_{r}\left(B\right)
 \]
 .
-\end{defn}
+\end{definition}
 
-\end{defn}
+\end{definition}
 
-\begin{rem}
+\begin{remark}
 We can think of conditioning as looking at event $A$ as our probability
 space thus we normalize according to it. $A$ happened what is the
 probability that $B$ will happen too? so we do a conjunction between
 the two and normalize by A to get the new probability.
-\end{rem}
+\end{remark}
 
-\begin{defn}
+\begin{definition}
 Random Variable: Let $\left(\Omega,p_{r}\right)$ be a probability
 space and $X:\Omega\to\mathbb{R}$ is called a real random variable.
 In general it is very typical to not care about where $X$ maps $\omega\in\Omega$.
 In most cases we care about the event that is tied to the random variable. 
-\end{defn}
+\end{definition}
 
 \begin{example}
 Random Variable: 
@@ -90,29 +90,29 @@ about real life events. Each $\omega\in\Omega$ in this example can
 be a person and $X$ can map from a person to it's salary. 
 \end{example}
 
-\begin{defn}
+\begin{definition}
 Random variable independency 
 
 Let $X,Y:\Omega\to S$ be Random Variables (R.V) we say that $X,Y$
 are independent if $\forall r,\sigma\in S$ the events $\left\{ \omega|X\left(\omega\right)=r\right\} ,\left\{ \omega|Y\left(\omega\right)=\sigma\right\} $
 are independent events.
-\end{defn}
+\end{definition}
 
-\begin{defn}
+\begin{definition}
 Indicator 
 
 $X:\Omega\to\left\{ 0,1\right\} $ is called an ``indicator random
 variable''.
-\end{defn}
+\end{definition}
 
 When we are working with random variables we might face questions
 like the following: What is the average grade of $X$
-\begin{defn}
+\begin{definition}
 Expectation (Tochelet)
 
 Denote $\mathbb{E}\left[x\right]=\sum\limits _{\omega\in\Omega}p_{r}\left(\omega\right)\cdot X\left(\omega\right)$
 the expectation of $X$.
-\end{defn}
+\end{definition}
 
 \begin{claim}
 Linearity of expectation (with no proof)
@@ -133,7 +133,7 @@ how far each value (with it's appropriate size factor):$\sum p_{i}\left(a_{i}-\m
 Didn'\'{t} go as wanted.
 
 A working definition would be $Var\left[X\right]=\sum p_{i}\left(a_{i}-\mu\right)^{2}$
-\begin{defn}
+\begin{definition}
 Variance of a random variable
 
 $Var\left[X\right]=\sum p_{i}\left(a_{i}-\mu\right)^{2}=\mathbb{E}\left[\left(X-\mu\right)^{2}\right]=\mathbb{E}\left[\left(X-\mathbb{E}\left[X\right]\right)^{2}\right]$
@@ -144,7 +144,7 @@ Let as simplify this equation:
  & =\mathbb{E}\left[X^{2}\right]-2\mathbb{E}\left[X\right]^{2}+\mathbb{E}\left[X\right]^{2}=\\
  & =\mathbb{E}\left[X^{2}\right]-\mathbb{E}\left[X\right]^{2}
 \end{align*}
-\end{defn}
+\end{definition}
 
 \begin{thm}[Markov inequality]
  If $X$ is a non-negative R.V and $c>1$ then $p_{r}\left(x\ge c\cdot\mathbb{E}\left[X\right]\right)\le\frac{1}{c}$
@@ -188,9 +188,9 @@ Which in turn means that $\mathbb{E}\left[X\right]=\sum\limits _{i=1}^{n}\frac{1
 The answer to our question is 1.
 \end{xca}
 
-\begin{rem}
+\begin{remark}
 The above exercise is known as the disoriented secretary.
-\end{rem}
+\end{remark}
 
 
 \section{Ramsey's Theorem and the probabilistic method}
@@ -215,17 +215,17 @@ or an anti-clique of size $\ge\frac{1}{2}\log_{2}n$ (because $\frac{1}{2}\log_{2
 
 \end{thm}
 
-\begin{rem}
+\begin{remark}
 \label{probRVreualsZero}if $X$ is a R.V that is non negative then
 $p\left[X\ge c\cdot\mathbb{E}\left[X\right]\right]\le\frac{1}{c}$.
 If X takes values in $\N\cup\left\{ 0\right\} $ and $\mathbb{E}\left[X\right]=\epsilon$
 then $P\left[X=0\right]\ge1-\epsilon$. (from Markov) 
-\end{rem}
+\end{remark}
 
-\begin{rem}
+\begin{remark}
 Chebyshev inequality: $p\left[X=0\right]\le\frac{Var\left[X\right]}{\mathbb{E}\left[X\right]^{2}}$
 (proved in problem set 1).
-\end{rem}
+\end{remark}
 
 \begin{corollary}
 $\forall N$ every $N$-vertex graph must have a clique or an anti-clique
@@ -240,10 +240,10 @@ In fact this is true for almost all graphs.
 \begin{proof}
 $\Omega_{n}=\left\{ \text{all graphs on }V=\left\{ 1,2,\dots N\right\} \right\} $,
 there is a uniform distribution; $\forall G\in\Omega_{N},p_{r}\left[G\right]=\frac{1}{2^{\binom{n}{2}}}$.
-\begin{rem}
+\begin{remark}
 the number of all possible graphs is $2^{\binom{n}{2}}$ because for
 each edge we have two choices and we have $\binom{n}{2}$ edges.
-\end{rem}
+\end{remark}
 
 This probability space is named $G\left(n,\frac{1}{2}\right)$. $k$
 is a parameter, $X,Y:\Omega_{n}\to\N\cup\left\{ 0\right\} $. $X\left(G\right)=\text{Number of k-cliques in }G$.
@@ -255,10 +255,10 @@ If this happens then we can conclude that $p_{r}\left[X+Y=0\right]=1-o\left(1\ri
 (remember remark \ref{probRVreualsZero}). Well that means that $X=Y=0$
 and that most $N$ - vertex graphs have no k-clique and no k-anti-clique.
 So we want to find that $\mathbb{E}\left[X+Y\right]=o\left(1\right)$.
-\begin{rem}
+\begin{remark}
 Please note that $\mathbb{E}\left[X+Y\right]=2\cdot\mathbb{E}\left[X\right]$
 because they are the same R.V but for different colour.
-\end{rem}
+\end{remark}
 
 \end{proposition}
 
@@ -301,13 +301,13 @@ and then $p_{r}\left[X+Y=0\right]=1-o\left(1\right)$ as wanted.
 We will inspect another view of this method: What is the probability
 that $G\sim G\left(n,p\right)$ contains a $K_{4}$? ($k_{4}$is a
 clique of 4).
-\begin{rem}
+\begin{remark}
 $G\left(n,p\right);p_{r}\left[G\right]=p^{\left|E\left(G\right)\right|}\cdot\left(1-p\right)^{\binom{n}{2}-\left|E\left(G\right)\right|}$.
 Explanation: $p^{\left|E\left(G\right)\right|}$ means the probability
 to get the edges. $\left(1-p\right)^{\binom{n}{2}-\left|E\left(G\right)\right|}$
 means to not get an edge number of possible edges in the graph minus
 the number of edges we already have.
-\end{rem}
+\end{remark}
 
 \begin{thm}
 $p=n^{-\frac{2}{3}}$is the threshold probability for the occurrences
@@ -318,10 +318,10 @@ of $k_{4}$ in a $G\left(n,p\right)$ graph.
 \item for $p=\omega\left(n^{-\frac{2}{3}}\right)$ i.e $p\gg n^{-\frac{2}{3}}$
 ``almost surely'' G contains $k_{4}$.
 \end{enumerate}
-\begin{rem}
+\begin{remark}
 ``almost surely'' means: when we sample with p from the graph ,
 and the probability strives to zero as $n\to\infty$.
-\end{rem}
+\end{remark}
 
 \end{thm}
 
@@ -363,7 +363,7 @@ to handle $\left|S\cap T\right|=2$ and $\left|S\cap T\right|=3$,
 that is because the R.V are either independent when $\left|S\cap T\right|=1$
 or they are disjointed. when $\left|S\cap T\right|=4$ they are the
 same variable hence not in the summation.
-\begin{rem}
+\begin{remark}
 Note that we indeed compute only where the covariance is no\'{t} zero,
 but we can enlarge the value of $Var\left[X\right]$ and make our
 life easier by simply computing 
@@ -372,7 +372,7 @@ life easier by simply computing
 <\sum\limits _{\left|S\cap T\right|\in\left\{ 2,3\right\} }\mathbb{E}\left[X_{s}\cdot X_{t}\right]
 \end{align*}
  so we will address only the values in $\sum\limits _{\left|S\cap T\right|\in\left\{ 2,3\right\} }\mathbb{E}\left[X_{s}\cdot X_{t}\right]$.
-\end{rem}
+\end{remark}
 
 \begin{casenv}
 \item 
@@ -457,7 +457,7 @@ sets of size $l$ - our probability space).
  & =\left(1-\frac{k}{n}\right)\cdot\left(1-\frac{k}{n-1}\right)\cdots\left(1-\frac{k}{n-l+1}\right)\cong\\
  & \cong e^{-\left(\frac{k}{n}+\frac{k}{n-1}+\dots+\frac{k}{n-l+1}\right)}\cong e^{-\frac{kl}{n}}
 \end{align*}
-\begin{lyxgreyedout}
+\begin{insight}
 \begin{align*}
 p_{r}\left[A\cap B=\emptyset\right] & =\frac{\binom{n-k}{l}}{\binom{n}{l}}=\frac{\frac{\left(n-k\right)!}{l!\left(n-k-l\right)!}}{\frac{n!}{l!\left(n-l\right)!}}=\\
  & =\frac{\frac{\left(n-k\right)\left(n-k-1\right)\dots\left(n-k-l\right)\left(n-k-l-1\right)\dots}{l!\left(n-k-l\right)\left(n-k-l-1\right)\dots}}{\frac{n\left(n-1\right)\dots\left(n-l\right)\left(n-l-1\right)\dots}{l!\left(n-l\right)\left(n-l-1\right)\dots}}=\\
@@ -472,7 +472,7 @@ hence
 \[
 \backsimeq e^{-\left(\underbrace{\frac{k}{n}+\frac{k}{n}+\dots+\frac{k}{n}}_{l\text{ times}}\right)}=e^{-\frac{kl}{n}}
 \]
-\end{lyxgreyedout}
+\end{insight}
 {} Now, if $kl=\omega\left(n\right)$ then asymptotic almost surely
 $\left(a.a.s\right)$ the two sets intersect because $p_{r}\left[A\cap B=\emptyset\right]=e^{-\frac{kl}{n}}=o\left(1\right)$.
 On the other hand if $kl=o\left(n\right)$ then $p_{r}\left[A\cap B=\emptyset\right]=e^{-\frac{kl}{n}}=1-o\left(1\right)$.
@@ -503,10 +503,10 @@ By linearity of expectation\"{ }$\E X=\sum\limits _{i=1}^{n}\E{X_{i}}=n\cdot\lef
 Another proof: define $T_{i}$ as the time between having seen $\left(i-1\right)$
 bins to the first time bin $i-th$ is visited. this means that $T=\sum T_{i}$.
 $\E T=\sum_{i=1}^{n}\E{T_{i}}$. 
-\begin{rem}
+\begin{remark}
 $T_{i}$ is a geometrically distributed random variable $T_{i}\sim Geo\left(p\right)$.
 $\E{T_{i}}=\frac{1}{p}$.
-\end{rem}
+\end{remark}
 
 thus $T_{i}\sim Geo\left(\frac{n-i+1}{n}\right)$, the probability
 is defined as follows $n-i+1$ bins are currently empty, so we need
@@ -527,15 +527,15 @@ We can use Chebyshev's inequality
 \]
 Notice that $\var T=\var{\sum T_{i}}$ and that the $T_{i}$ R.Vs
 are independent %
-\begin{lyxgreyedout}
+\begin{insight}
 Notice that each $T_{i}$ is independent because they count number
 of tries given a static event. So we check for each$T_{i}$ how many
 tries should we do when $i$ slots are already filled.%
-\end{lyxgreyedout}
+\end{insight}
 . 
-\begin{rem}
+\begin{remark}
 A geometric distributed R.V $X$ with parameter $p$ has $\var X=\frac{1-p}{p^{2}}$.
-\end{rem}
+\end{remark}
 
 Therefore 
 \[
@@ -546,9 +546,9 @@ Therefore
 \Pr\left[T>n\ln n+cn\right]\le\frac{10}{c^{2}}
 \]
 
-\begin{lyxgreyedout}
+\begin{insight}
 Not sure whys that chebyshev%
-\end{lyxgreyedout}
+\end{insight}
 {} If we choose $c=\sqrt{\log n}$ we get that the probability tends
 to 0.
 
@@ -682,11 +682,11 @@ as wanted.
 
 
 \section{More bounds}
-\begin{rem}
+\begin{remark}
 we used previously $e^{tX}$ - the moment generating function. not
 that the expectation of such random variable is defined as follows:
 $\E{e^{tX}}=\sum_{j=0}^{\infty}\frac{t^{j}}{j!}\E{X^{j}}$
-\end{rem}
+\end{remark}
 
 
 \subsection{Chernoff bound}
@@ -737,7 +737,7 @@ and we get
 
 According to Nati this isn't the standard way martingales are defined
 but this is equivalent. 
-\begin{defn}[Martingale]
+\begin{definition}[Martingale]
  $\Omega$ is a probability space, $X:\Omega\to\R$ is a real R.V.
 $\pi_{0}=\Omega$, $\pi_{0}\prec\pi_{1}\prec\pi_{2}\prec\dots$ are
 partitions of $\Omega$. 
@@ -745,7 +745,7 @@ partitions of $\Omega$.
 Notice that partition $i$ is a refined partition of $i-1$. For example
 if $\pi_{1}$ splits $\Omega$ into two halves than $\pi_{2}$ splits
 these two halves in some manner. 
-\end{defn}
+\end{definition}
 
 Now having these partitions we define the following random variables.
 $X_{i}$ will be associated with partition $\pi_{i}$. $X_{0}\left(\omega\right)=\E X$.
@@ -782,11 +782,11 @@ variance $\sigma^{2}$, then
  That is $\forall a<b\in\R$ $\limn{\p{a<\frac{\sum_{i=1}^{n}\left(x_{i}\right)-n\mu}{\sigma\sqrt{n}}<b}}=\frac{1}{\sqrt{2\pi}}\int\limits _{a}^{b}e^{-\frac{x^{2}}{2}}dx$. 
 \end{thm}
 
-\begin{lyxgreyedout}
+\begin{insight}
 First of all note that $\E{X_{i}}=\mu$ for any $i$ and $\var{X_{i}}=\sigma^{2}$.
 now when removing from each $X_{i}$ the value of the mean we get
 that each $X_{i}$ have a mean 0 and now we can look at it like random
 walk with $\sigma$ steps. so we will divide by $\sigma$and now we
 have steps of size around $1$. so we divide by $\sqrt{n}$ which
 is the expectation of random walk.%
-\end{lyxgreyedout}
+\end{insight}
