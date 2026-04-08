@@ -112,6 +112,10 @@
 \usepackage{bbm}
 \newcommand{\todo}[1]{\textbf{\textcolor{red}{[TODO: #1]}}}
 
+% Use \includeonly{filename} to compile only specific files.
+% \includeonly{mathematics/math, mathematics/probability}
+% \includeonly{computer-sceince/algorithms}
+
 \newenvironment{casenv}{\begin{enumerate}}{\end{enumerate}}
 \newenvironment{insight}{\color{gray}}{\ignorespacesafterend}
 
@@ -136,11 +140,25 @@
 \pagebreak\tableofcontents
 
 
-\input{mathematics/math.tex}
+\include{mathematics/math}
 
-\part{Computer-Science}
+\part{Mathematics}
+\include{mathematics/Algebraic-structures}
+\include{mathematics/probability}
+\include{mathematics/linear-algebra}
+\include{mathematics/Lattice}
+\include{mathematics/technique}
+\part{Number-Theoretic Algorithms}
+\include{computer-sceince/algorithms}
 
-\input{computer-sceince/computer-sceince}
+\part{Coding Theory}
+\include{computer-sceince/code-theory/main}
+
+\part{Cryptography and Distributed Algorithms}
+\include{computer-sceince/cryptography}
+\include{computer-sceince/distributed-algorithms}
+
+\include{computer-sceince/quantum/main}
 
 \printbibliography
 \end{document}
