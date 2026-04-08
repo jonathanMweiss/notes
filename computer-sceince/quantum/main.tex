@@ -1,63 +1,83 @@
-%TODO: look for ket and bra brackets.
-
 \chapter{quantum computing}
+%TODO: look for ket and bra brackets.
+\section{prelimenaries}
 
-q-bits are basically vectors. <0> is described as (1,0) and <1> as (0,1).
 
-q-bit $\alpha= a\cdot <0>+b\cdot <1>=(a,b)$, where 0,1 are vectors (as seen before), and $a,b\in \mathbb{C}$. In addition $||\alpha||=1$.
+\section{Class 1}
+
+
+q-bits are basically vectors. $|0>$ is described as $\begin{pmatrix} 1 \\ 0 \end{pmatrix}$ and $|1>$ as $\begin{pmatrix} 0 \\ 1 \end{pmatrix}$.
+
+a q-bit $\alpha$ can have the following state$\alpha= a\cdot |0>+b\cdot |1>=(a,b)$, where $|0>$,$|1>$ are vectors (as seen before), and $a,b\in \mathbb{C}$. Additionaly, $||\alpha||=1$.
 
 % note:
 When we want to describe circular movement on the plane (using the unit circle), then, $\alpha=e^i\omega \cdot t$ for $t=0,1,2,3,\dots,\infty$.
 
-measurements of $\alpha$ according to the basis $0,1$ gives us the results:
+measurements of $\alpha$ according to the basis $|0>,|1>$ gives us the results:
 \begin{enumerate}
-    \item 0 in probability $|a|^2$
-    \item 1 in probability $|b|^2$
+    \item $0$ in probability $|a|^2$
+    \item $1$ in probability $|b|^2$
 \end{enumerate}
-In addition, the state after measurement is either <0> or <1>.
+In addition, the state after measurement is either $|0>$ or $|1>$.
 
-Namely, measurement changes the result to go either to 0 or 1.
-So given $\alpha=a<0>+b<1>$, upon measurement, 
-$a$ and $b$ states what probability we'll get $<0>$ or $<1>$.
+Namely, measurement "collapses" the result to go either to 0 or 1.
+So given $\alpha=a|0>+b|1>$, upon measurement, 
+$a$ and $b$ determines the probability we'll get either $|0>$ or $|1>$.
 
 this measurement doesn't "destroy" the value.
 
-If we measure using poloroyde lenses, photon's polarity is exactly q-bit. So poloroyde lenses can help us look at the 'state'. Given a uniform random photon, it'll either go through a poloroyde with $<0>$ polarity, or through a $<1>$ poloroyde with $0.5$ probability.
+If we measure using poloroyde lenses, photon's polarity is a q-bit. So poloroyde lenses can help us look at the 'state'.
+Given a uniform random photon, it'll either go through a poloroyde with $|0>$ polarity, or through a $|1>$ poloroyde with $0.5$ probability.
 
 \paragraph{What happens with $2,\dots,n$ q-bits?}
-Again, two (classical) bits can have the states $00,01,10,11$.
-Two q-bits can also have these states, we define them as vectors in space, wher $00,01,10,11$ are translated to the vectors $<00>, <01>, <10>, <11>$.
+Two (classical) bits can have the states $00,01,10,11$.
+Thus, two q-bits can also have these states. We define them as vectors in space, where $00,01,10,11$ are translated to the vectors $|00>, |01>, |10>, |11>$.
 
-Namely, we defined our space with words of length 2, and a state/word of the system is defined given these vectors:
-$\alpha=a \cdot <00>+b \cdot <01>+c \cdot <10>+d \cdot <11>$, where $a,b,c,d\in \mathbb{C}$ and $||\alpha||=|a|^2+|b|^2+|c|^2+|d|^2=1$.
+Namely, we defined our space with words of length $2$, and a state/word of the system is defined given these vectors:
+$\alpha=a \cdot |00>+b \cdot |01>+c \cdot |10>+d \cdot |11>$, where $a,b,c,d\in \mathbb{C}$ and $||\alpha||=|a|^2+|b|^2+|c|^2+|d|^2=1$.
 
-In practice, when we want a q-bits, these q-bits need to have two different "energy" levels that do not affect one another. if the energies "leak" it is possible to still operate as long as we don't have "too much" noise.
+In practice, when we want q-bits, these q-bits need to have two different "energy" levels that do not affect one another.
+if the energies "leak" it is possible to still operate as long as we don't have "too much" noise.
 
-These 2 q-bits can run on two different systems, for instance one q-bit system in one place, and have another q-bit in a different location. 
+These $2$ q-bits can run on two different systems, for instance one q-bit system in one place, and have another q-bit in a different location. 
 
-Instead of writing <00>, we can also write
-$<a,b>=<a>\otimes <b>$ where $\oplus$ is a tensor product.
+Instead of writing $|00>$, we can also write
+$|a,b>=|a>\otimes |b>$ where $\oplus$ is a tensor product.
 
 Namely, a Hilbert space $\mathcal{H}_2\otimes \mathcal{H}_2= \mathcal{H}_4$
 
 When we want to inspect the space, we can "collapse" it to look at what state it (like before)
 \begin{enumerate}
- \item 00 in probability $|a|^2$
- \item 10 in probability $|b|^2$
+ \item $|00>$ in probability $|a|^2$
+ \item $|10>$ in probability $|b|^2$
  \item \dots
 \end{enumerate}
 
 What happens when we measure the first q-bit?
-We'll get with probability $|a|^2+|b|^2$ the value $<0>$.
-and the new state $\alpha$ is given by:
-$$\alpha=\frac{a<00>+b<01>}{\sqrt{|a|^2+|b|^2}} $$
+We'll get with probability $|a|^2+|b|^2$ the value $|0>$.
+and the new state of the q-bits $\alpha$ is given by:
+$$\alpha=\frac{a|00>+b|01>}{\sqrt{|a|^2+|b|^2}} $$
+
+\begin{insight}
+Why this formula? The full state is $\alpha = a|00> + b|01> + c|10> + d|11>$.
+The first q-bit is $|0>$ in exactly the terms $|00>$ and $|01>$, so the probability of seeing $|0>$ is $|a|^2+|b|^2$ (sum the squared amplitudes of all matching terms).
+
+After the measurement confirms the first q-bit is $|0>$, the terms $|10>$ and $|11>$
+are \emph{impossible}---they are discarded.
+What remains is $a|00> + b|01>$, but this no longer has unit norm.
+Dividing by $\sqrt{|a|^2+|b|^2}$ \textbf{renormalizes} it so that probabilities again sum to $1$.
+This is called \emph{partial collapse}: only the measured q-bit collapses; the second q-bit is still in superposition (conditioned on the outcome).
+\end{insight}
 
 
 if we have $n$ q-bits:
 
-$$\alpha=\sum_{x\in\{0,1\}^n} {a_x\cdot <x>}$$ and $\sum_{x\in\{0,1\}^n} |a_x|^2=1$.
+$$\alpha=\sum_{x\in\{0,1\}^n} {a_x\cdot |x>}$$ and $\sum_{x\in\{0,1\}^n} |a_x|^2=1$.
 
-Did you notice? just to store a state, we need the sum of an exponential amount of data.
+
+\begin{bclogo}[logo=\bcattention, couleurBarre=orange, noborder=true, couleur=white]{Exponential storage}
+    Did you notice? Just to store a state, we need the sum of an exponential amount of data.
+\end{bclogo}
 
 \paragraph{operations}
 Given an hilbert space $\mathcal{H}_d$ where $\dim(\mathcal{H}_d)=d$.
@@ -70,7 +90,7 @@ $\mathcal{U}^\dagger=(\bar{\mathcal{U}}_{i,j})$.
 Reminder: Hilbert space is a vector space over the complex numbers with an inner product.
 
 denote two vectors $\alpha =(a_1,a_2,\dots a_d)$ and $\beta=(b_1,b_2,\dots b_d,) \in \mathcal{H}_d$
-So $\alpha^\dagger=(\bar{a_1},...,\bar{a_d})$. 
+So $\alpha^\dagger=\alpha^*=(\bar{a_1},...,\bar{a_d})$. 
 and $<\alpha | \beta > =\sum{a_ib_i}$
 
 
@@ -82,34 +102,41 @@ How can we do it in a single step?
 
 \paragraph{Possible operations on a single q-bit}
 \begin{enumerate}
-    \item ID: the id matrix: $\begin{matrix}
-        1 0 &
-        0 1 &
-    \end{matrix}$
-    \item NOT: $\begin{matrix}
-        0 1 &
-        1 0 &
-    \end{matrix}$
-    \item Z operation (face-flip) $|0> = |0>$  $Z|1> = -|1>$
-    \item $H|0> = \frac{|0>+|1>}{\sqrt{2}}$ and for 1: $H|1> = \frac{|0> - |1>}{\sqrt{2}}$ (The Haddamard matrix) $H=\frac{1}{\sqrt{2}}\begin{matrix}
-        1 1 &
-        1 -1 &
-    \end{matrix}$
+    \item ID: the id matrix: $\begin{bmatrix}
+        1 & 0  \\
+        0 & 1 \\
+    \end{bmatrix}$
+    \item NOT: $\begin{pmatrix}
+        0 & 1 \\
+        1 & 0 \\
+    \end{pmatrix}$
+    \item Z operation (phase-flip) $Z|0> = -|0>=|0>$  $Z|1> = -|1>$ defined via $\begin{pmatrix}
+        1 & 0  \\
+        0 & -1 \\
+    \end{pmatrix}$
+    \item $H|0> = \frac{|0>+|1>}{\sqrt{2}}$ and for 1: $H|1> = \frac{|0> - |1>}{\sqrt{2}}$ (The Hadamard matrix) $H=\frac{1}{\sqrt{2}} \cdot\begin{pmatrix}
+        1 &1 \\
+        1 &-1 \\
+    \end{pmatrix}$ 
     \item Rotation in $\theta$ (using a cos,sin matrix).
 \end{enumerate}
 
 We can create using all these functions every unitary matrix.
 
-If we add to this collection (of operations) the following operation:
-$|a,b> \to^{\text{CNOT}} |a,a+b>$, a $4\times4$ matrix (controled not), it is "easy to see" that one can build any unitary operation over $n$ q-bits.
+If we add to this collection (of operations) the following operation the controlled not operation matrix (a $4\times4$ matrix):
+$|a,b> \overset{\text{CNOT}}{\to} |a,a+b>$, it is "easy to see" that one can build any unitary operation over $n$ q-bits.
 
 
-If we want a finite set of gates, it is enough to the following operation, instead of all possible rotation operations $R_\theta$, choose $T=\begin{matrix}
-    1 0
-    0 e^{i\pi/4}
-\end{matrix}$
-One can use powers of $T$ to get closer to the actual wanted values, without needing to be able to compute rotation gates for very complex numbers.
+Since all possible rotations are infinte amount of matrices, and thus an infinite amount of possible operations, we resolve to use approximations instead.
+Reapplying the following operation allows us to forgo all possible rotation matrices, thus simplifying the amount of operations gates we have to define.
 
+Thus, instead of $R_\theta$, we use powers of $T=\begin{pmatrix}
+    1 &0 \\
+    0 &e^{i\pi/4} \\
+\end{pmatrix}$
+to get closer to the actual wanted values, without needing to be able to compute rotation gates for very possible complex number.
+
+\paragraph{EPR/CHSH Game}
 Let us look at the following 2 q-bits
 $|\phi>=\frac{1}{\sqrt{2}}|00>-\frac{1}{\sqrt{2}}|11>$
 what happens if we apply $R_\alpha\oplus R_\beta$ to it?
@@ -126,9 +153,12 @@ $R$ the referee chooses $x,y\in\{0,1\}$ in uniform random. $R$ gives alice $x$ a
 Alice and Bob need to answer $a,b$ such that 
 $a\oplus b=x\cdot y$.
 
-$A$ and $B$ can win with $3/4$ probability by ignoring $x$ and $y$ and saying: $a=b=0$. 
+$A$ and $B$ can win with $3/4$ probability by ignoring $x$ and $y$ and saying: $a=b=0$.
+\begin{insight}
+    Classically, Alice and Bob cannot communicate. Out of the 4 possible input pairs for $(x,y)$, the product $x \cdot y$ equals $0$ three times, and equals $1$ only once (when $x=1, y=1$). 
+    Because they cannot know the other's input, the easiest and best strategy is to just guess the majority outcome ($0$) by constantly outputting $a=0$ and $b=0$. This guarantees they win exactly 3 out of 4 times ($75\%$).
+\end{insight}
 
-[From bit to bit, there are 4 functions ($o\to0, o\to1, 1\to0, 1\to1$)].
 
 If Alice and Bob share a state $\phi$ (one of EPR states - Einstein, Pozolski, Rosen 1936), they can do better!
 
@@ -139,21 +169,27 @@ $B$ does the same for its $y$ value.
 
 Looking at the results, $A$ and $B$ measure and the followings are the $a,b$ values:
 
-% TODO: put into a table
-x/y | 0 | 1
-0   |$\frac{-\pi}{8}$  |  $\frac{+\pi}{8}$ |
-1   |$\frac{\pi}{8}$   |  $\frac{3\pi}{8}$ |
+\begin{center}
+\begin{tabular}{c|c|c}
+$x/y$ & 0 & 1 \\
+\hline
+0 & $\frac{-\pi}{8}$ & $\frac{+\pi}{8}$ \\
+1 & $\frac{\pi}{8}$ & $\frac{3\pi}{8}$ \\
+\end{tabular}
+\end{center}
 
-
+\begin{insight}
+    The values in the table represent the sum of the rotation angles ($\alpha + \beta$) chosen by Alice and Bob for each possible input pair $(x,y)$. For example, if $x=0$ and $y=0$, they both use $-\pi/16$, which sums to $-\pi/8$. 
+    
+    After applying these rotations, Alice and Bob measure their individual qubits in the standard computational basis to get their outputs $a, b \in \{0, 1\}$. 
+    The probability of their measured bits matching ($a=b$) is $\cos^2(\alpha+\beta)$, and the probability of them differing ($a \neq b$) is $\sin^2(\alpha+\beta)$. By choosing these specific angles, the probability of satisfying the winning condition $a \oplus b = x \cdot y$ comes out to exactly $\cos^2(\pm\pi/8) = \sin^2(3\pi/8) \approx 85\%$ across all four cases!
+\end{insight}
 The probability for $0$ is $cos^2(\pi/8)=0.85$
 The probability for $1$ is $sin^2(3\pi/8)=cos^2=(\pi/8)=0.85$
 
 Thus, in any way we have a solution better than a classical strategy.
 
-Why does this happen? because they have a *corelation* in the state over the entire system. without passing information between them.
-Namely, Quantum allow us to give us more possibilities.
+Why does this happen? because they have a \emph{corelation} in the state over the entire system. Without passing information between them.
+Namely, Quantum allow us more possibilities.
 
 In Quantum world: the measurement changes the state and thus creates a correlation that are stronger than what we expect.
-
-This is called the EPR-game/ CHSH-game.
-
