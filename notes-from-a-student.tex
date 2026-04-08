@@ -9,6 +9,7 @@
 \usepackage{amssymb}
 \usepackage{cancel}
 \usepackage{xcolor}
+\usepackage{mathtools}
 \PassOptionsToPackage{normalem}{ulem}
 \usepackage{ulem}
 \usepackage[unicode=true,pdfusetitle,
@@ -56,6 +57,11 @@
 \newtheorem*{claim*}{\protect\claimname}
 \newtheorem{fact}[theorem]{Fact}
 \newtheorem{reminder}[theorem]{Reminder}
+
+\DeclarePairedDelimiter\bra{\langle}{\rvert}
+\DeclarePairedDelimiter\ket{\lvert}{\rangle}
+\DeclarePairedDelimiterX\braket[2]{\langle}{\rangle}{#1\,\delimsize\vert\,\mathopen{}#2}
+
 
 \global\long\def\ball#1{B_{\left|\left|\cdot\right|\right|_{#1}}}%
 \global\long\def\C{\mathbb{C}}%

@@ -22,16 +22,184 @@ A matrix $A$ is considered unitary if $A=A^-1$. The following conditions are equ
 \end{enumerate}
 
 \paragraph{Diagonalization and Singular Values}
-
 $\lambda\in\mathbb{C}$ is an eigenvalue of a (square) $A$ matrix if $Av=\lambda v$ for $v\neq 0$.
 
-$A$ and $B$ are \emph{similar} if there exists an invertible matrix $S$ such that $A=SBS^{-1}$.
-% \begin{enumerate}
-%     \item hello
-% \end{enumerate}$
+
+$A$ and $B$ are \emph{similar} if there exists an invertible matrix $S$ such that $A=SBS^{-1}$. As a result, similar matrices share the same eigenvalues.
+
+Schur's Lemma states that every matrix $A$  is similar to some upper triangular $A=U^{-1}TU$ for unitary $U$.
+
+Since similar matrices share their eigenvalue, and an upper triangular matrix eigenvalues are its diagonal entries, the eigenvalues of $A$ form the diagonal of $T$.
+
+A Matrix $D$ is  diagonal if $D_{ij}=0$ whenever $i\neq j$. 
+
+Let $S$ be some matrix satisfying $AS=SD$ for diagonal matrix $D$. Let $v_i$ be the $i$-th column of $S$, and $\lambda_i$ be the $i$-th diagonal entry of $D$.
+then 
+
+$$
+AS=
+\begin{pmatrix}
+    \vdots & & \vdots \\
+    Av_1 & \dots & Av_n \\
+    \vdots & & \vdots \\ 
+\end{pmatrix}
+=
+\begin{pmatrix}
+    \vdots & & \vdots \\
+    \lambda_1v_1 & \dots & \lambda_nv_n \\
+    \vdots & & \vdots \\ 
+\end{pmatrix}
+=SD
+$$
+
+and we see that $v_i$ is an eigenvalue of $A$, associated with $\lambda_i$.
+Namely, if $v_1,v_n$ are eigenvectors of $A$, then $S=\begin{pmatrix}
+    \vdots & & \vdots \\
+    v_1 & \dots & v_n \\
+    \vdots & & \vdots \\ 
+\end{pmatrix}$
+exists, such that $AS=SD$, and if $S$ is invertible, then $A=SDS^{-1}$ is diagonalizable.
 
 
+Conversly, if $(v_1,\dots v_n)$ are eigenvectors of $A$ associated with eigenvalues $\lambda_1,\dots \lambda_n$, then we have $AS=SD$, where $S$ is the matrix with columns $v_1,\dots v_n$, and $D$ is the diagonal matrix with diagonal entries $\lambda_1,\dots \lambda_n$. 
+If $S$ is invertible, then $A=SDS^{-1}$ is diagonalizable.
 
+Also, $A$ is Diagonalizable iff $A$ has a set of linearly independant eigenvectors of size $d$ (its diagonal size).
+
+
+$A$ is unitarily diagonalizable iff it can be diagonalized via a unitary matrix $U$ ($A=UDU^{-1}$). In addition, $A$ can be represented as $ \sum{\lambda_i u_i \cdot u_i^*}$ (Note that this is a sum of rank-1 matrices, where $u_i$ is the $i$-th column of $U$).
+
+
+$A$ is considered \emph{normal} if $AA^* = A^*A$. 
+
+\begin{insight}
+All unitary matrices are normal (but not vise versa!)
+\end{insight}
+
+
+A matirx $A$ is normal iff it can be diagonalized via unitary matrices $A=UDU^{-1}$! 
+
+If $A$ is not normal it might still be Diagonalizable (but not by unitary matrices).
+
+
+Hermatian Matrices are an important class of normal matrices, where $A=A^*$. Their eigenvalues are real, since $A=UDU^{-1}=UD^*U^{-1}=A^*$.
+if all its eigenvalues are positive, a hermatian matrix is called positive defintive.
+
+if all eigenvalues are either 0 or 1, $A$ is called a projection, and $A^2=A$.
+
+
+ALL matrices has a singular value decomposition. SVD~\autoref{theorem:SVD}.
+
+\paragraph{Tensor Product}
+if $A=(A_{ij})$ is an $m\times n$ matrix and $B$ an $m'\times n'$ matrix, then their tensor product (a.k.a kronecker) is the $mm'\times nn'$ matrix
+
+$$ A\otimes B= \begin{pmatrix}
+    A_{11}B & \dots & A_{1n}B \\
+    A_{21}B & \dots & A_{2n}B \\
+    \vdots & & \vdots \\
+    A_{m1}B & \dots & A_{mn}B \\
+\end{pmatrix}$$
+
+For instance 
+$$\begin{pmatrix}
+    \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\
+    \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} \\
+\end{pmatrix} \otimes \begin{pmatrix}
+    0 & 1 \\
+    -1 & 0 \\
+\end{pmatrix}= \begin{pmatrix}
+    
+    \begin{matrix}
+        0 & \frac{1}{\sqrt{2}}\\ 
+        -\frac{1}{\sqrt{2}}& 0 \\
+    \end{matrix}
+    & \begin{matrix}
+        0 & \frac{1}{\sqrt{2}} \\
+        - \frac{1}{\sqrt{2}} & 0 \\
+    \end{matrix} \\
+
+    \begin{matrix}
+        0 & \frac{1}{\sqrt{2}} \\
+        - \frac{1}{\sqrt{2}} & 0 \\
+    \end{matrix} &
+    \begin{matrix}
+        0 & -\frac{1}{\sqrt{2}} \\ 
+        \frac{1}{\sqrt{2}} & 0 \\
+    \end{matrix}
+\end{pmatrix}$$
+
+
+The tensor product of two numbers ($1\times1$ matrices) is also a number.
+This tensor product support the following properties:
+
+\begin{itemize}
+    \item $c(A\otimes B)= (cA)\otimes B= A\otimes (cB)$ for all $c$ scalars.
+    \item $(A\otimes B)^*=A^*\otimes B^*$, and similarly for inverse and transpose (Note that the order of the tensor factors does not change).
+    \item $A\otimes(B+C)=(A\otimes B)+(A\otimes C)$.
+    \item $A\otimes (B\otimes C)=(A\otimes B)\otimes C$
+    \item $(A\otimes B)\cdot (C \otimes D)= (A\cdot C) \otimes (B\cdot D)$
+\end{itemize}
+
+\paragraph{Trace}
+The trace of a matrix is the sum of its diagonal entries: $Tr(A)=\sum_i{A_{ii}}$.
+Trace properties: 
+
+\begin{itemize}
+    \item $Tr(A+B)=Tr(A)+Tr(B)$
+    \item $Tr(A\cdot B) = Tr(BA)$ (cyclic property of trace.) as a result $Tr(Avv^*)=v^*Av$.
+    \item $Tr(A)$ is the sum of the eigenvalues of $A$ (since $Tr(A)=Tr(UTU^{-1})=Tr(U^{-1}UT)=Tr(T)=\sum\lambda_i$).
+    \item $Tr(A\otimes B)= Tr(A) \cdot Tr(B)$.
+\end{itemize}
+
+\paragraph{Rank}
+The rank of a matrix is the size of a largest linearly independant set of row.
+We say $A$ is full rank if its rank equals its dimension.
+\begin{itemize}
+    \item $rank(A)=rank(A^*)$.
+    \item $rank(A)$ equals the number of nonzero eigenvalues of $A$ (counting multiplicity).
+    \item $rank(A+B)\le rank(A)+rank(B)$
+    \item $rank(a\cdot B)\le \min\{rank(A),rank(B)\}$
+    \item $rank(a\otimes B) = rank(A)\cdot rank(B)$
+    \item $A$ has an inverse iff $A$ has full rank.
+\end{itemize}
+
+\paragraph{Pauli Matrices}
+The four Pauli matrices are $I=\begin{pmatrix}
+    1 & 0 \\
+    0 & 1
+\end{pmatrix}$, $X=\begin{pmatrix}
+    0 & 1 \\
+    1 & 0
+\end{pmatrix}$, $Y=\begin{pmatrix}
+    0 & -i \\
+    i & 0
+\end{pmatrix}$, $Z=\begin{pmatrix}
+    1 & 0 \\
+    0 & -1
+\end{pmatrix}$.
+Each Pauli matrix is both unitary and Hermatian.
+
+Thus, self-invertable $P^-1=P$. This implies their eigenvalues are in $\{-1,1\}$.
+
+if $P,Q\in\{X,Y,Z\}$ are distinct, then  $PQ=-QP$. Note that $Y=iXZ$.
+Also, the product of two distinct Pauli matrices has a trace of 0.
+
+Define the Hilbert-Schmidt inner product on the space $d\times d$ matrices as $<A,B>=1/d \cdot Tr(A^*\cdot B)$.
+With respect to this inner product for $d=2$, the Pauli matrices form an orthonormal set.
+This implies that every complex $2\times2$ matrix $A$ can be written as a linear combination of Pauli matrices: 
+$A=\alpha_0I+\alpha_1X+\alpha_2Y+\alpha_3Z$ for complex coefficients $\alpha_i$.
+If $A$ is Hermatian, then $\alpha_i$ are real numbers. 
+
+\paragraph{Dirac Notation}
+We follow physicits's notation for vectors: $\ket{v}=v$ (notation called `ket') and $\bra{v} = v^*$ (notation called `bra').
+
+\begin{itemize}
+    \item Inner products are braket (bra and ket)  $\braket{v}{w}$
+    \item if a matrix is unitarily diagonalizable, the $A=\sum \lambda_i \ket{v_i}\bra{v_i}$ for some orthonormal set of eigenvectors $\{v_i\}$.
+    \item $\ket{v}\bra{v}\otimes \ket{w}\bra{w}=(\ket{v}\otimes\ket{w})(\bra{v}\bra{w})$.
+    \item $(U\ket{v})^*=\bra{v}U^*$, Also $(\ket{u}\otimes \ket{v})^*=\bra{u}\otimes \bra{v}$ (The ordering of tensor factors doesn't change).
+    \item Avoid using bra and ket in a nested manner.
+\end{itemize}
 
 \section{Class 1}
 
