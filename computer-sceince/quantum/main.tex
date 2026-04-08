@@ -1,10 +1,19 @@
 \chapter{quantum computing}
-%TODO: look for ket and bra brackets.
 \section{prelimenaries}
+We are working over $\mathbb{C}$. Thus for vectors $v,w$ their inner product is defined as $<v|w>=v^*\cdot w=\sum v_i^*\cdot w_i$ ($v_i^*=a-b\cdot i$ is the complex conjugate of $v_i=a+b\cdot i$). We call a vector space over the complex numbers, with this type of inner product a Hilbert Space, and denote it by $\mathcal{H}$.
+
+The norm of a vector $v$ is defined as $||v||=\sqrt{<v|v>}=\sqrt{\sum |v_i|^2}$. 
+Also used to measure distance between vectors: $||v-w||=\sqrt{<v-w|v-w>}=||v||^2+||w||^2-<v|w>-<w|v>$.
+
+In particular, for unit vectors $v,w$ the real part of their inner product equals $1-\frac{1}{2}||v-w||^2$
+
+\begin{theorem}[Cauchy-Schwarz inequality]
+    $|<v,w>| \leq ||v||\cdot ||w||$
+\end{theorem}
+
 
 
 \section{Class 1}
-
 
 q-bits are basically vectors. $|0>$ is described as $\begin{pmatrix} 1 \\ 0 \end{pmatrix}$ and $|1>$ as $\begin{pmatrix} 0 \\ 1 \end{pmatrix}$.
 
@@ -95,12 +104,10 @@ and $<\alpha | \beta > =\sum{a_ib_i}$
 
 
 
-
-\pagebreak
+\paragraph{Possible operations on a single q-bit}
 We need to define how to operate these complex operations, which are basically multiplying matrices. 
 How can we do it in a single step?
 
-\paragraph{Possible operations on a single q-bit}
 \begin{enumerate}
     \item ID: the id matrix: $\begin{bmatrix}
         1 & 0  \\
@@ -123,7 +130,7 @@ How can we do it in a single step?
 
 We can create using all these functions every unitary matrix.
 
-If we add to this collection (of operations) the following operation the controlled not operation matrix (a $4\times4$ matrix):
+If we add to this collection (of operations) the "controlled not" operation matrix (a $4\times4$ matrix):
 $|a,b> \overset{\text{CNOT}}{\to} |a,a+b>$, it is "easy to see" that one can build any unitary operation over $n$ q-bits.
 
 
