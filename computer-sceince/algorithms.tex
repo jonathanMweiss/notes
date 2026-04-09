@@ -388,6 +388,18 @@ separately to define the two new polynomials $A^{[0]}(x)$ and $A^{[1]}(x)$ of de
 
 
 It follows that $A(x)=A^{[0]}(x^2) + x\cdot A^{[1]}(x^2)$.
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Example: splitting a degree-8 polynomial}
+Take $A(x) = 1 + 2x + 3x^2 + 4x^3 + 5x^4 + 6x^5 + 7x^6 + 8x^7$ with $n = 8$.
+The even-indexed coefficients are $a_0=1,\, a_2=3,\, a_4=5,\, a_6=7$, and the odd-indexed coefficients are $a_1=2,\, a_3=4,\, a_5=6,\, a_7=8$, giving
+$$A^{[0]}(x) = 1 + 3x + 5x^2 + 7x^3, \qquad A^{[1]}(x) = 2 + 4x + 6x^2 + 8x^3.$$
+We can verify the identity $A(x) = A^{[0]}(x^2) + x \cdot A^{[1]}(x^2)$:
+\begin{align*}
+  A^{[0]}(x^2) + x \cdot A^{[1]}(x^2)
+  &= (1 + 3x^2 + 5x^4 + 7x^6) + x(2 + 4x^2 + 6x^4 + 8x^6)\\
+  &= 1 + 2x + 3x^2 + 4x^3 + 5x^4 + 6x^5 + 7x^6 + 8x^7 = A(x). \checkmark
+\end{align*}
+The two subpolynomials each have degree bound $n/2 = 4$, illustrating how the problem halves at each recursive step.
+\end{bclogo}
 
 Thus, the problem of evaluating $A(x)$ at 
 $\omega_n^0, \omega_n^1, \omega_n^2,\dots, \omega_n^{n-1}$ 
@@ -402,6 +414,33 @@ the above values consist not of $n$ distinct values but only of the $n/2$
 These subproblems have the same form as the original problem but are half the size.
 We can continue in this manner until we evaluate the full polynomial on $n$ distinct values.
 
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Example: DFT matrix with permuted coefficient vector ($n=4$)}
+Reordering the coefficient vector as $[a_0, a_2, a_1, a_3]^T$ (even indices first, then odd), the DFT evaluation becomes
+$$
+\begin{pmatrix} A(\omega_4^0) \\ A(\omega_4^1) \\ A(\omega_4^2) \\ A(\omega_4^3) \end{pmatrix}
+=
+\begin{pmatrix}
+  (\omega_4^0)^0 & (\omega_4^0)^2 & (\omega_4^0)^1 & (\omega_4^0)^3 \\
+  (\omega_4^1)^0 & (\omega_4^1)^2 & (\omega_4^1)^1 & (\omega_4^1)^3 \\
+  (\omega_4^2)^0 & (\omega_4^2)^2 & (\omega_4^2)^1 & (\omega_4^2)^3 \\
+  (\omega_4^3)^0 & (\omega_4^3)^2 & (\omega_4^3)^1 & (\omega_4^3)^3
+\end{pmatrix}
+\begin{pmatrix} a_0 \\ a_2 \\ a_1 \\ a_3 \end{pmatrix}
+=
+\begin{pmatrix}
+  \omega_4^0 & \omega_4^0 & \omega_4^0 & \omega_4^0 \\
+  \omega_4^0 & \omega_4^2 & \omega_4^1 & \omega_4^3 \\
+  \omega_4^0 & \omega_4^4 & \omega_4^2 & \omega_4^6 \\
+  \omega_4^0 & \omega_4^6 & \omega_4^3 & \omega_4^9
+\end{pmatrix}
+\begin{pmatrix} a_0 \\ a_2 \\ a_1 \\ a_3 \end{pmatrix}.
+$$
+Row $j$ evaluates $A$ at $\omega_4^j$, so each entry is $(\omega_4^j)^m$ where $m$ is the exponent of $x$ for that coefficient.
+The first row ($j=0$) collapses to all $\omega_4^0$ since $(\omega_4^0)^m = 1$ for any $m$.
+The left half of each row (columns for $a_0, a_2$) contains only even powers of $\omega_4$,
+and the right half (columns for $a_1, a_3$) contains only odd powers.
+This separation is exactly what allows the two size-$n/2$ DFTs to be computed independently.
+\end{bclogo}
 
 \subsection{putting it all together}
 \red{there might be some miscalculations here, but the idea is solid.}
@@ -518,7 +557,7 @@ It is important to note that $N$ also applies to the length of our polynomial.
 \subsubsection{Preliminaries}
 I will describe everything in terms of fields, but essentially all of this can be easily generalised to rings 
 using the Chinese Remainder Theorem (CRT), as shown below.
-\paragraph{\bf Finding Roots of Unity (In Field)}
+\paragraph{ Finding Roots of Unity (In Field)}
 As described above, an $n$-th root of unity, is an element $\alpha\in Z_q$ 
 such that $\alpha^n =1  \mod q $, and for every $0<k<n$ $\alpha^k \neq 1 \mod q$.
 
@@ -571,7 +610,7 @@ not a root of $X^n-1$ is a root of $X^n+1$.
 How do we find the roots of $X^{2n}-1$? Those are the $2n$-th roots of unity, 
 which are easy to find!
 
-\paragraph{\bf Chinese Remainder Theorem (CRT) For Dummies}
+\paragraph{Chinese Remainder Theorem (CRT) For Dummies}
 CRT is a way of representing elements $x\in Z_q$ (
   where $q=p_1,p_2,\dots,p_k$ and $p_i\in\text{Primes}$)
 such that the $x_{CRT}$ is a single and unique representation of $x$ using the 
@@ -594,7 +633,7 @@ There is more to it honestly, but for our cause, it's enough.
 
 \subsubsection{Putting it all together}
 
-\paragraph[NTT Over Finite Fields]{\bf NTT Over Finite Fields} \label{ntt-field}
+\paragraph[NTT Over Finite Fields]{ NTT Over Finite Fields} \label{ntt-field}
 When working over a field $GF(p)$ such that $p$ is prime,
 the maximal $N$, the array of coefficients representing a
 polynomial, is $N_{max}=p-1$, and $N$ is a valid size for NTT
@@ -610,14 +649,14 @@ then run the (almost) same algorithm in \nameref{algorithm:fft},
 but change line 7 such that omega is now the $n$-th root of unity in $GF(p)$, and
 all operations in the algorithm are now $\mod p$.
 
-\paragraph{\bf iNTT}
+\paragraph{iNTT}
 Just like in \nameref{ifft}, but to calculate $\omega^-1$, we'll
 use the algorithm shown in \autoref{sec:finite-field:extended-euclidean} 
 to find the inverse of every element ($x^-1$).
 
 
 
-\paragraph[short]{\bf NTT over Rings}
+\paragraph[short]{NTT over Rings}
 Let $Z_M$ represent a ring of integers ${0,1,2,\dots , M-1}$,
 with arithmetics mod $M$.
 Where $M$ is constructed the following unique prime factorization
@@ -625,7 +664,7 @@ $M=p_{1}^{r_1}\cdot  p_{2}^{r_2} \cdots p_{\ell}^{r_\ell}$
 and $p_i$'s are distinct primes (see \cite[NTT sec. III][]{ntt}
  for further explanations).
 
-For NTT to work, the following must hold $\bf N|L(M)$
+For NTT to work, the following must hold $N|L(M)$
 where $L(M)$ is the greatest common
 divisor (gcd) of the $(p_{i}-1)$. That is, 
 $L(M):= gcd\{p_1-1,p_2-1,\dots\}$
