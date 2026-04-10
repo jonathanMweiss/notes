@@ -306,20 +306,41 @@ a root of $156$.
 
 \section{Structure of Finite Fields}
 
-
+Reminder, coprime numbers are numbers that have no common divisors other than 1 ($gcd(a,b)=1$).
 
 
 \begin{theorem}[Fermat's little theorem]\label{fermats-little-theorem}
-    For every element of a finite field $F$ with $q$ elements, 
-    $x^q=x$. 
+    For every element of a finite field $\mathbb{F}_q$ with $q$ elements, 
+    $a^q=a$. 
 \end{theorem}
 
+\begin{proof}
+    If $a$ is not coprime to $q$: since $q$ is prime it must divide $a$, thus $a=0\mod q$ and $a^q=0=a\mod q$.
+
+    Else, we assume $a$ is coprime. Let $A=\{1,2,\dots,(q-1)\}$ be the set of all remainders (except $0$) mod $q$. 
+    Let $B=a\cdot A=\{1 \cdot a, 2\cdot a,\dots,(q-1)\cdot a\}$ be the set of all remainders multiplied by $a$.
+
+    First, $0\notin B$ since $a$ and every element in $A$ are coprime to $q$ (and their multiplication is also coprime since it doesn't divide $q$ and vise versa). Second, $B$ should be the same size of $A$: consider $i,j\in A$,
+    if $i\cdot a = j \cdot a \mod q$ (since a is coprime, and $q$ is not dividing it, it isn't $0$, and thus we can cancel it in both sides using division), leading to $i=j \mod q$. That is,  $|B|=|A|$.
+    So, we get that $B$ mod $q$ has the same elements as in $A$.
+
+    Now inspect the product of all elements:
+    \begin{align}
+     (a \cdot 1) \cdot (a \cdot 2) \cdot \dots \cdot (a \cdot (q-1)) = 1 \cdot 2 \cdot \dots \cdot (q-1) \mod q \\
+     a^{(q-1)}\cdot (q-1)! = (q-1)! \mod q    
+    \end{align}
+
+    Since $(q-1)!$ is a product of coprimes of $q$, it equivalent to $0 (\mod q)$. So we can divide both sides of our equation, and we have: 
+    $ a^{q-1} = 1 \mod q$
+\end{proof}
+
+
 \begin{corollary}
-    Let $F$ be a finite field with $q$ elements, and let $x\ne0\in F$.
+    Let $\mathbb{F}$ be a finite field with $q$ elements, and let $x\ne0\in \mathbb{F}$.
     Then, $x^{q-1}=1$.
 \end{corollary}
 
-This theorem is very useful in cryptography, algorithms, and many other fields.
+This theorem is very useful in cryptography, algorithms, and many other fields (Rabin-Miller algorithm).
 I specifically used it to explain to myself some aspects of the NTT algorithm (see \autoref{section:fft}). 
 
 
