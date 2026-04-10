@@ -1,16 +1,14 @@
-
-
-\chapter{Number-Theoretic Algorithms}\label{finite-fields}
+\chapter{Number-Theoretic Algorithms}
 \section{GCD and Extended Euclidean Algorithm}
 
 \subsection{GCD}
 The greatest common divisor (GCD) of two integers
- $a$ and $b$ is the largest integer that divides both $a$ and $b$.
- While seemingly simple, the GCD is a fundamental concept in number theory
- and used extensively when working with integers over finite fields.
+$a$ and $b$ is the largest integer that divides both $a$ and $b$.
+While seemingly simple, the GCD is a fundamental concept in number theory
+and used extensively when working with integers over finite fields.
 
 
- \begin{lstlisting}[language=Python,
+\begin{lstlisting}[language=Python,
   caption={GCD algorithm in python}
 ]
 
@@ -19,16 +17,27 @@ def gcd(a, b):
         a, b = b, a%b
 
     return a
-
  \end{lstlisting}
 
-This simple algorithm works since 
-$a=b*q+r$ where $r$ is some remainder. The $GCD(a,b)=x$
-must divide both of these numbers, thus it should be able to divide $b$, and $r$ (
-otherwise, $a/x = \frac{b*q+r}{x}=\frac{b*q}{x}+\frac{r}{x}$, and if $\frac{r}{x}$ has a remainder 
-then it is a contradication to it being a gcd of $a$).
-Thus, $GCD(a,b)=GCD(b,r)$, and we can continue the algorithm until the smaller 
-value is $0$.
+This algorithm relies on the following theorem, allowing us to work with the remainder (until it is zero).
+\begin{theorem}
+  Consider $a=b\cdot q +r$ then $GCD(a,b)= GCD(b,r)$.
+\end{theorem}
+
+\begin{proof}
+  Consider $a=b\cdot q +r$, and $GCD(a,b)=x$.
+
+  $x$ divides both $a$ and $b$ by definition. So $x$ also divides 
+  $b\cdot q+ r$ (otherwise it wouldn't be the GCD of $a$ and $b$).
+  Thus, $x$ must divide $r$ as well. 
+
+  Let $GCD(b,r)=y$, Since $x$ also divides $r,b$ we know that $y\ge x$.
+  Suppose $r=a-b\cdot q=b\cdot(-q) +a$ (i.e., re-ordering the equation). 
+  That is, $y$ is the GCD of $r,b$ so it must also divide $b\cdot(-q) +a$: 
+  $y$ is a common divisor of $a,b$ and from $GCD(a,b)=x\ge y$.
+  
+  Since $x\ge y \ge x$ they must be equal.
+\end{proof}
 
 
 \subsection{Extended Euclidean Algorithm (inverse algorithm)}
@@ -50,37 +59,46 @@ The following proof is an iteration of the above explanation.
     Therefore, $d = \gcd(a, b)$.
 \end{proof}
 
-\paragraph{Using Bezout to Find Inverse}
+\paragraph{Using Bezout to Find Inverse in Field}
 As a result of Bezout's identity, we can find the inverse of an element in a finite field $GF(q)$. 
 in short, in a finite field $q$ is a prime right? so $GCD(a,q)=1$ for every $a\in GF(q)$.
 As a result, we have $ax+qy=ax+0=GCD(a,q)=1$ (where $qy=0$ since we are in $GF(q)$), and thus $ax=1 \mod q$. and luckily, the 
 extended Euclidean algorithm can find this $x$ and this $y$ (we toss the $y$ when we just want the inverse of $a$ in $GF(q)$).
 
+The same idea works in rings: if $GCD(a,q)=1$ then there exists an inverse.
+if $GCD(a,q)\neq 1$, there isn't any inverse. 
 
 
-The algorithm is basically applying the GCD algorithm, but keeping track of the coefficients
-$x$ and $y$ in the process.
+\paragraph{Algorithm}
+
+The algorithm is basically applying the GCD algorithm, but keeping track of the coefficients $x$ and $y$ in the process.
 
 \begin{lstlisting}[language=Python,
   caption={Extended Euclidean Algorithm in python}
 ]
-def extended_euclidean(a, b):
-    x0, x1, y0, y1 = 1, 0, 0, 1
-    while b != 0:
-        q, a, b = a // b, b, a % b # advancing the algorithm by one step.
+def extended_gcd(a, b):
+    # Base case: gcd(a, 0) = a, and a = a*1 + 0*0, so x=1, y=0.
+    if b == 0:
+        return a, 1, 0
 
-        # updating the x coefficients. try doing gcd by hand to understand this.
-        x0, x1 = x1, x0 - q * x1 
-        y0, y1 = y1, y0 - q * y1
+    # Recursive call returns (g, x', y') such that g = b*x' + r*y',
+    # where r = a mod b. We'll rename them to x, y for brevity.
+    g, x, y = extended_gcd(b, a % b)
 
-    return a, x0, y0
-
+    # Now convert coefficients for (b, r) into coefficients for (a, b).
+    # Since r = a - (a // b) * b, substitute into g = b*x + r*y:
+    #   g = b*x + (a - (a//b)*b) * y
+    #     = a*y + b*(x - (a//b)*y)
+    # So the new x is the old y, and the new y is x - (a//b)*y.
+    return g, y, x - (a // b) * y
 \end{lstlisting}
 
 \red{below paragraphs are generated via gemini3, i've read through them though.}
 
 \paragraph{Matrix Intuition}
-To understand the coefficients update, we can view the Euclidean algorithm steps as matrix transformations.
+Let us find the iterative procedure (which is also important for the Half-GCD algorithm).
+
+We can view the Euclidean algorithm steps as matrix transformations.
 We start with the identity relations:
 \[
 \begin{pmatrix} a \\ b \end{pmatrix} = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} \begin{pmatrix} a \\ b \end{pmatrix}
@@ -90,37 +108,52 @@ If we want to transition from the state $(a, b)$ to $(b, r)$, we can apply the f
 \[
 \begin{pmatrix} b \\ r \end{pmatrix} = \begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix} \begin{pmatrix} a \\ b \end{pmatrix}
 \]
-By maintaining the product of these transformation matrices, we effectively track the linear combination coefficients $x$ and $y$ such that $r_i = x \cdot \text{original\_}a + y \cdot \text{original\_}b$.
-The code above implements exactly this logic, updating the coefficients $(x_0, x_1)$ and $(y_0, y_1)$ according to the transformation matrix $\begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix}$ at each step.
 
-\paragraph{Invariant Explanation}
-To make it even clearer, let's denote the initial inputs as $A$ and $B$.
-The variables $x_0, y_0$ track the coefficients for the current value of variable \texttt{a}, and $x_1, y_1$ track the coefficients for the current value of variable \texttt{b}.
-Throughout the execution of the loop, the following invariant holds:
-\[
-\begin{pmatrix} \texttt{a} \\ \texttt{b} \end{pmatrix} = \begin{pmatrix} x_0 & y_0 \\ x_1 & y_1 \end{pmatrix} \begin{pmatrix} A \\ B \end{pmatrix}
-\]
-This means that at any step:
-\[
-\texttt{a} = x_0 \cdot A + y_0 \cdot B \quad \text{and} \quad \texttt{b} = x_1 \cdot A + y_1 \cdot B
-\]
-When the loop terminates ($\texttt{b}=0$), the variable \texttt{a} holds the GCD, and the invariant tells us that $\text{GCD}(A, B) = x_0 \cdot A + y_0 \cdot B$.
-Thus, the returned $x_0$ and $y_0$ are the Bezout coefficients.
+We found a transition matrix right? let's call it $M$. what happens if we apply $M$. This matrix essentially help us transofrm from $GCD(a,b)$ state to the next $GCD(b,r)$ state.
 
-\paragraph{Deriving the Update Rules}
-The code updates \texttt{x0, x1} and \texttt{y0, y1} by performing a matrix multiplication.
-Let $M = \begin{pmatrix} x_0 & y_0 \\ x_1 & y_1 \end{pmatrix}$ be the matrix storing the current coefficients.
-In each step of the loop, we apply the transformation $T = \begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix}$.
-The new coefficient matrix $M_{new}$ is the product $T \times M$:
-\[
-M_{new} = \begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix} \begin{pmatrix} x_0 & y_0 \\ x_1 & y_1 \end{pmatrix} 
-= \begin{pmatrix} x_1 & y_1 \\ x_0 - q \cdot x_1 & y_0 - q \cdot y_1 \end{pmatrix}
-\]
-This matrix multiplication exactly matches the Python tuple assignment:
-\begin{itemize}
-    \item The first row of $M_{new}$ becomes the new $(x_0, y_0)$, which takes values from the old second row $(x_1, y_1)$.
-    \item The second row of $M_{new}$ becomes the new $(x_1, y_1)$, calculated as $(x_0 - q x_1, y_0 - q y_1)$.
-\end{itemize}
+Similarly, if we apply this matrix again on the $(b,r)$ vector, we'll get the next GCD state.
+
+So lets us apply this state again and again until we reach the state $GCD(g,0)$. Namely, we reached our goal and found the GCD.
+
+$\begin{pmatrix}gcd \\0 \end{pmatrix} = M \cdot M \cdot M \cdots M \cdot \begin{pmatrix} a \\ b \end{pmatrix}$
+
+What is of all these $M$ matrices? it's a matrix too: 
+$M^* = M \cdot M \cdot M \cdots M = \begin{pmatrix} M_{11}^*   & M_{12}^* & \\ M_{21}^* & M_{22}^* \end{pmatrix} $
+
+Noitce that 
+$\begin{pmatrix}gcd \\0 \end{pmatrix} = \begin{pmatrix} M_{11}^*   & M_{12}^* & \\ M_{21}^* & M_{22}^* \end{pmatrix} \cdot \begin{pmatrix} a \\ b \end{pmatrix}$
+
+That is, we have $gcd=M_{11}^*a + M_{12}^*b$. That is, if we stored our matrix and kept it on the side, we can easily grab $x$ and $y$ such that $gcd=a\cdot x+ y\cdot b$.
+
+
+% \paragraph{Invariant Explanation}
+% To make it even clearer, let's denote the initial inputs as $A$ and $B$.
+% The variables $x_0, y_0$ track the coefficients for the current value of variable \texttt{a}, and $x_1, y_1$ track the coefficients for the current value of variable \texttt{b}.
+% Throughout the execution of the loop, the following invariant holds:
+% \[
+% \begin{pmatrix} \texttt{a} \\ \texttt{b} \end{pmatrix} = \begin{pmatrix} x_0 & y_0 \\ x_1 & y_1 \end{pmatrix} \begin{pmatrix} A \\ B \end{pmatrix}
+% \]
+% This means that at any step:
+% \[
+% \texttt{a} = x_0 \cdot A + y_0 \cdot B \quad \text{and} \quad \texttt{b} = x_1 \cdot A + y_1 \cdot B
+% \]
+% When the loop terminates ($\texttt{b}=0$), the variable \texttt{a} holds the GCD, and the invariant tells us that $\text{GCD}(A, B) = x_0 \cdot A + y_0 \cdot B$.
+% Thus, the returned $x_0$ and $y_0$ are the Bezout coefficients.
+
+% \paragraph{Deriving the Update Rules}
+% The code updates \texttt{x0, x1} and \texttt{y0, y1} by performing a matrix multiplication.
+% Let $M = \begin{pmatrix} x_0 & y_0 \\ x_1 & y_1 \end{pmatrix}$ be the matrix storing the current coefficients.
+% In each step of the loop, we apply the transformation $T = \begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix}$.
+% The new coefficient matrix $M_{new}$ is the product $T \times M$:
+% \[
+% M_{new} = \begin{pmatrix} 0 & 1 \\ 1 & -q \end{pmatrix} \begin{pmatrix} x_0 & y_0 \\ x_1 & y_1 \end{pmatrix} 
+% = \begin{pmatrix} x_1 & y_1 \\ x_0 - q \cdot x_1 & y_0 - q \cdot y_1 \end{pmatrix}
+% \]
+% This matrix multiplication exactly matches the Python tuple assignment:
+% \begin{itemize}
+%     \item The first row of $M_{new}$ becomes the new $(x_0, y_0)$, which takes values from the old second row $(x_1, y_1)$.
+%     \item The second row of $M_{new}$ becomes the new $(x_1, y_1)$, calculated as $(x_0 - q x_1, y_0 - q y_1)$.
+% \end{itemize}
 
 \section{Chinese Remainder Theorem}
 
