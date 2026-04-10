@@ -305,16 +305,22 @@ a root of $156$.
 
 
 \section{Structure of Finite Fields}
+We begin by describing a super important theorem. It is used wildly in cryptography, and that's why it is here! 
 
-Reminder, coprime numbers are numbers that have no common divisors other than 1 ($gcd(a,b)=1$).
-
-
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Ordering of elements}
+    I specifically used it to prove how to find roots of unity, which is used to perform the NTT algorithm, and so much more optimizations.
+\end{bclogo}
+(see \autoref{section:fft}). 
 \begin{theorem}[Fermat's little theorem]\label{fermats-little-theorem}
     For every element of a finite field $\mathbb{F}_q$ with $q$ elements, 
     $a^q=a$. 
 \end{theorem}
 
 \begin{proof}
+    \begin{insight}
+        Reminder, coprime numbers are numbers that have no common divisors other than 1 ($gcd(a,b)=1$).
+    \end{insight}
+
     If $a$ is not coprime to $q$: since $q$ is prime it must divide $a$, thus $a=0\mod q$ and $a^q=0=a\mod q$.
 
     Else, we assume $a$ is coprime. Let $A=\{1,2,\dots,(q-1)\}$ be the set of all remainders (except $0$) mod $q$. 
@@ -340,16 +346,29 @@ Reminder, coprime numbers are numbers that have no common divisors other than 1 
     Then, $x^{q-1}=1$.
 \end{corollary}
 
-This theorem is very useful in cryptography, algorithms, and many other fields (Rabin-Miller algorithm).
-I specifically used it to explain to myself some aspects of the NTT algorithm (see \autoref{section:fft}). 
 
-
-\begin{corollary}
+\begin{corollary}[Is part of a field?]
     Let $F$ be a subfield of $E$ with $|F|=q$. Then 
     an element $x\in E$ is in $F$ iff $x^q=x$.
 \end{corollary}
 
+\begin{corollary}[Modular Inverse]
+    Since $a^{q-1}=1 \mod q$, we can find the inverse of $a$ by computing $a^q-1$.
+\end{corollary}
 
+
+\begin{corollary}[Exponent reduction]
+    $a^b=a^{b\mod (q-1)} \mod q$.
+\end{corollary}
+
+\begin{proof}
+    Assume $b>q$ (otherwise it doesn't matter).
+    \begin{align}
+    a^b=
+    \underbrace{a^{q-1} \cdots a^{q-1}}_{\lfloor\frac{b}{q-1} \rfloor\text{ times}} \cdot a^{b\mod (q-1)} \mod q &= \\
+     1\cdots1 \cdot a^{b\mod (q-1)} \mod q = a^{b\mod (q-1)} \mod q.    
+    \end{align}
+\end{proof}
 
 \begin{theorem}
     For any prime $p$ and any integer $n$, there exists a field of size $p^n$.
