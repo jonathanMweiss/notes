@@ -156,6 +156,48 @@ That is, we have $gcd=M_{11}^*a + M_{12}^*b$. That is, if we stored our matrix a
 % \end{itemize}
 
 \section{Chinese Remainder Theorem}
+\label{sec:crt}
+
+The Chinese Remainder Theorem (CRT) addresses the following question: given a system of congruences
+\[
+  x \equiv a_1 \pmod{n_1}, \quad x \equiv a_2 \pmod{n_2}, \quad \ldots, \quad x \equiv a_k \pmod{n_k},
+\]
+does a solution $x$ exist, and if so, is it unique?
+
+\begin{theorem}[Chinese Remainder Theorem]
+  Let $n_1, n_2, \ldots, n_k$ be pairwise coprime positive integers, and let $a_1, a_2, \ldots, a_k$ be arbitrary integers.
+  Then there exists an integer $x$ satisfying all congruences simultaneously, and it is unique modulo $N = n_1 \cdot n_2 \cdots n_k$.
+\end{theorem}
+(Without proof)
+
+The solution is computed constructively. Define $N = \prod_{i=1}^k n_i$ and $N_i = N / n_i$.
+Since $\gcd(N_i, n_i) = 1$, the inverse $M_i = N_i^{-1} \pmod{n_i}$ exists and can be found via the Extended Euclidean Algorithm.
+The unique solution is then $x = \sum_{i=1}^k a_i N_i M_i \pmod{N}$.
+
+If $n_1,n_2,\dots,n_k$ are not pairwise coprime then it is possible no solution exists, or it isn't unique. 
+
+\begin{lstlisting}[language=Python, caption={Chinese Remainder Theorem solver}]
+from math import prod
+
+def mod_inverse(a, n):
+    # Inverse of a modulo n via the Extended Euclidean Algorithm
+    _, x, _ = extended_gcd(a, n)  
+    return x % n
+
+def crt(remainders, moduli):
+    # remainders: list [a_1, ..., a_k]
+    # moduli:     list [n_1, ..., n_k], must be pairwise coprime
+
+    N = prod(moduli)          # N = n_1 * n_2 * ... * n_k
+
+    x = 0
+    for a_i, n_i in zip(remainders, moduli):
+        N_i = N // n_i               # N_i = N / n_i
+        M_i = mod_inverse(N_i, n_i)  # M_i = N_i^{-1} mod n_i
+        x += a_i * N_i * M_i
+
+    return x % N              # unique solution mod N
+\end{lstlisting}
 
 \section{Generator}
 We've specified in \autoref{theorem:num-generators} that we have $\phi(q-1)$ generators in a finite field $\mathbb{F}_q$ (notice we don't have $\phi(q)$ generators).
