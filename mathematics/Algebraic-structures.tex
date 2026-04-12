@@ -372,6 +372,52 @@ We begin by describing a super important theorem. It is used wildly in cryptogra
     \end{align}
 \end{proof}
 
+\subsection{Generator}
+
+\begin{definition}(generator/primitive element)
+    An element $\alpha$ in a finite field $F_q$ is called a primitive element
+    (or generator) of $F_q$ if 
+    $F_q = \{0, \alpha, \alpha^2, \dots , \alpha^{q-1}\}$.
+\end{definition}
+
+That is, a primitive element is a generator of the multiplicative group of the field.
+
+\begin{definition}
+    The order of a non zero element $\alpha$ in a finite field $\mathbb{F}_q$ 
+    is the smallest positive integer $m$ such that
+    $\alpha^m=1$.
+\end{definition}
+
+\begin{corollary}
+    The order of a generator is $q-1$ (i.e., otherwise it'll have a cycle that does not cover all elements of $\mathbb{F}_q/{0}$.)
+\end{corollary}
+
+How can we find such a generator? Since there are quite a lot of them, actually, we can pick a number randmoly and check whether it is a generator or not.
+
+
+\begin{theorem}
+    The number of generators in a field $F_q$ is $\phi(q-1)$ (where $\phi(n)$ is the Euler totient function).
+\end{theorem}\label{theorem:num-generators}
+
+(without proof).
+
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Euler's Totient Function}
+    The \textbf{Euler totient function} $\phi(n)$ counts the number of integers in $\{1, 2, \dots, n\}$ that are coprime to $n$, i.e.,
+    \[
+        \phi(n) = \bigl|\{k \in \mathbb{Z} : 1 \le k \le n,\ \gcd(k, n) = 1\}\bigr|.
+    \]
+    For a prime $p$, every integer from $1$ to $p-1$ is coprime to $p$, so $\phi(p) = p - 1$.
+    More generally, for $n = p_1^{e_1} \cdots p_r^{e_r}$,
+    \[
+        \phi(n) = n \prod_{i=1}^{r} \left(1 - \frac{1}{p_i}\right).
+    \]
+\end{bclogo}
+
+Our last theorem for this subject is Lagrange's theorem. it is the modified version, specified for us, not for group theory.
+
+\begin{theorem}[Lagrange Group Theorem]\label{theorem:lagrange-groups}
+    The \emph{order} of any element, divides the order of the group.
+\end{theorem}
 \subsection{Field Extension}
 \begin{theorem}
     For any prime $p$ and any integer $n$, there exists a field of size $p^n$.
@@ -402,44 +448,6 @@ switch their notation to be integers in the range $[0,3]$.
     $$F[x]/f(x)=F[\alpha]= \{a0 + a1 \alpha + \dots + a_{n-1} \alpha_{d-1} : a_i \in F\}$$
     (we treat $\alpha$ as a symbol, rather than a value). 
 \end{remark}
-
-
-\begin{definition}(generator/primitive element)
-    An element $\alpha$ in a finite field $F_q$ is called a primitive element
-    (or generator) of $F_q$ if 
-    $F_q = \{0, \alpha, \alpha^2, \dots , \alpha^{q-1}\}$.
-\end{definition}
-
-That is, a primitive element is a generator of the multiplicative group of the field.
-
-\begin{definition}
-    The order of a non zero element $\alpha$ in a finite field $\mathbb{F}_q$ 
-    is the smallest positive integer $m$ such that
-    $\alpha^m=1$.
-\end{definition}
-
-\begin{corollary}
-    The order of a generator is $q-1$ (i.e., otherwise it'll have a cycle that does not cover all elements of $\mathbb{F}_q/{0}$.)
-\end{corollary}
-
-How can we find such a generator? Since there are quite a lot of them, actually, we can pick a number randmoly and check whether it is a generator or not.
-
-
-\begin{theorem}
-    The number of generators in a field $F_q$ is $\phi(q-1)$ (where $\phi(n)$ is the Euler totient function).
-\end{theorem}
-
-\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Euler's Totient Function}
-    The \textbf{Euler totient function} $\phi(n)$ counts the number of integers in $\{1, 2, \dots, n\}$ that are coprime to $n$, i.e.,
-    \[
-        \phi(n) = \bigl|\{k \in \mathbb{Z} : 1 \le k \le n,\ \gcd(k, n) = 1\}\bigr|.
-    \]
-    For a prime $p$, every integer from $1$ to $p-1$ is coprime to $p$, so $\phi(p) = p - 1$.
-    More generally, for $n = p_1^{e_1} \cdots p_r^{e_r}$,
-    \[
-        \phi(n) = n \prod_{i=1}^{r} \left(1 - \frac{1}{p_i}\right).
-    \]
-\end{bclogo}
 
 
 It is important to note that, if $\alpha$ is a 

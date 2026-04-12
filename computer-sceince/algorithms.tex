@@ -158,6 +158,35 @@ That is, we have $gcd=M_{11}^*a + M_{12}^*b$. That is, if we stored our matrix a
 \section{Chinese Remainder Theorem}
 
 \section{Generator}
+We've specified in \autoref{theorem:num-generators} that we have $\phi(q-1)$ generators in a finite field $\mathbb{F}_q$ (notice we don't have $\phi(q)$ generators).
+
+So how do we find them?
+Let us sample $g \leftarrow \mathbb{F}_q^*$. We will test if it is a primitive element.
+
+By \autoref{theorem:lagrange-groups}, the order of any element in $\mathbb{F}_q^*$ divides $q-1$.
+For each prime divisor $p_i$ of $q-1$, we check whether $g^{(q-1)/p_i} = 1$.
+If so, $g$ is not a generator: the order of $g$ divides $(q-1)/p_i < q-1$, so it cannot equal $q-1$.
+
+
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Why Does it Work?}
+
+It suffices to check only the prime divisors of $q-1$, rather than all divisors of $q-1$.
+
+\textbf{If $g$ is not a generator, some check will catch it.}
+Suppose $\mathrm{ord}(g) = d$ where $d \mid (q-1)$ and $d \neq q-1$.
+Since $d$ is a proper divisor of $q-1$, the quotient $(q-1)/d$ is an integer greater than or equal to $2$, so it has at least one prime factor; call it $p_j$.
+
+Because $p_j \mid (q-1)/d$, we can write $(q-1)/d = p_j \cdot m$ for some integer $m$, so $q - 1 = d \cdot p_j \cdot m$.
+In particular, $d \mid (q-1)/p_j$.
+Therefore:
+$$g^{(q-1)/p_j} = \left(g^{d}\right)^{(q-1)/(d \cdot p_j)} = 1^{(q-1)/(d \cdot p_j)} = 1.$$
+The check at the prime $p_j$ evaluates to $1$, so $g$ is correctly rejected.
+
+\textbf{If every check passes, $g$ is a generator.}
+Suppose $g^{(q-1)/p_i} \neq 1$ for every prime divisor $p_i$ of $q-1$.
+This means $\mathrm{ord}(g)$ does not divide $(q-1)/p_i$ for any $p_i$.
+The only divisor of $q-1$ with this property is $q-1$ itself, so $\mathrm{ord}(g) = q-1$ and $g$ is a generator.
+\end{bclogo}
 
 \section{Roots of Unity}
 
