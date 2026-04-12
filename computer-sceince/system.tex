@@ -1,0 +1,9 @@
+
+\chapter{Load Balancers and Anycast}
+Load balancing presents an interesting design challenge. The canonical mental model of a load balancer is a single entry point that forwards incoming requests to one of several backend services, with minimal added latency. Since it is the single point of entry, it must handle all incoming traffic. For instance, Google uses the IP address 8.8.8.8, yet the entire world can contact it without overwhelming a single machine. Understanding how this is achieved requires revisiting the assumption that an IP address maps to a single physical server.
+
+The answer is that the assumption of a one-to-one mapping between an IP address and a physical server is incorrect. In practice, a load balancer is a cluster of machines that share the same IP address, with each machine accessible through a different router.
+
+This technique is called \textit{Anycast} routing. Each machine in the cluster advertises the same IP address to the network via BGP (Border Gateway Protocol). When a client sends a packet to that IP, the routing infrastructure delivers it to whichever cluster node is topologically closest to the client. Different clients around the world therefore reach different physical machines, even though they all contact the same IP address. This distributes the load geographically without requiring the client to be aware of the cluster at all.
+
+A simpler alternative is \textit{DNS-based} load balancing, where the DNS server returns a different IP address for each query, cycling through the addresses of the backend servers. This approach does not require shared IPs, but it is less flexible: clients and resolvers cache DNS responses, so a client may continue contacting a machine that has gone offline until the cached record expires.
