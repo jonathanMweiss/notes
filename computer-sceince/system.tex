@@ -26,3 +26,16 @@ The same mechanism that enables Anycast also creates a significant security vuln
 A notable example occurred in 2010, when China Telecom briefly advertised routes for large portions of the internet, redirecting traffic through Chinese routers for approximately 18 minutes. In 2018, traffic destined for Amazon Route 53 DNS servers was hijacked using this technique to steal cryptocurrency.
 
 The standard mitigation is \emph{Resource Public Key Infrastructure} (RPKI), which allows IP prefix owners to cryptographically sign route origin authorizations (ROAs), stating which AS is permitted to advertise a given prefix. Routers that enforce RPKI can reject advertisements that lack a valid ROA. Adoption has grown substantially but remains incomplete, meaning BGP hijacking is still a practical threat.
+
+% \section{Gateway Types}
+
+% Load balancers are commonly classified by the OSI layer at which they operate. The two principal types are Layer 4 and Layer 7 load balancers, each with distinct capabilities and trade-offs.
+
+% \paragraph{Layer 4 (Transport Layer).}
+% A Layer 4 load balancer operates on IP addresses and TCP/UDP port numbers, without inspecting the contents of packets. When a connection arrives, the balancer selects a backend server and rewrites the destination IP and port in the packet headers, then forwards it. Because it never reads above the transport layer, it does not need to terminate the TCP connection itself: the connection runs directly between the client and the backend. This makes Layer 4 balancers very fast and lightweight, as the forwarding decision is made once per connection rather than once per request. The trade-off is limited routing intelligence: all packets in a flow go to the same backend, and the balancer cannot distinguish between, for example, a request for a static image and an API call within the same TCP session.
+
+% For instance, AWS uses a tuple of 5 values: (client ip, client port, server ip, server port, and protocol). It applies a hash on the tuple to determine which underlying server should handle the incoming traffic. 
+% Usually, it has specialized hardware, and the servers in the same VPC allows for TCP/UDP connection handoff.
+
+% \paragraph{Layer 7 (Application Layer).}
+% A Layer 7 load balancer operates at the application layer and can inspect the full content of requests, including HTTP headers, URLs, cookies, and request bodies. It terminates the client's TCP connection, reads the request, makes a routing decision based on its content, and opens a new connection to the selected backend. This enables much richer routing policies: requests to \texttt{/api/} can be forwarded to one pool of servers while requests to \texttt{/static/} go to another; a cookie can pin a user to a specific backend for session affinity; traffic can be shifted between versions of a service for canary deployments. The cost is higher per-request overhead, since the balancer must fully parse each request and maintain two separate TCP connections per client.
