@@ -242,8 +242,8 @@ There are several methods to evaluate polynomials, with varying levels of effici
 I highly recommend reading the section on polynomial evaluation before 
 proceeding (refer to~\ref{sec:poly-eval}), as I have personally used it in 
 practice to both verify the correctness of my algorithms (as outlined
- in paper~\cite{SPIR} \todo{once published}) and gain a deeper 
- understanding of the capabilities and limitations of polynomials.
+in paper~\cite{slicedPIR} and gain a deeper 
+understanding of the capabilities and limitations of polynomials.
 % To see the formal definition of a polynomial, refer to \autoref{def:poly-eval}
 
 \subsection{Evaluation Algorithms}
@@ -272,29 +272,31 @@ def horner(p: List[int], r: int) -> int:
 We've defined one representation for polynomials, the coefficient representation~\ref{polynomials:coeffcient-pres},
 But there is another representation, which is used in numerous algorithms (e.g.,~\ref{schawtz-zippel},\ref{polynomial:multiplication}):
 
+\begin{definition}
+The Point-Value representation of a polynomial $P(x)$ of degree-bound $n$ is a set of $n+1$ point-value pairs. 
+\(\{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}\).
+\end{definition}
 
-A point-value representation of a polynomial $P(x)$ of degree-bound $n$ is a set of $n+1$ point-value pairs.
-$ \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}$, which uniquely defines it.
 
 \begin{theorem}[Uniqueness of an interpolating polynomial]
-  For any set $ \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}$ of $n+1$
+  For any set \( \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}\) of $n+1$
   point-value pairs such that all the $x_k$ values are distinct,
-  there is a unique polynomial $P(x)$ of degree-bound $n$ such that
-  $y_k = P(x_k)$. for $k\in[n]$ 
+  there is a unique (single) polynomial $P(x)$ of degree-bound $n$ such that
+  $y_k = P(x_k)$ for $k\in[n]$ 
 \end{theorem}
 
 \begin{proof}
   \sloppy{
   So let there be a polynomial $p(x) \neq 0$ of degree 
   $n$ and a set $ \{ (x_0,P(x_0)),\dots , (x_{n}, P(x_{n})) \}$
-  of points representing it. Let us assume in contradication that there exists $q(x)\neq p(x)$ and it also happens
-  that $p(x_0)=q(x_0), \dots, p(x_n)=q(x_n)$. That is, there is another polynomial that is evaluated to the same points,
+  of points representing it. Let us assume in contradication that there exists $q(x)\neq p(x)$ such that $p(x_0)=q(x_0), \dots, p(x_n)=q(x_n)$.
+  That is, there exists another polynomial that is evaluated to the same points,
   making the representation non-unique.
 
-  So if such $q(x)$ exists, we can create a new polynomial $(p-q)(x)$, notice that $(p-q)$ is also of degree $n$.
-  $x_i$ is a root $0\le i\le n$ of $(p-q)(x)$, since $(p-q)(x_i)=p(x_i)-q(x_i)$, thus it has $n+1$ roots.
-  This is a contradication to the fundamental theorem of algebra \todo{cite}, that is, a polynomial $p(x)\neq 0$ 
-  of degree $n$ has at most $n$ roots. }
+  If such $q(x)$ exists, we can create a new polynomial $(p-q)(x)$. Note that this polynomial may be of degree up to $n$.
+  $x_i$ is a root $0\le i\le n$ of $(p-q)(x)$, since \((p-q)(x_i)=p(x_i)-q(x_i)\), thus it has $n+1$ roots.
+  This is a contradication to the fundamental theorem of algebra, that is, a polynomial $p(x)\neq 0$ 
+  of degree at most $n$ has at most $n$ roots.}
 \end{proof}
 
 Now that we know that this representation is unique, I'll claim without proof that
@@ -306,16 +308,15 @@ In this section, we talk about identity testing,
 and some issues involving this subject.
 
 Given two polynomials $P(x)$ and $Q(x)$ of the same degree $d$, 
-how do we prove these are the same polynomials?
+how do we prove these are the same polynomials? We can compare their coefficients. 
+What if we don't have access to their coefficients, instead we have an oracle that outputs for any input integer $x_i$ the values of $P(x_i)$ and $Q(x_i)$?
 We can calculate it and check $d$ points on each polynomial 
 since each polynomial can be solely defined by its point-value representation\ref{polynomials:point-val-representation}.
 
 
-Schwartz-Zippel \cite{SZ} made this notion much more efficient 
-(and complete since they discuss multivariate polynomials).
+Schwartz-Zippel \cite{SZ} made this notion much more efficient.
 By choosing a random point for evaluating each polynomial, we can 
-be almost entirely certain 
-whether the polynomials are equal or not.
+be almost entirely certain whether the polynomials are equal or not.
 
 \begin{theorem}
  Let $P(x)$ be a non-zero polynomial of total degree $d$ over 
