@@ -243,7 +243,7 @@ We'll need a few components before being able to construct an IBE:
   \item $G(msk,id):$ key generation using $msk = \alpha$:
   $$ sk_id \from H_0(id)^\alpha \in \G_0 \text{ output } sk_id$$
   \item $E(mpk, id, m ):$ encryption using the public parameters $mpk=u_1$:
-  \begin{align*}\label{lamlam} 
+  \begin{align*}
     \beta \getrandom \Z_q,\  z\from e(H_0(id),mpk^\beta) 
     \\ \ 
     k\from H_1(g^\beta,z), c\getrandom E_s(k,m), \text{ output } (g^\beta,c)

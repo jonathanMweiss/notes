@@ -80,7 +80,6 @@ $p = S + a_0\cdot x + a_1\cdot x^2+a_2\cdot x^3+\dots$ of degree $f+1$.
 create shares $(p(1),p(2),\dots, p(n))$ where $n\ge f+1$ and send it to nodes $(1,2,...n)$.
 The nodes will publish their shares when they want to reconstruct the secret.
 
-
 Once a party in the protocol has a hold of $f+1$ shares, 
 it can recover the secret by creating an equations system,
 and solve for the coefficients using $f+1$ shares as follows:
@@ -96,7 +95,7 @@ This solution is simple, but is limiting in other factors (see~\ref{lagrange-in-
 In addition, it isn't very efficient; most known algorithms for solving linear equations 
 demand $O(n^3)$.
 One can improve performance by relying on Lagrange interpolation, which 
-can be implemented in $O(n^2)$ (again, see \ref{lagrange-in-exponent}).
+can be implemented in $O(n^2)$ (see \autoref{lagrange-interpolation}).
 
 
 \paragraph{Improving Performance}
@@ -155,33 +154,12 @@ Each of these broadcasts costs $O(n^2)$. with up to constant rounds of broadcast
 
 
 \section{Largange interpolation in the exponent}\label{lagrange-in-exponent} %https://crypto.stackexchange.com/questions/67500/how-to-apply-lagrange-interpolation-on-bilinear-pairings
-\todo{The following is explanation regarding lagrange interpolation, give it a place of honour in the Algorithm.tex file}
-We can modify cryptographic schemes using Lagrange interpolation to work with $f<n$ participants.
 
-Given a dataset of coordinate pairs $(x_j,y_j)$ on 
-a polynomial $P(X)=\sum_{i=0}^{k}{a_i^{i}\cdot x^k}$ we can interpolate it as follows:
- $$P(X)=L(x)=\sum _{j=0}^{k}y_{j}\ell _{j}(x)$$
- where $\ell _{j}(x)$ is:
-
- $$\prod_{0\leq m\leq k, \ m\neq j}\frac {x-x_{m}}{x_{j}-x_{m}}$$
-That is, we ensure the new polynomial pass through each point in its correct point-value representation $L(x_j)=y_j$.
-
-
-\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Information}
-When I think of the interpolation, I think Lagrange did something very clever in the above scheme:
-He didn't know how the polynomial looks like.
-But he knew that there is only one polynomial of degree $f$ that passes
-through $f+1$ points(see~\ref{polynomials:point-val-representation}).
-So he created a polynomial that will pass through the exact $f+1$ points, even if he doesn't know 
-where else this polynomial goes through, and because only one polynomial can pass through these same points
-the newly built polynomial (with the method above) must be equal to the original polynomial
-passing through these specific $f+1$ points.
-\end{bclogo}
-
-
+In this section we extend Lagrange's interpolation algorithm (see \autoref{lagrange-interpolation}) to work in cryptography.
+That is, we use Lagrange's interpolation in the exponents of some group. 
 
 \subsection{Using it in crypto}
-For our convinicece, we publish onlt shares of the form: $\{(i,P(i))| i > 0\}$.
+For our convinicece,  we publish only shares of the form: $\{(i,P(i))| i > 0\}$.
 
 Denote: $i_j\in T\subseteq [n]$,  means index of player $j$.
 in order to reconstruct we'll need enough indices such that $|T|=deg(P)+1$.

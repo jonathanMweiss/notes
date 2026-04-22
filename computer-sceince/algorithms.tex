@@ -1085,21 +1085,67 @@ The fallback line keeps the implementation robust and easy to trust:
 if a batched move does not shrink enough, do one ordinary Euclid step.
 So this stays correct while still benefiting from larger jumps.
 
-\section{Lagrange's Interpolation}
+\section{Lagrange's Interpolation} \label{lagrange-interpolation}
 Given a set of points $(x_0,y_0),\dots,(x_n,y_n)$, 
 we can find a unique polynomial of degree-bound $n$ that passes through all of them.
 
 The output of the algorithm is a polynomial in coefficient form.
-This is a generalisation of inverse NTT for evaluation on arbitrary points.
+This is a generalisation of inverse NTT for evaluation on 
+arbitrary points.
 
-Naively computing the lagrange polynomial will cost us $O(n^3)$, 
-but it can be done in $O(n^2)$ time if computed carefuly (utilising cleverly both 
-memory and computation - kind of like dynamic programming).
+Naively computing the Lagrange polynomial costs $O(n^3)$, but it can be done in $O(n^2)$ time by carefully reusing intermediate computations.
 
-\todo{Complete this section, See book Modern Computer Algebra. Section 5 to see how to perform 
-interpolation fast. 
-another solution is implementing inverse NTT, and fill with zeros. }
+The key insight is that any polynomial of degree at most $n$ passing through $n+1$ points is unique. It therefore suffices to construct a polynomial of degree at most $n$ that passes through the given $n+1$ points.
 
+\[\mathcal{L}(x)=\sum_{i=0}^{n}{L_i(x)\cdot y_i}\]
+
+where \[L_i(x) =
+\begin{cases}
+  1 & \text{if } x=x_i \\
+  0 & \text{otherwise}
+\end{cases}\]
+
+\paragraph{Constructing \(L_i(x)\)}
+
+We need a polynomial of degree at most $n$ that equals $1$ at $x_i$ and $0$ at every other point $x_j$ ($j \neq i$).
+The zero condition is satisfied by including a factor $(x - x_j)$ for each $j \neq i$, giving a product of $n$ terms.
+Dividing by the constant $\prod_{j \neq i}(x_i - x_j)$ normalises the polynomial so that it evaluates to $1$ at $x_i$:
+
+\[L_i(x) = \prod_{j=0,\, j \neq i}^{n} \frac{x - x_j}{x_i - x_j}.\]
+
+\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Information}
+  Lagrange's insight is that he did not need to know what the target polynomial looks like.
+  He only needed to know that a polynomial of degree at most $n$ passing through $n+1$ points is unique
+  (see~\ref{polynomials:point-val-representation}).
+  It therefore suffices to construct \emph{any} polynomial of degree at most $n$ that passes through the same $n+1$ points.
+  Uniqueness guarantees that this constructed polynomial must equal the target.
+\end{bclogo}
+
+
+\paragraph{Algorithm}
+
+The naive approach computes each $L_i(x)$ independently, repeating work shared across all basis polynomials.
+The efficient algorithm avoids this by factoring out the common nodal polynomial
+\(m(x) = \prod_{i=0}^{n}(x - x_i)\),
+so that \(L_i(x) = m(x)\,/\,[(x - x_i)\cdot c_i]\) where \(c_i = \prod_{j \neq i}(x_i - x_j)\).
+
+\medskip
+\noindent\textbf{Step 1: Build $m(x)$.}
+Multiply in the linear factors one by one:
+\[m^{(0)} = (x - x_0),\qquad m^{(k)} = m^{(k-1)}\cdot(x - x_k),\quad k=1,\dots,n.\]
+Each multiplication extends a degree-$k$ polynomial by one factor in $O(k)$ coefficient operations, so the total cost is $O(n^2)$.
+
+\medskip
+\noindent\textbf{Step 2: Accumulate the interpolant.}
+For each $i = 0, \dots, n$:
+\begin{enumerate}
+  \item Deflate: compute $m_i = m\,/\,(x - x_i)$ by synthetic division in $O(n)$.
+  \item Normalise: evaluate $c_i = m_i(x_i) = \prod_{j \neq i}(x_i - x_j)$ in $O(n)$.
+  \item Accumulate: $\mathcal{L} \mathrel{+}= (y_i / c_i)\cdot m_i$.
+\end{enumerate}
+Step 2 runs $n+1$ iterations, each costing $O(n)$, for a total of $O(n^2)$.
+
+The output is $\mathcal{L}(x)$ in coefficient form, computed in $O(n^2)$ overall.
 
 % \section{Reed-Solomon}
 % It is fairly simple, but effective algorithm to encode words and be able to deal with erasurs.
