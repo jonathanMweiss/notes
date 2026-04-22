@@ -195,9 +195,9 @@ The protocol allows any dealer that knows the public key $pk$ to hide a message.
 
 Thus, to hide a new message $tx$ the dealer samples ephemeral keys $\left(sk',pk'\right)$ and a random number $r$.
 \begin{itemize}
-\item compute $\gamma=Enc_{pk'}\left(tx\right)$
-\item compute $c=\left(\underbrace{g^{r}}_{c_{L}},\underbrace{e\left(pk,H\left(\gamma\right)^{r}\right)\cdot sk'}_{c_{R}}\right)$ 
-\item send $\left(c,\gamma,pk'\right)$.
+\item compute \(\gamma=Enc_{pk'}\left(tx\right)\)
+\item compute \(c=\left(\underbrace{g^{r}}_{c_{L}},\underbrace{e\left(pk,H\left(\gamma\right)^{r}\right)\cdot sk'}_{c_{R}}\right)\) 
+\item send \(\left(c,\gamma,pk'\right)\).
 \end{itemize}
 
 \paragraph{Decryption}
@@ -218,41 +218,44 @@ This protocol will have slight changes from the one described before.
 It'll ensure we need only $f-out-of-n$ signatures to reconstruct the secret.
 
 
-Each player holds a share $s_j$ (and a matching public key $g^{s_j}$), generated from Polynomial $P$. 
+Each player holds a share $s_j$ (and a matching public key \(pk_j=g^{s_j}\)), generated from Polynomial $P$. 
 The shared secret key is $P(0)= S = \sum_{k \in T}{\ell_k(0)\cdot s_k}$,
 and the public key is 
-$$
+\[
   PK=
   \prod_{k\in T}{(g^{s_k})^{\ell_k(0)}} =
   g^{\sum_{k\in T}{\ell_k(0)\cdot s_k}} =
   g^{L(0)}=g^{P(0)}=g^S 
-$$
+\]
 for $|T|=f+1$ indices.
 
-\paragraph*{Creating new secret}
-For each transaction $tx$: sample new keys: $\left(sk'\right)$ and a random number $r$.
-\begin{itemize}
-\item compute $\gamma=Enc_{sk'}\left(tx\right)$
-\item compute $c=\left(\underbrace{g^{r}}_{c_{L}},\underbrace{e\left(PK, H\left(\gamma\right)^{r}\right)\cdot sk'}_{c_{R}}\right)$ 
-\item send $\left(c, \gamma\right)$.
-\end{itemize}
+% \paragraph{Creating new secret}
+
+% For each message $tx$, the dealer samples new ephemeral key pair $\left(sk'\right)$ and a random number $r$.
+% \begin{itemize}
+% \item compute $\gamma=Enc_{sk'}\left(tx\right)$
+% \item compute $c=\left(\underbrace{g^{r}}_{c_{L}},\underbrace{e\left(pk, H\left(\gamma\right)^{r}\right)\cdot sk'}_{c_{R}}\right)$ 
+% \item send $\left(c, \gamma\right)$.
+% \end{itemize}
 
 
 
 \paragraph*{reconstruction}
+While hiding a message $tx$ remains the same, the reconstruction must be adjusted such that $f+1$ signatures are required, instead of $n$, to reconstruct the secret key $sk'$.
+% Given $f+1$ signatures over $H(\gamma)$, each participant can recompute the secret and extract out of $c$ the decryption key $sk'$.
 
-
-With $f+1$ signatures over $H(\gamma)$, we can recompute the secret and extract out of $c$ the decryption key $sk'$.
-When a player receives a signature $\sigma_{i}=H\left(\gamma\right)^{s_{i}}$
-It verifies the signature and then stores $ (\sigma_i)^{\ell_i(0)}$.
-With enough signatures, we can compute the product signature: $$
-\sigma=\prod_{k\in T}{\sigma_k^{\ell_k(0)}} = 
-\prod_{k\in T}{H\left(\gamma\right)^{\ell_k(0)\cdot s_{k}}} = 
-H\left(\gamma\right)^{\sum_{k\in T}{\ell_k(0)\cdot s_{k}}}=
-H\left(\gamma\right)^{L(0)} =
-H\left(\gamma\right)^{S}
-$$
-Which can be used to decrypt the temp secret key: 
+Thus, when a player receives a signature \(\sigma_{i}=H\left(\gamma\right)^{s_{i}}\)
+It verifies the signature against \(pk_i\) and then stores \((\sigma_i)^{\ell_i(0)}\).
+Once a participant viewed $f+1$ signatures it can compute the product signature: 
+\[
+  \sigma=\prod_{k\in T}{\sigma_k^{\ell_k(0)}} = 
+  \prod_{k\in T}{H\left(\gamma\right)^{\ell_k(0)\cdot s_{k}}} = 
+  H\left(\gamma\right)^{\sum_{k\in T}{\ell_k(0)\cdot s_{k}}}=
+  H\left(\gamma\right)^{L(0)} =
+  H\left(\gamma\right)^{S}
+\]
+where $\ell_k(0)$ is the lagrange coefficients defined above. 
+Given $\sigma$, anyone can compute the ephemeral secret key $sk'$ needed to decrypt the message $\gamma=Enc_{pk'}\left(tx\right)$: 
 \begin{align*}
  & \frac{c_{R}}{e\left(c_{L},\sigma\right)}=\frac{e\left(PK, H\left(\gamma\right)^{r}\right)\cdot sk'}{e\left(g^{r},\sigma\right)}=\\
  & =\frac{e\left(g^S, H\left(\gamma\right)^{r}\right)\cdot sk'}{e\left(g^{r},H(\gamma)^S\right)}=\\
@@ -260,8 +263,6 @@ Which can be used to decrypt the temp secret key:
  & =\frac{e\left(g, H\left(\gamma\right)\right)^{S\cdot r}}{e\left(g,H(\gamma)\right)^{r\cdot S}} \cdot sk'=\\
  & =sk'
 \end{align*}
- we managed to find out the temp secret key. now we can get the value
-under $\gamma=Enc_{pk'}\left(tx\right)$. as wanted.
 
 \chapter{protocols for identification and login}
 \section{Identification Protocols}.
