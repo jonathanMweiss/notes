@@ -75,27 +75,24 @@ a symmetric encryption scheme like AES (e.g., $symKey=Hash(g^{ab})$).
 
 \chapter{Secret sharing, distributed key generation and threshold cryptography}
 \section{Shamir secret sharing}
-Given a secret $S$, generate random polynomial 
-$p = S + a_0\cdot x + a_1\cdot x^2+a_2\cdot x^3+\dots$ of degree $f+1$.
-create shares $(p(1),p(2),\dots, p(n))$ where $n\ge f+1$ and send it to nodes $(1,2,...n)$.
-The nodes will publish their shares when they want to reconstruct the secret.
+Given a secret $S$, choose $f$ random coefficients $a_1,\dots,a_f$ and define the polynomial
+\[p(x) = S + a_1 x + a_2 x^2 + \dots + a_f x^f\]
+of degree $f$. Distribute the shares $(p(1), p(2), \dots, p(n))$ to nodes $(1, 2, \dots, n)$, where $n \ge f+1$.
+The nodes publish their shares when they wish to reconstruct the secret.
 
-Once a party in the protocol has a hold of $f+1$ shares, 
-it can recover the secret by creating an equations system,
-and solve for the coefficients using $f+1$ shares as follows:
+Once a party holds $f+1$ shares, it can recover $S$ by solving the linear system
 \begin{align*}
-  & S +a_0\cdot 1^1 + a_1\cdot 1^2  + \dots = p(1)\\
-  & S +a_0\cdot 2^1 + a_1\cdot 2^2  + \dots = p(2)\\
+  & S + a_1\cdot 1 + a_2\cdot 1^2  + \dots + a_f \cdot 1^f = p(1)\\
+  & S + a_1\cdot 2 + a_2\cdot 2^2  + \dots + a_f \cdot 2^f = p(2)\\
   & \vdots \\
-  & S +a_0\cdot (f+1)^1 + a_1\cdot (f+1)^2  + \dots = p(f+1)
+  & S + a_1\cdot (f+1) + a_2\cdot (f+1)^2  + \dots + a_f\cdot(f+1)^f = p(f+1)
 \end{align*}
+for the $f+1$ unknowns $S, a_1, \dots, a_f$.
 
-
-This solution is simple, but is limiting in other factors (see~\ref{lagrange-in-exponent}).
-In addition, it isn't very efficient; most known algorithms for solving linear equations 
-demand $O(n^3)$.
-One can improve performance by relying on Lagrange interpolation, which 
-can be implemented in $O(n^2)$ (see \autoref{lagrange-interpolation}).
+This approach is straightforward, but has limitations in some settings (see~\ref{lagrange-in-exponent}).
+It is also not efficient: solving the linear system costs $O(n^3)$.
+Performance can be improved by using Lagrange interpolation instead,
+which runs in $O(n^2)$ (see \autoref{lagrange-interpolation}).
 
 
 \paragraph{Improving Performance}
@@ -106,9 +103,13 @@ By relying on roots of unity, we can both create the shares of the polynomial, a
 via NTT (see~\ref{ntt}). 
 Doing so, we can perform secret sharing or secret reconstruction in $O(n\log n)$ complexity.
 
-\paragraph{Error Corrections}
-\red{TODO}
 \section{Verifiable secret sharing}
+Verifiable secret sharing (VSS) has multiple different solutions, and is constantly being improved. 
+In this notion, it is important that malicious participants are caught, and that honest parties manage to reconstruct some specific secret, even if the dealer is malicious. 
+
+\paragraph{Feldman VSS}
+The first notable construction is Feldman's VSS~\cite{feldman-vss}, which assumes a broadcast channel and discrete log hardness.
+
 The dealer will generate a random polynomial $P(x)=S+a_1\cdot x +a_2\cdot x^2 +\dots a_n\cdot x^n$. 
 It'll broadcast the polynomial as follows: $\{g^{a_i} | i\in [n]\cup {S}\}$.
 Then it'll send to each node $i$ its share of the polynomial $P(i)$. 
@@ -122,7 +123,8 @@ $$ g^{P(i)} =
 Every node can compute for any $i$ the value $g^{P(i)}$ using the hidden coefficient broadcasted by the dealer.  
 The ability to compute $g^{P(i)}$ guarantees that no one can publish a corrupt share and fool other nodes when they reconstruct the secret.
 
-
+\paragraph{Information-secure VSS}
+\red{when you have the time.}
 \section{Distributed key generation}
 \subsection{protocol}
 Assumptions, $n$ players, where each player has a broadcast channel (Might cost $n^2$ to publish through) and
@@ -153,28 +155,30 @@ Each of these broadcasts costs $O(n^2)$. with up to constant rounds of broadcast
  That is, computing $ \{ g^{\sum_{j}{a_{1j}}}, g^{\sum_{j}{a_{2j}}},\dots\} $  is $O(n^2)$, and computing it for each player: $O(n^3)$ 
 
 
-\section{Largange interpolation in the exponent}\label{lagrange-in-exponent} %https://crypto.stackexchange.com/questions/67500/how-to-apply-lagrange-interpolation-on-bilinear-pairings
-
+\section{Largange Interpolation in the Exponent}\label{lagrange-in-exponent} %https://crypto.stackexchange.com/questions/67500/how-to-apply-lagrange-interpolation-on-bilinear-pairings
+The previous protocol (DKG) demands that everyone participates, however, many threshold cryptography protocols require some subset 
+from the entire group that the secret is shared over to participate. 
 In this section we extend Lagrange's interpolation algorithm (see \autoref{lagrange-interpolation}) to work in cryptography.
 That is, we use Lagrange's interpolation in the exponents of some group. 
 
-\subsection{Using it in crypto}
-For our convinicece,  we publish only shares of the form: $\{(i,P(i))| i > 0\}$.
+\paragraph{Notations and Reminders}
+\begin{remark}
+  For our convinicece, we publish only shares of the form: $\{(i,P(i))| i > 0\}$.
+\end{remark}
 
 Denote: $i_j\in T\subseteq [n]$,  means index of player $j$.
 in order to reconstruct we'll need enough indices such that $|T|=deg(P)+1$.
 
-So to evaluate $L(0)$ we'll need to compute for each $i_j\in T$:
-$$
+To evaluate the secret, $\mathcal{L}(0)$, we'll need to compute for each $i_j\in T$:
+\[
  \ell_{i_j}(0) = \frac{
  \prod _{k\in T \setminus \{i_j\}}{\textbf{0}-k}
 }{
   \prod_{k\in T \setminus \{i_j\}}{ (i_j - k)}
 }
-$$
-Now, let us finally evaluate the secret:
-$$ L(0) = \sum_{i_j \in T} {\ell_{i_j}\cdot P(i_j)} $$
-
+\]
+To construct the secret, we need to compute:
+\[\mathcal{L}(0) = \sum_{i_j \in T} {\ell_{i_j}\cdot P(i_j)} \]
 
 \subsubsection*{$n-out-of-n$ protocol}
 We'll take a complex and unfamiliar example to ensure one can apply it to other schemes.
