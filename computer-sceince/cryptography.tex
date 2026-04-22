@@ -155,58 +155,54 @@ Each of these broadcasts costs $O(n^2)$. with up to constant rounds of broadcast
  That is, computing $ \{ g^{\sum_{j}{a_{1j}}}, g^{\sum_{j}{a_{2j}}},\dots\} $  is $O(n^2)$, and computing it for each player: $O(n^3)$ 
 
 
-\section{Largange Interpolation in the Exponent}\label{lagrange-in-exponent} %https://crypto.stackexchange.com/questions/67500/how-to-apply-lagrange-interpolation-on-bilinear-pairings
-The previous protocol (DKG) demands that everyone participates, however, many threshold cryptography protocols require some subset 
-from the entire group that the secret is shared over to participate. 
-In this section we extend Lagrange's interpolation algorithm (see \autoref{lagrange-interpolation}) to work in cryptography.
-That is, we use Lagrange's interpolation in the exponents of some group. 
+\section{Lagrange Interpolation in the Exponent}\label{lagrange-in-exponent} %https://crypto.stackexchange.com/questions/67500/how-to-apply-lagrange-interpolation-on-bilinear-pairings
+The previous protocol (DKG) requires full participation from all parties.
+Many threshold cryptography protocols, however, require only a subset of parties to participate in reconstruction.
+This section extends Lagrange interpolation (see \autoref{lagrange-interpolation}) to operate in the exponent of a group element,
+enabling reconstruction without revealing the secret in the clear.
 
-\paragraph{Notations and Reminders}
+\paragraph{Notation}
 \begin{remark}
-  For our convinicece, we publish only shares of the form: $\{(i,P(i))| i > 0\}$.
+  For convenience, shares are indexed by evaluation point: $\{(i, P(i)) \mid i > 0\}$.
 \end{remark}
 
-Denote: $i_j\in T\subseteq [n]$,  means index of player $j$.
-in order to reconstruct we'll need enough indices such that $|T|=deg(P)+1$.
+Let $T \subseteq [n]$ be the set of participating parties, with $i_j$ denoting the index of party $j \in T$.
+Reconstruction requires $|T| = \deg(P) + 1$ shares.
 
-To evaluate the secret, $\mathcal{L}(0)$, we'll need to compute for each $i_j\in T$:
+The Lagrange basis coefficients evaluated at $0$ are:
 \[
  \ell_{i_j}(0) = \frac{
- \prod _{k\in T \setminus \{i_j\}}{\textbf{0}-k}
+ \prod_{k\in T \setminus \{i_j\}}(0-k)
 }{
-  \prod_{k\in T \setminus \{i_j\}}{ (i_j - k)}
-}
+  \prod_{k\in T \setminus \{i_j\}}(i_j - k)
+} = \prod_{k\in T \setminus \{i_j\}} \frac{-k}{i_j - k}
 \]
-To construct the secret, we need to compute:
-\[\mathcal{L}(0) = \sum_{i_j \in T} {\ell_{i_j}\cdot P(i_j)} \]
+The secret is then recovered as:
+\[\mathcal{L}(0) = \sum_{i_j \in T} \ell_{i_j}(0) \cdot P(i_j). \]
 
-\subsubsection*{$n-out-of-n$ protocol}
-We'll take a complex and unfamiliar example to ensure one can apply it to other schemes.
-NOTE: We rely in the following example on pairing-based cryptography. 
-It'll have slight differences. 
-for example, using the key pair $(sk, g^{sk})$ one can sign a message $m$ as follows: $H(m)^{sk}$.
+\subsection{\texorpdfstring{$n$-out-of-$n$}{n-out-of-n} Protocol}
+This example illustrates how an $n$-out-of-$n$ protocol can be extended to an $f$-out-of-$n$ protocol.
 
-Let's begin:
+The protocol uses IBE-based signatures and encryptions.
+A master secret and public key $(sk,\, g^{sk})$ are established, and a signature over a message $m$ is $H(m)^{sk}$ (signature verification is omitted here).
 
-
-A node can publish a secret tied to a specific ID in the following protocol (Assume we have pairings).
-Each user has a key pair $(sk_{i}, pk_{i})$, 
-and the shared public key would be $\prod_{i}pk_{i}=pk$.
-that is $\prod_{i}g^{sk_{i}}=g^{\sum_{i}sk_{i}}$.
+In an $n$-out-of-$n$ signing protocol, $sk$ is generated via DKG, so each participant $i$ holds a share $(sk_i, pk_i)$ of the master key pair.
+The shared public key is then \[pk = \prod_{i} pk_i = \prod_{i} g^{sk_i} = g^{\sum_{i} sk_i}.\]
 
 
-to hide a new transaction $tx$: sample new keys: 
-$\left(sk',pk'\right)$ and a random number $r$.
+\paragraph{Message Hiding}
+The protocol allows any dealer that knows the public key $pk$ to hide a message. Later, we'll show how the $n$ participants that have access to the shares of $sk$ can decrypt the message. 
+
+Thus, to hide a new message $tx$ the dealer samples ephemeral keys $\left(sk',pk'\right)$ and a random number $r$.
 \begin{itemize}
 \item compute $\gamma=Enc_{pk'}\left(tx\right)$
 \item compute $c=\left(\underbrace{g^{r}}_{c_{L}},\underbrace{e\left(pk,H\left(\gamma\right)^{r}\right)\cdot sk'}_{c_{R}}\right)$ 
 \item send $\left(c,\gamma,pk'\right)$.
 \end{itemize}
 
-
-Now, when every server signs: $\sigma_{i}=H\left(\gamma\right)^{sk_{i}}$\\
-we can compute the product signature: $\sigma=\prod H\left(\gamma\right)^{sk_{i}}$
-which can be used to decrypt the temp secret key: 
+\paragraph{Decryption}
+To decrypt, every share holder $i$ must sign $\gamma$: \(\sigma_{i}=H\left(\gamma\right)^{sk_{i}}\).
+The product of all these signatures \(\sigma=\prod H\left(\gamma\right)^{sk_{i}}\) can be used to generate the ephemeral secret key to decrypt the message.
 \begin{align*}
  & \frac{c_{R}}{e\left(c_{L},\sigma\right)}=\frac{e\left(g^{x},H\left(\gamma\right)^{r}\right)sk'}{e\left(g^{r},\sigma\right)}=\\
  & =\frac{e\left(g^{\sum sk_{i}},H\left(\gamma\right)^{r}\right)\cdot sk'}{e\left(g^{r},H\left(\gamma\right)^{\sum sk_{i}}\right)}=\\
@@ -214,11 +210,9 @@ which can be used to decrypt the temp secret key:
  & =\frac{e\left(g,H\left(\gamma\right)\right)^{r\sum sk_{i}}\cdot sk'}{e\left(g,H\left(\gamma\right)\right)^{r\cdot\sum sk_{i}}}=\\
  & =sk'
 \end{align*}
- we managed to find out the temp secret key. now we can get the value
-under $\gamma=Enc_{pk'}\left(tx\right)$.
 
 
-\subsubsection*{$f-out-of-n$ protocol}
+\subsection{$f-out-of-n$ protocol}
 We assume all nodes have shares of the same polynomial $P$.
 This protocol will have slight changes from the one described before.
 It'll ensure we need only $f-out-of-n$ signatures to reconstruct the secret.
