@@ -94,6 +94,70 @@ It is also not efficient: solving the linear system costs $O(n^3)$.
 Performance can be improved by using Lagrange interpolation instead,
 which runs in $O(n^2)$ (see \autoref{lagrange-interpolation}).
 
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=stealth, xscale=1.2, yscale=1.1]
+  % Axes
+  \draw[->] (-2.5,0) -- (5.8,0) node[right] {$x$};
+  \draw[->] (0,-0.5) -- (0,5.0);
+
+  % P(x) = 1.0 + 0.9x - 0.15x^2  (true polynomial, S=1.0)
+  % P(1)=1.75, P(2)=2.2, P(3)=2.35, P(4)=2.2, P(5)=1.75
+  \draw[thick, blue, domain=0:5, samples=80]
+    plot (\x, {1.0 + 0.9*\x - 0.15*\x*\x});
+
+  % Q(x) = 2.5 - 1.35x + 0.6x^2  (alternative, S'=2.5)
+  % Q(1)=1.75, Q(2)=2.2 -- same as P(1), P(2)
+  \draw[thick, violet, dashed, domain=0:3.1, samples=80]
+    plot (\x, {2.5 - 1.35*\x + 0.6*\x*\x});
+
+  % True secret S = P(0) = 1.0
+  \filldraw[blue]   (0, 1.0) circle (2.5pt) node[left=4pt] {$S  = P(0) = 1.0$};
+
+  % Ambiguous secret S' = Q(0) = 2.5
+  \filldraw[violet] (0, 2.5) circle (2.5pt) node[left=4pt] {$S' = Q(0) = 2.5$};
+
+  % Tick at x=0
+  \draw (0, 0.06) -- (0,-0.06) node[below] {$0$};
+
+  % All share points on P (grey)
+  \foreach \xi in {1, 2, 3, 4, 5} {
+    \pgfmathsetmacro{\yi}{1.0 + 0.9*\xi - 0.15*\xi*\xi}
+    \filldraw[gray!50] (\xi,\yi) circle (2pt);
+    \draw[densely dotted, gray!60] (\xi,\yi) -- (\xi,0)
+      node[below, black] {\small $\xi$};
+  }
+
+  % f=2 shares known (insufficient): x=1,2 -- both P and Q pass through these
+  \foreach \xi in {1, 2} {
+    \pgfmathsetmacro{\yi}{1.0 + 0.9*\xi - 0.15*\xi*\xi}
+    \filldraw[orange] (\xi,\yi) circle (3.5pt);
+  }
+
+  % (f+1)-th share at x=3 -- lies on P but not Q (Q(3)=3.85 vs P(3)=2.35)
+  \filldraw[orange!70!black] (3, 2.35) circle (3.5pt);
+
+  % Show where Q would be at x=3 (wrong value) with a cross
+  \draw[violet, thick] (3, 3.85) node {$\times$};
+  \draw[densely dotted, violet] (3, 3.85) -- (3, 0);
+  \node[violet, right=3pt] at (3, 3.85) {\small $Q(3)$};
+
+  % Legend (top-left, clear of both curves)
+  \draw[blue, thick]           (-2.3, 4.6) -- (-1.7, 4.6);
+  \node[blue,  right] at (-1.6, 4.6) {\small $P(x)$: true polynomial};
+  \draw[violet, thick, dashed] (-2.3, 4.2) -- (-1.7, 4.2);
+  \node[violet, right] at (-1.6, 4.2) {\small $Q(x)$: consistent with $f$ shares only};
+  \filldraw[orange]          (-2.0, 3.8) circle (3pt);
+  \node[right] at (-1.6, 3.8) {\small $f$ shares (insufficient)};
+  \filldraw[orange!70!black] (-2.0, 3.4) circle (3pt);
+  \node[right] at (-1.6, 3.4) {\small $(f{+}1)$-th share (resolves ambiguity)};
+\end{tikzpicture}
+\caption{With only $f=2$ shares (orange, at $x=1$ and $x=2$), multiple degree-$f$ polynomials
+fit the data: both $P$ and $Q$ pass through those points yet yield different secrets
+$S=P(0)=1.0$ and $S'=Q(0)=2.5$.
+The third share at $x=3$ lies on $P$ (dark orange) but not on $Q$ (violet cross),
+uniquely determining the polynomial and hence the secret.}
+\end{figure}
 
 \paragraph{Improving Performance}
 While Lagrange interpolation is highly efficient when interpolating, it assumes we don't have 
@@ -212,13 +276,11 @@ The product of all these signatures \(\sigma=\prod H\left(\gamma\right)^{sk_{i}}
 \end{align*}
 
 
-\subsection{$f-out-of-n$ protocol}
-We assume all nodes have shares of the same polynomial $P$.
-This protocol will have slight changes from the one described before.
-It'll ensure we need only $f-out-of-n$ signatures to reconstruct the secret.
+\subsection{\texorpdfstring{$f$-out-of-$n$}{f-out-of-n} Protocol}
+We assume all nodes hold shares of the same polynomial $P$.
+This protocol extends the previous one, requiring only $f$-out-of-$n$ signatures to reconstruct the secret.
 
-
-Each player holds a share $s_j$ (and a matching public key \(pk_j=g^{s_j}\)), generated from Polynomial $P$. 
+Each player holds a share $s_j$ (and a matching public key \(pk_j=g^{s_j}\)), derived from polynomial $P$.
 The shared secret key is $P(0)= S = \sum_{k \in T}{\ell_k(0)\cdot s_k}$,
 and the public key is 
 \[
@@ -240,13 +302,12 @@ for $|T|=f+1$ indices.
 
 
 
-\paragraph*{reconstruction}
-While hiding a message $tx$ remains the same, the reconstruction must be adjusted such that $f+1$ signatures are required, instead of $n$, to reconstruct the secret key $sk'$.
+\paragraph{Reconstruction}
+Message hiding proceeds identically to before. Reconstruction is adjusted so that only $f+1$ signatures are required, rather than $n$, to recover the secret key $sk'$.
 % Given $f+1$ signatures over $H(\gamma)$, each participant can recompute the secret and extract out of $c$ the decryption key $sk'$.
 
-Thus, when a player receives a signature \(\sigma_{i}=H\left(\gamma\right)^{s_{i}}\)
-It verifies the signature against \(pk_i\) and then stores \((\sigma_i)^{\ell_i(0)}\).
-Once a participant viewed $f+1$ signatures it can compute the product signature: 
+Upon receiving a partial signature \(\sigma_{i}=H\left(\gamma\right)^{s_{i}}\), a participant verifies it against \(pk_i\) and stores \((\sigma_i)^{\ell_i(0)}\).
+Once $f+1$ such signatures are collected, the participant computes the combined signature:
 \[
   \sigma=\prod_{k\in T}{\sigma_k^{\ell_k(0)}} = 
   \prod_{k\in T}{H\left(\gamma\right)^{\ell_k(0)\cdot s_{k}}} = 
@@ -254,8 +315,8 @@ Once a participant viewed $f+1$ signatures it can compute the product signature:
   H\left(\gamma\right)^{L(0)} =
   H\left(\gamma\right)^{S}
 \]
-where $\ell_k(0)$ is the lagrange coefficients defined above. 
-Given $\sigma$, anyone can compute the ephemeral secret key $sk'$ needed to decrypt the message $\gamma=Enc_{pk'}\left(tx\right)$: 
+where $\ell_k(0)$ are the Lagrange coefficients defined above.
+Given $\sigma$, anyone can recover the ephemeral secret key $sk'$ needed to decrypt $\gamma=Enc_{pk'}\left(tx\right)$:
 \begin{align*}
  & \frac{c_{R}}{e\left(c_{L},\sigma\right)}=\frac{e\left(PK, H\left(\gamma\right)^{r}\right)\cdot sk'}{e\left(g^{r},\sigma\right)}=\\
  & =\frac{e\left(g^S, H\left(\gamma\right)^{r}\right)\cdot sk'}{e\left(g^{r},H(\gamma)^S\right)}=\\
@@ -263,6 +324,62 @@ Given $\sigma$, anyone can compute the ephemeral secret key $sk'$ needed to decr
  & =\frac{e\left(g, H\left(\gamma\right)\right)^{S\cdot r}}{e\left(g,H(\gamma)\right)^{r\cdot S}} \cdot sk'=\\
  & =sk'
 \end{align*}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=stealth,
+    box/.style={draw, rounded corners, minimum width=2.9cm, minimum height=0.7cm,
+                align=center, font=\small},
+    arrow/.style={->, thick}]
+
+  % Dealer
+  \node[box, fill=blue!15] (dealer) at (0, 0) {Dealer};
+  \node[font=\small, text=blue] at (0, -0.55)
+    {broadcasts $(c,\,\gamma,\,pk')$};
+
+  % Participant boxes (absolute coordinates)
+  \node[box, fill=orange!20] (p1) at (-3.0, -2.0) {Party $i_1$};
+  \node[box, fill=orange!20] (p2) at (-0.3, -2.0) {Party $i_2$};
+  \node[box, fill=gray!15]   (p3) at ( 2.4, -2.0) {Party $i_3$};
+  \node[font=\small]          at ( 4.0, -2.0) {$\cdots$};
+
+  % Subset label above p1..p2
+  \node[font=\small, orange] at (-1.65, -1.35)
+    {participating subset $T$,\; $|T|=f+1$};
+  \draw[orange, thick] (-4.5, -1.6) -- (1.2, -1.6);
+
+  % Broadcast arrows
+  \draw[arrow, blue, dashed] (dealer.south) -- (p1.north);
+  \draw[arrow, blue, dashed] (dealer.south) -- (p2.north);
+  \draw[arrow, blue, dashed] (dealer.south) -- (p3.north);
+
+  % Partial signature labels
+  \node[font=\scriptsize] at (-3.0, -2.65)
+    {$\sigma_{i_1}=H(\gamma)^{s_{i_1}}$};
+  \node[font=\scriptsize] at (-0.3, -2.65)
+    {$\sigma_{i_2}=H(\gamma)^{s_{i_2}}$};
+  \node[font=\scriptsize, text=gray] at (2.4, -2.65)
+    {(not in $T$)};
+
+  % Combine node
+  \node[box, fill=green!15, minimum width=7cm] (combine) at (-1.65, -4.1)
+    {Combine ($f+1$ partial sigs)\\[3pt]
+     $\sigma = \prod_{k\in T}\sigma_k^{\ell_k(0)} = H(\gamma)^S$};
+
+  \draw[arrow] (p1.south) -- ++(0,-0.75) -| (combine.north);
+  \draw[arrow] (p2.south) -- ++(0,-0.75) -| (combine.north);
+
+  % Decrypt node
+  \node[box, fill=red!10, minimum width=7cm] (decrypt) at (-1.65, -5.4)
+    {Recover $sk'$:\quad $c_R\,/\,e(c_L,\sigma) = sk'$};
+  \draw[arrow] (combine) -- (decrypt);
+
+\end{tikzpicture}
+\caption{Threshold reconstruction in the $f$-out-of-$n$ protocol.
+Each party $i \in T$ publishes a partial signature $\sigma_i = H(\gamma)^{s_i}$.
+The $f+1$ partial signatures are combined via Lagrange exponentiation to yield
+$\sigma = H(\gamma)^S$, from which $sk'$ is recovered without any party learning $S$ in the clear.}
+\end{figure}
 
 \chapter{protocols for identification and login}
 \section{Identification Protocols}.
