@@ -922,6 +922,14 @@ meaning we can send less bandwidth over the network, and perform fewer computati
 This trick can be seen in \cite{SEAL}.
 
 \section{Fast Polynomial Division via Reversal and Newton Iteration}
+\begin{insight}
+The algorithm for fast polynomial division attempts to find the inverse of the divisor polynomial. To do so, it modifies it such that one can apply the Newton iteration.
+Using the Newton iteration with specific loop invariant allows us to find the inverse of the modified divisor polynomial. 
+Once done, one can modify the result such that it conforms to the quotient polynomial we are looking for.
+
+Algorithm: reverse coefficients, apply Newton iteration to find the inverse of the reversed divisor, multiply this with the reversed dividend, and reverse the result to get the quotient.
+\end{insight}
+
 \red{Notice that this section is a somewhat explanation for section 9.1 of Modern Computer Algebra}
 Let $A(x), B(x) \in \mathbb{F}[x]$ with $\deg(A)=n$, $\deg(B)=m$, and assume
 the leading coefficient of $B(x)$ is invertible in $\mathbb{F}$. We want to compute
@@ -938,33 +946,66 @@ by
 \]
 which essentially reverses the coefficients up to length $L$.
 
-If $Q(x)$ has degree $k-1$ with $k=n-m+1$, then
+\begin{examplebox}
+  Let $f(x) = 1 + 2x + 3x^2 + 4x^3 + 5x^4$, so $\deg(f)=4$.
+  First substitute $x^{-1}$:
+  \[ f(x^{-1}) = 1 + 2x^{-1} + 3x^{-2} + 4x^{-3} + 5x^{-4}. \]
+  Then multiply by $x^{L-1}$:
+  \[ x^{L-1}f(x^{-1}) = x^{L-1} + 2x^{L-2} + 3x^{L-3} + 4x^{L-4} + 5x^{L-5}, \]
+  and the $\bmod\, x^L$ step keeps only terms of degree $0$ through $L-1$.
+  \begin{itemize}
+    \item $L=5$ (equals $\deg(f)+1$): all terms have degree $0,\dots,4$, nothing is dropped.
+      \[ \operatorname{rev}_5(f) = 5 + 4x + 3x^2 + 2x^3 + x^4. \]
+      Coefficients $(1,2,3,4,5)$ are fully reversed to $(5,4,3,2,1)$.
+    \item $L=7$ (greater than $\deg(f)+1$): terms have degree $2,\dots,6$, all below $L$, so nothing is dropped but the result is zero-padded at the low end.
+      \[ \operatorname{rev}_7(f) = 5x^2 + 4x^3 + 3x^4 + 2x^5 + x^6. \]
+    \item $L=3$ (less than $\deg(f)+1$): terms with degree $< 0$ (from $4x^{L-4}=4x^{-1}$ and $5x^{L-5}=5x^{-2}$) are discarded. Only the first $L$ coefficients of $f$ survive, reversed.
+      \[ \operatorname{rev}_3(f) = 3 + 2x + x^2. \]
+      The leading coefficients $4$ and $5$ are lost.
+  \end{itemize}
+\end{examplebox}
+
+We want to find $Q(x)$, and we know that $Q(x) = A(x)\cdot B(x)^{-1}$, so we can find $Q$ by finding the inverse of $B$ and multiplying it by $A$.
+$Q(x)$ has degree $k-1$ with $k=n-m+1$, so we can find $Q$ by finding the inverse of $B$.
+
+What is the inverse of $B$? It is the polynomial $B^{-1}$ such that $B(x) \cdot B^{-1}(x) = 1$.
+\begin{notice}
+  How does reversing $B(X)$ help us find the inverse of $B$? It doesn't! However,
+  it ensures that the leading coefficient of $B$ becomes the constant term of $\operatorname{rev}_{m+1}(B)$, which is crucial for the Newton iteration to work and  find the inverse of $\operatorname{B}_{m+1}(f)(x)$. 
+\end{notice}
+
+Given the reverse operator, we apply it to each of the polynomials, allowing us to find the reversed quotient $\operatorname{rev}_k(Q)$ (for $k=n-m+1$ the degree of $Q$) by multiplying $\operatorname{rev}_{n+1}(A)$ with the inverse of $\operatorname{rev}_{m+1}(B)$ (once we find it).
 \[
 \operatorname{rev}_k(Q)(x) \;=\; \operatorname{rev}_{n+1}(A)(x) \cdot
    \bigl( \operatorname{rev}_{m+1}(B)(x) \bigr)^{-1} \bmod x^k.
 \]
 
-(Since $Q(x) = A(x)\cdot B(x)^{-1}$.)
-This reversal operation will later be used to \emph{convert the problem of dividing
-high-degree polynomials into the problem of inverting a series with a nonzero
-constant term}, which can be solved efficiently by Newton iteration(see next). In other words,
-reversal ensures that the divisor's leading coefficient becomes the constant term
-of $\operatorname{rev}_{m+1}(B)$, so its inverse exists modulo $x^k$ and can be
-computed in $O(M(k))$ time (i.e., $M(k)$ describe the cost of multiplication. using NTT it is $k\cdot \log k$).
+% (Since $Q(x) = A(x)\cdot B(x)^{-1}$.)
+% This reversal operation will later be used to \emph{convert the problem of dividing}
+% high-degree polynomials into the problem of inverting a series with a nonzero
+% constant term}, which can be solved efficiently by Newton iteration(see next). In other words,
+% reversal ensures that the divisor's leading coefficient becomes the constant term
+% of $\operatorname{rev}_{m+1}(B)$, so its inverse exists modulo $x^k$ and can be
+% computed in $O(M(k))$ time (i.e., $M(k)$ describe the cost of multiplication. using NTT it is $k\cdot \log k$).
 
-In other words, the newtwon iteration, which we describe next demands the polynomial has a constant, invertible, nonzero constant. Otherwise, it doesn't converge (don't ask me why)!
+% In other words, the newtwon iteration, which we describe next demands the polynomial has a constant, invertible, nonzero constant. Otherwise, it doesn't converge (don't ask me why)!
 
-\subsection{Series inversion via Newton iteration.}
-Newton iteration is a technique to find roots of polynomials (similar to gradient descent). Given some good starting point, each iteration approaches the root (if exists), up to some precision $k$.
-In our case, we modify technique to find a polynomial $T(X)$ to serve as the inverse of our input. That is, we are looking for the root of $F(T)=T(X)^{-1}-C(X)$ over the ring $\mathbb{F}/(x^k)$, that is, if we find $T(X)^{-1}$ that can serve as a root, we 
-know that $T(X)^-1=C(X)$, or in other words $T(X)$ is the inverse of $C(X)$. 
-\begin{insight}
-    a more straightforward $F(T)$ would be $F(T)=1-T(x)C(X)$, but this leads to 
+\paragraph{Series inversion via Newton iteration.}
+Newton iteration is a technique to find roots of polynomials (similar to gradient descent). 
+Given some good starting point, each iteration approaches the root (if exists), up to some precision $k$.
+
+In our case, we modify technique to find a polynomial $T(X)$ to serve as the inverse of our input (reversed $B(X)$ which we denote as $C(X)$ to avoid confusion).
+That is, we build the function $F(T)=T(X)^{-1}-C(X)$ and seek its root (when $T(X)^{-1}=C(X)$).
+This specific Newton iteration modification operates over the ring $\mathbb{F}/(x^k)$.
+%  that is, if we find $T(X)^{-1}$ that can serve as a root, we know that $T(X)^{-1}=C(X)$, or in other words $T(X)$ is the inverse of $C(X)$. 
+\begin{notice}
+    You might be wondering why we choose $F(T)=T(X)^{-1}-C(X)$, and not something else. 
+    For example, a more straightforward $F(T)$ would be $F(T)=1-T(x)C(X)$, but this leads to 
     an issue with the iteration. Try to apply this to the iteration after you understand how it works, and you'll get stuck.
-\end{insight}
+\end{notice}
 
-So we begin with $x_1= T_1(X)=c_0^{-1}$, then compute each step using 
-the formula of the technique:
+So we begin with $x_1= T_1(X)=c_0^{-1}$ (the inverse of the constant term of $C(X)$), 
+then compute each step using the formula of the Newton iteration technique:
 $T_{i+1}= T_i - \frac{F(T_i)}{F'(T_i)}= T_i - \frac{1/T_i(X)-C(x)}{-1/T_i(X)^2}$
 So the computation in each step is $T_{i+1}= 2T_i(x)-C(X) \cdot T_i(X)^2$
 
