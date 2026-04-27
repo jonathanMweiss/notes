@@ -268,7 +268,7 @@ Furthermore, we note that $[a]+[b]=[a+b]$ and $[a]\cdot[b]=[a\cdot b]$.
 \end{example}
 
 
-\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{How I think about ideals}
+\begin{insight}{How I think about ideals}
     This formal definition is quite confusing. I think about these ideals as groups 
     with values we don't care about, and $R/I$ defines $R$ without 
     the values we don't care about.
@@ -280,7 +280,7 @@ Furthermore, we note that $[a]+[b]=[a+b]$ and $[a]\cdot[b]=[a\cdot b]$.
     Another important example if the polynomial quotient ring $R[X]/X^d$. 
 This ring is the set of equivalence classes of $R[X]$ under the equivalence relation
 $f\sim g$ iff $f-g\in X^d$. Or in other words, all polynomials of degree less than $d$ are equivalent.
-\end{bclogo}
+\end{insight}
 
 \begin{definition}[irreducible polynomials]
     Let $F$ be a field, and $f(x)\in F[X]$ be a polynomial of degree $d\ge 1$.
@@ -294,11 +294,11 @@ $f\sim g$ iff $f-g\in X^d$. Or in other words, all polynomials of degree less th
     such that $f(x)|g(x)\cdot h(x)$, then $f(x)|g(x)$ or $f(x)|h(x)$. (Stronger)
 \end{definition}
 
-\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{primes, irreducibility and roots}
+\begin{notice}{primes, irreducibility and roots}
 Note, the irreducible or primality of polynomials has nothing to do with roots 
 of the polynomial. For instance, $x+1$ is irreducible over $GF(157)$, but has 
 a root of $156$.
-\end{bclogo}
+\end{notice}
 
 \begin{theorem}
     Let $f(x)\in F[X]$ be a polynomial of degree $d\ge 1$.
@@ -309,9 +309,10 @@ a root of $156$.
 \section{Structure of Finite Fields}
 We begin by describing a super important theorem. It is used wildly in cryptography, and that's why it is here! 
 
-\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Ordering of elements}
-    I specifically used it to prove how to find roots of unity, which is used to perform the NTT algorithm, and so much more optimizations.
-\end{bclogo}
+% \begin{insight}{Ordering of elements}
+%     I specifically used it to prove how to find roots of unity, which is used to perform the NTT algorithm, and so much more optimizations.
+% \end{insight}
+
 (see \autoref{section:fft}). 
 \begin{theorem}[Fermat's little theorem]\label{fermats-little-theorem}
     For every element of a finite field $\mathbb{F}_q$ with $q$ elements, 
@@ -401,7 +402,7 @@ How can we find such a generator? Since there are quite a lot of them, actually,
 
 (without proof).
 
-\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Euler's Totient Function}
+\begin{notice} {Euler's Totient Function}
     The \textbf{Euler totient function} $\phi(n)$ counts the number of integers in $\{1, 2, \dots, n\}$ that are coprime to $n$, i.e.,
     \[
         \phi(n) = \bigl|\{k \in \mathbb{Z} : 1 \le k \le n,\ \gcd(k, n) = 1\}\bigr|.
@@ -411,7 +412,7 @@ How can we find such a generator? Since there are quite a lot of them, actually,
     \[
         \phi(n) = n \prod_{i=1}^{r} \left(1 - \frac{1}{p_i}\right).
     \]
-\end{bclogo}
+\end{notice}
 
 Our last theorem for this subject is Lagrange's theorem. it is the modified version, specified for us, not for group theory.
 
@@ -459,9 +460,9 @@ $F_{q^m}=\{0,1,\alpha,\alpha^2,\dots,\alpha^{q^{m-1}}\}$.
 Addition, and multiplication is easier while represented in terms of $\alpha$ 
 (since it doesn't demand polynomial multiplication and modulo).
 
-\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Ordering of elements}
+\begin{notice}{Ordering of elements}
     You don't know the ordering of the elements using the generator $\alpha$.
-\end{bclogo}
+\end{notice}
 
 \paragraph{Zech logarithms}
 Zech logarithms are used to implement addition in finite fields 

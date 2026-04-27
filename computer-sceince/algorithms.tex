@@ -210,8 +210,7 @@ For each prime divisor $p_i$ of $q-1$, we check whether $g^{(q-1)/p_i} = 1$.
 If so, $g$ is not a generator: the order of $g$ divides $(q-1)/p_i < q-1$, so it cannot equal $q-1$.
 
 
-\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Why Does it Work?}
-
+\begin{insight}[Why Does it Work?]
 It suffices to check only the prime divisors of $q-1$, rather than all divisors of $q-1$.
 
 \textbf{If $g$ is not a generator, some check will catch it.}
@@ -228,7 +227,7 @@ The check at the prime $p_j$ evaluates to $1$, so $g$ is correctly rejected.
 Suppose $g^{(q-1)/p_i} \neq 1$ for every prime divisor $p_i$ of $q-1$.
 This means $\mathrm{ord}(g)$ does not divide $(q-1)/p_i$ for any $p_i$.
 The only divisor of $q-1$ with this property is $q-1$ itself, so $\mathrm{ord}(g) = q-1$ and $g$ is a generator.
-\end{bclogo}
+\end{insight}
 
 \section{Roots of Unity}
 
@@ -493,7 +492,7 @@ separately to define the two new polynomials $A^{[0]}(x)$ and $A^{[1]}(x)$ of de
 
 
 It follows that $A(x)=A^{[0]}(x^2) + x\cdot A^{[1]}(x^2)$.
-\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Example: splitting a degree-8 polynomial}
+\begin{examplebox}{Example: splitting a degree-8 polynomial}
 Take $A(x) = 1 + 2x + 3x^2 + 4x^3 + 5x^4 + 6x^5 + 7x^6 + 8x^7$ with $n = 8$.
 The even-indexed coefficients are $a_0=1,\, a_2=3,\, a_4=5,\, a_6=7$, and the odd-indexed coefficients are $a_1=2,\, a_3=4,\, a_5=6,\, a_7=8$, giving
 $$A^{[0]}(x) = 1 + 3x + 5x^2 + 7x^3, \qquad A^{[1]}(x) = 2 + 4x + 6x^2 + 8x^3.$$
@@ -504,7 +503,7 @@ We can verify the identity $A(x) = A^{[0]}(x^2) + x \cdot A^{[1]}(x^2)$:
   &= 1 + 2x + 3x^2 + 4x^3 + 5x^4 + 6x^5 + 7x^6 + 8x^7 = A(x). \checkmark
 \end{align*}
 The two subpolynomials each have degree bound $n/2 = 4$, illustrating how the problem halves at each recursive step.
-\end{bclogo}
+\end{examplebox}
 
 Thus, the problem of evaluating $A(x)$ at 
 $\omega_n^0, \omega_n^1, \omega_n^2,\dots, \omega_n^{n-1}$ 
@@ -519,7 +518,7 @@ the above values consist not of $n$ distinct values but only of the $n/2$
 These subproblems have the same form as the original problem but are half the size.
 We can continue in this manner until we evaluate the full polynomial on $n$ distinct values.
 
-\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Example: DFT matrix with permuted coefficient vector ($n=4$)}
+\begin{examplebox}{Example: DFT matrix with permuted coefficient vector ($n=4$)}
 Reordering the coefficient vector as $[a_0, a_2, a_1, a_3]^T$ (even indices first, then odd), the DFT evaluation becomes
 $$
 \begin{pmatrix} A(\omega_4^0) \\ A(\omega_4^1) \\ A(\omega_4^2) \\ A(\omega_4^3) \end{pmatrix}
@@ -545,7 +544,7 @@ The first row ($j=0$) collapses to all $\omega_4^0$ since $(\omega_4^0)^m = 1$ f
 The left half of each row (columns for $a_0, a_2$) contains only even powers of $\omega_4$,
 and the right half (columns for $a_1, a_3$) contains only odd powers.
 This separation is exactly what allows the two size-$n/2$ DFTs to be computed independently.
-\end{bclogo}
+\end{examplebox}
 
 \subsection{putting it all together}
 As we've seen we can create a matrix with heavy symmetry, called the DFT matrix. 
@@ -553,7 +552,7 @@ now, we'd want to capitalize on that and create a recursive algorithm.
 To do so, instead of the regular polynomial assignment we've seen above using a matrix,  
 we'll shuffle things a bit according to the divide-and-conquer approach from above
 
-\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Example: factoring the $n=4$ DFT matrix}
+\begin{examplebox}{Example: factoring the $n=4$ DFT matrix}
 Starting from the permuted matrix in the previous example, notice that the left two columns
 (even coefficients $a_0, a_2$) repeat identically in the top and bottom halves, while the right two columns
 (odd coefficients $a_1, a_3$) appear with opposite sign between the halves.
@@ -581,7 +580,7 @@ $$
 \begin{pmatrix} F_2 & D_2 F_2 \\ F_2 & -D_2 F_2 \end{pmatrix}.
 $$
 This is exactly the recursive structure: compute $F_2$ on the even and odd halves separately, then combine with the twiddle factors in $D_2$.
-\end{bclogo}
+\end{examplebox}
 
 
 $$
@@ -959,10 +958,10 @@ In other words, the newtwon iteration, which we describe next demands the polyno
 Newton iteration is a technique to find roots of polynomials (similar to gradient descent). Given some good starting point, each iteration approaches the root (if exists), up to some precision $k$.
 In our case, we modify technique to find a polynomial $T(X)$ to serve as the inverse of our input. That is, we are looking for the root of $F(T)=T(X)^{-1}-C(X)$ over the ring $\mathbb{F}/(x^k)$, that is, if we find $T(X)^{-1}$ that can serve as a root, we 
 know that $T(X)^-1=C(X)$, or in other words $T(X)$ is the inverse of $C(X)$. 
-\begin{bclogo}[logo=\bcinfo,noborder=true]{Explanation}
+\begin{insight}
     a more straightforward $F(T)$ would be $F(T)=1-T(x)C(X)$, but this leads to 
     an issue with the iteration. Try to apply this to the iteration after you understand how it works, and you'll get stuck.
-\end{bclogo}
+\end{insight}
 
 So we begin with $x_1= T_1(X)=c_0^{-1}$, then compute each step using 
 the formula of the technique:
@@ -1196,13 +1195,13 @@ Dividing by the constant $\prod_{j \neq i}(x_i - x_j)$ normalises the polynomial
 
 \[L_i(x) = \prod_{j=0,\, j \neq i}^{n} \frac{x - x_j}{x_i - x_j}.\]
 
-\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, noborder=true, couleur=white]{Information}
+\begin{notice}{Information}
   Lagrange's insight is that he did not need to know what the target polynomial looks like.
   He only needed to know that a polynomial of degree at most $n$ passing through $n+1$ points is unique
   (see~\ref{polynomials:point-val-representation}).
   It therefore suffices to construct \emph{any} polynomial of degree at most $n$ that passes through the same $n+1$ points.
   Uniqueness guarantees that this constructed polynomial must equal the target.
-\end{bclogo}
+\end{notice}
 
 
 \paragraph{Algorithm}

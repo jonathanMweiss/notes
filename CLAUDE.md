@@ -26,11 +26,25 @@ The main entry point is `notes-from-a-student.tex`. It directly inputs `mathemat
 
 The preamble requires these packages (all must be present):
 - `biblatex` + `\addbibresource{bib.bib}` — bibliography (do **not** also add `\bibliography{}`, which conflicts)
-- `listings` — for `lstlisting` code blocks
-- `[tikz]{bclogo}` — for info/attention boxes (the `[tikz]` option is required with `pdflatex`; the default PSTricks driver does not work)
+- `listings` + `\lstset{...}` — for `lstlisting` code blocks, configured with IBM colorblind-safe colors and Python as the default language
+- `tcolorbox` + `\tcbuselibrary{skins,breakable}` — must be loaded **before** `bclogo`
+- `[tikz]{bclogo}` — legacy attention boxes; new content should use the tcolorbox environments below (the `[tikz]` option is required with `pdflatex`)
 - `bbm` — for `\mathbbm{1}` (the `\one` macro)
 - A `\newcommand{\todo}` definition
 - `definition` and `proposition` theorem environments (in addition to `defn`)
+
+### Colored box environments
+
+All boxes accept an optional title argument: `\begin{insight}[Custom Title]...\end{insight}`. If omitted, the default title is used. Use IBM colorblind-safe colors throughout.
+
+| Environment   | Color   | Default title   | Use for                                          |
+|---------------|---------|-----------------|--------------------------------------------------|
+| `insight`     | Blue    | Insight         | Intuitions, explanations of why something works  |
+| `notice`      | Gold    | Notice          | Caveats, edge cases, things easy to get wrong    |
+| `issue`       | Magenta | Summary Issue   | Open problems, gaps, unresolved questions        |
+| `examplebox`  | Orange  | Example         | Worked examples illustrating a definition        |
+
+Note: `examplebox` is intentionally distinct from the `example` theorem environment.
 
 ### Content organization
 

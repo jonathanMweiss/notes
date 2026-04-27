@@ -198,11 +198,11 @@ Without proof.
     \end{enumerate}
 \end{theorem}
 
-\begin{bclogo}[couleur=blue!10, arrondi=0.1, logo=\bcinfo]{How useful is it?}
+\begin{notice}{How useful is it?}
 The above theorem produces codes with worse
 parameters than the old ones. We usually do not make new codes using these
 constructions. However, they are quite useful when we study codes
-\end{bclogo}
+\end{notice}
 
 
 % \chapter{Robust Interpolation}
@@ -250,8 +250,7 @@ are not relevant to robust interpolation.
 The Berlekamp-Welch (BW) algorithm is a robust interpolation algorithm that
 can be used as a decoder for Reed-Solomon codes and solves the following problem:
 
-\begin{bclogo}[logo=\bcattention,noborder=true]{Problem: Decode 
-    $RS_q(\bar{\alpha},n,k)$ from $e\le \lfloor\frac{n-k}{2}\rfloor$}
+\begin{notice}{Problem: Decode $RS_q(\bar{\alpha},n,k)$ from $e\le \lfloor\frac{n-k}{2}\rfloor$}
 Given a word of $w=w_1w_2\dots w_n$ of length $n$, 
 find a polynomial $f(x)\in F_q[x]$ such that
 \begin{itemize}
@@ -259,7 +258,7 @@ find a polynomial $f(x)\in F_q[x]$ such that
     \item $f(\alpha_i)\ne w_i$ for at most $e$ values of i. Else, return $\bot$.
 \end{itemize}
 
-\end{bclogo}
+\end{notice}
 That is, BW can decode a word of size $k$ from a corrupted reeds-solomon 
 codeword $w$ of length $n$, containing at most $e$ errors. Otherwise, it returns $\bot$.
 
@@ -277,12 +276,12 @@ equation that is correct, and will let us later find $E(x)$:
 $$ w_i\cdot E(\alpha_i) = f(\alpha_i)\cdot E(\alpha_i)= Q(\alpha)$$
 
 
-\begin{bclogo}[logo=\bcinfo,noborder=true]{Explanation}
+\begin{insight}
     Notice that for $\alpha_i$, if $w_i\ne f(\alpha_i)$, then $E(\alpha_i)=0$.
     and thus we have $w_i\cdot 0 = f(\alpha_i)\cdot 0$, which is true.
     Otherwise, $f(\alpha_i)=w_i$ and we have
      $w_i\cdot E(\alpha_i) = f(\alpha_i)\cdot E(\alpha_i)$, which is also true.
-\end{bclogo}
+\end{insight}
 
 If we knew $E(x)$, we could find $f(x)$ by dividing $Q(x)$ by $E(x)$:
 $f(x)=\frac{Q(x)}{E(x)}$.
@@ -301,14 +300,14 @@ $f(x)=\frac{Q(x)}{E(x)}$.
 \end{enumerate}
 
 
-\begin{bclogo}[logo=\bcquestion]{Why?}
+\begin{notice}{Why?}
     The algorithm above raises two key questions.
     \begin{enumerate}
         \item How do we find $E(x)$ and $Q(x)$?
         \item Why is this a good idea? even if we found some $E(x)$ and $Q(x)$, 
         how do we know that they give as the correct question?
     \end{enumerate}    
-\end{bclogo}
+\end{notice}
 
 
 \begin{theorem}
@@ -365,14 +364,14 @@ $f(x)=\frac{Q(x)}{E(x)}$.
 \end{proof}
 
 
-\begin{bclogo}[logo=\bcquestion]{Why is it important that $E(x)$ is monic?}
+\begin{notice}{Why is it important that $E(x)$ is monic?}
     Consider polynomial long division, specifically 
     the division of $x^2-1$ by $2x$ over $\mathbb{Z}[X]$. 
     As we attempt the division, we quickly realize that the element 
     $\frac{1}{2}$ is required, which is not an element of $\mathbb{Z}$. 
     In other words, if $E(x)$ is not monic, we cannot guarantee 
     that we can divide $Q(x)$ by $E(x)$.
-\end{bclogo}
+\end{notice}
 
 \paragraph{Finding $E(x)$ and $Q(x)$}
 

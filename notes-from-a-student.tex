@@ -114,16 +114,75 @@
 \usepackage{biblatex}
 \addbibresource{bib.bib}
 \usepackage{listings}
+\definecolor{ibmBlue}{HTML}{648FFF}
+\definecolor{ibmPurple}{HTML}{785EF0}
+\definecolor{ibmOrange}{HTML}{FE6100}
+\definecolor{ibmGray}{HTML}{6F6F6F}
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{ibmBlue}\bfseries,
+  stringstyle=\color{ibmOrange},
+  commentstyle=\color{ibmPurple}\itshape,
+  numberstyle=\tiny\color{ibmGray},
+  numbers=left,
+  stepnumber=1,
+  showstringspaces=false,
+  breaklines=true,
+  frame=none,
+}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
 \usepackage[tikz]{bclogo}
 \usepackage{bbm}
 \newcommand{\todo}[1]{\textbf{\textcolor{red}{[TODO: #1]}}}
+
+% IBM color-blind safe palette: #648FFF, #785EF0, #DC267F, #FE6100, #FFB000
+% ibmBlue and ibmPurple already defined above for listings.
+\definecolor{ibmGold}{HTML}{FFB000}
+\definecolor{ibmMagenta}{HTML}{DC267F}
 
 % Use \includeonly{filename} to compile only specific files.
 % \includeonly{mathematics/math, mathematics/probability}
 % \includeonly{computer-sceince/algorithms}
 
 \newenvironment{casenv}{\begin{enumerate}}{\end{enumerate}}
-\newenvironment{insight}{\color{gray}}{\ignorespacesafterend}
+% insight (blue)  — intuitions, explanations of why something works, conceptual remarks
+\newtcolorbox{insight}[1][Insight]{
+    enhanced, breakable,
+    colback=ibmBlue!8!white, colframe=ibmBlue!80!black,
+    fonttitle=\bfseries\small, title=#1,
+    attach boxed title to top left={yshift=-2mm, xshift=4mm},
+    boxed title style={colback=ibmBlue!80!black, colframe=ibmBlue!80!black, sharp corners},
+    coltitle=white, left=6pt, right=6pt, top=8pt, bottom=4pt,
+}
+% notice (gold)   — important caveats, edge cases, things easy to get wrong
+\newtcolorbox{notice}[1][Notice]{
+    enhanced, breakable,
+    colback=ibmGold!10!white, colframe=ibmGold!80!black,
+    fonttitle=\bfseries\small, title=#1,
+    attach boxed title to top left={yshift=-2mm, xshift=4mm},
+    boxed title style={colback=ibmGold!80!black, colframe=ibmGold!80!black, sharp corners},
+    coltitle=white, left=6pt, right=6pt, top=8pt, bottom=4pt,
+}
+% issue (magenta) — open problems, known gaps, or unresolved questions in the notes
+\newtcolorbox{issue}[1][Summary Issue]{
+    enhanced, breakable,
+    colback=ibmMagenta!8!white, colframe=ibmMagenta!80!black,
+    fonttitle=\bfseries\small, title=#1,
+    attach boxed title to top left={yshift=-2mm, xshift=4mm},
+    boxed title style={colback=ibmMagenta!80!black, colframe=ibmMagenta!80!black, sharp corners},
+    coltitle=white, left=6pt, right=6pt, top=8pt, bottom=4pt,
+}
+% examplebox (orange) — worked examples illustrating a definition or theorem
+\newtcolorbox{examplebox}[1][Example]{
+    enhanced, breakable,
+    colback=ibmOrange!8!white, colframe=ibmOrange!80!black,
+    fonttitle=\bfseries\small, title=#1,
+    attach boxed title to top left={yshift=-2mm, xshift=4mm},
+    boxed title style={colback=ibmOrange!80!black, colframe=ibmOrange!80!black, sharp corners},
+    coltitle=white, left=6pt, right=6pt, top=8pt, bottom=4pt,
+}
 
 \begin{document}
 
@@ -143,7 +202,20 @@
  notions. Some of the items will have sources, and some will simply be proved here.
 \end{itemize}
 
-\pagebreak\tableofcontents
+\pagebreak
+%   ┌───────┬────────────────┐
+%   │ Value │  Shows up to   │
+%   ├───────┼────────────────┤     
+%   │ 0     │ chapters only  |                                                                               
+%   ├───────┼────────────────┤   
+%   │ 1     │ sections       │
+%   ├───────┼────────────────┤
+%   │ 2     │ subsections    │                             
+%   ├───────┼────────────────┤   
+%   │ 3     │ subsubsections │
+%   └───────┴────────────────┘
+\setcounter{tocdepth}{1}
+\tableofcontents
 
 
 \include{mathematics/math}
@@ -164,7 +236,6 @@
 \include{computer-sceince/cryptography}
 \include{computer-sceince/distributed-algorithms}
 
-\include{computer-sceince/quantum/main}
 \part{System Design}
 \include{computer-sceince/system}
 \printbibliography
