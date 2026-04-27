@@ -990,7 +990,7 @@ Given the reverse operator, we apply it to each of the polynomials, allowing us 
 
 % In other words, the newtwon iteration, which we describe next demands the polynomial has a constant, invertible, nonzero constant. Otherwise, it doesn't converge (don't ask me why)!
 
-\paragraph{Series inversion via Newton iteration.}
+\subsection{Series inversion via Newton iteration.}
 Newton iteration is a technique to find roots of polynomials (similar to gradient descent). 
 Given some good starting point, each iteration approaches the root (if exists), up to some precision $k$.
 
@@ -1004,21 +1004,50 @@ This specific Newton iteration modification operates over the ring $\mathbb{F}/(
     an issue with the iteration. Try to apply this to the iteration after you understand how it works, and you'll get stuck.
 \end{notice}
 
-So we begin with $x_1= T_1(X)=c_0^{-1}$ (the inverse of the constant term of $C(X)$), 
-then compute each step using the formula of the Newton iteration technique:
+\paragraph{Loop Invariant.}
+% We begin with $T_1(X)=c_0^{-1}$ (the inverse of the constant term of $C(X)$), 
+Following the Newton iteration technique, we maintain the invariant that $T_i(X)$ is correct mod $x^{\ell_i}$, where $\ell_i$ is the precision at step $i$.
+Thus, compute each step using the formula of the Newton iteration technique:
 $T_{i+1}= T_i - \frac{F(T_i)}{F'(T_i)}= T_i - \frac{1/T_i(X)-C(x)}{-1/T_i(X)^2}$
-So the computation in each step is $T_{i+1}= 2T_i(x)-C(X) \cdot T_i(X)^2$
+So the computation in each step is $T_{i+1}= \bigl(2T_i(x)-C(X) \cdot T_i(X)^2\bigr) \bmod x^{2\ell_i}$, where $\ell_i\in \{1,2,4,8,\dots,2\cdot k\}$ (also called the "precision").
+
+What is the base case? we begin with the inverse of $C(X)$ mod $x^1$, which is the inverse of the constant term of $C(X)$, denoted as $c_0^{-1}$. As a result, the base case is $T_1(X)=c_0^{-1}$, and the invariant/induction step is the Newton iteration formula shown above.
 
 Thus, Given $C(x)$ wih nonztero constant term, its inverse series modulo $x^k$ can be
-computed by Newton iteration:
-\[
-T_{1}(x) = c_0^{-1}, \qquad
-T_{2\ell}(x) = T_\ell(x) \,\bigl(2 - C(x)T_\ell(x)\bigr) \bmod x^{2\ell}.
-\]
-This converges doubly in the precision, so after $O(\log k)$ iterations we obtain
-$C(x)^{-1} \bmod x^k$.
-It is important to notice, this function uses polynomial multiplication, but the overall work remains in $O(M(n))$.
+computed by Newton iteration (see full algorithm below).
 
+\begin{notice}
+What happens when $c_0=0$? The Newton iteration isn't defined! since we begin with $T_1(X)=c_0^{-1}$, which is not defined.
+\end{notice}
+
+\paragraph{Termination.}
+The algorithm begins with $T_1 = c_0^{-1}$ correct mod $x^1$, then computes $T_2$ which is correct mod $x^2$, then $T_4$ correct mod $x^4$, and so on, until we have $T_k$ correct mod $x^k$ (promised to us by the correctness of the Newton iteration).
+Each step computes $T$ mod $x^{2\ell}$ from $T$ mod $x^\ell$. We call $\ell$ the precision. 
+Namely, during the algorithm the precision doubles at each step. 
+Since we start with a correct value of the wanted inverse $c_0^{-1}$ (mod $x^1$), and precision doubles each step, after $\lceil\log_2 k\rceil$ iterations we reach precision $k$ and can terminate having found $C(x)^{-1} \bmod x^k$.
+
+
+\paragraph{Runtime.}
+We denote $M(\ell)$ as the cost of multiplying two polynomials of degree $\ell$.
+The total cost sums over precisions $1, 2, 4, \dots, k$: since $M(\ell) \le \frac{1}{2}M(2\ell)$, the costs form a geometric series $M(k)(1 + \frac{1}{2} + \frac{1}{4} + \cdots) = 2M(k)$, so the overall runtime is $O(M(k))$ using FFT/NTT-based multiplication, this is $k \log k$.
+% \[
+% T_{1}(x) = c_0^{-1}, \qquad
+% T_{2\ell}(x) = T_\ell(x) \,\bigl(2 - C(x)T_\ell(x)\bigr) \bmod x^{2\ell}.
+% \]
+
+% This converges doubly in the precision, so after $O(\log k)$ iterations we obtain
+% $C(x)^{-1} \bmod x^k$.
+\begin{notice} {runtime}
+  The runtime of each iteration is dominated by the polynomial multiplications, denote $M(\ell)$ as the cost of multiplying two polynomials of degree $\ell$.
+
+  The total runtime is \(O(M(1) + M(2) + M(4) + \dots + M(2\cdot k))\). And we have
+  \[
+  M(k) + M(k/2) + M(k/4) + \cdots \leq M(k)\left(1 + \frac{1}{2} + \frac{1}{4} + \cdots\right) = 2M(k)
+  \]
+  meaning we have nlogn runtime for the Newton iteration.
+\end{notice}
+
+\paragraph{Algorithm}
 \begin{lstlisting}[language=Python,
   caption={Newton iteration for polynomial series inverse},
 ]
@@ -1053,7 +1082,7 @@ def series_inverse(C, k):
 \end{lstlisting}
 
 proof of correctness is via induction. (See Modern Computer Algebra book, section 9.1, theorm 9.2).
-and runtime is around $4M(n)$, so if we use NTT, it should be aroud four times the cost of regular NTT multiplication.
+and runtime is around $~k4M(n)$, so if we use NTT, it should be aroud four times the cost of regular NTT multiplication.
 
 \paragraph{Why Newton Iteration Applies.}
 In polynomial division we know in advance the degree bound of the quotient:
