@@ -646,6 +646,89 @@ def fft(p: np.ndarray) -> np.ndarray:
       even and odd parts, and then adjust the assignment matrix using
       the properties of roots of unity. Each part is important in its own way.
     \end{remark}
+
+% \begin{figure}[ht]
+% \centering
+% \begin{tikzpicture}[>=stealth, scale=0.95]
+%   \def\dy{0.65}  % vertical spacing between rows
+%   \def\st{2.3}   % horizontal spacing between stages
+
+%   % Input nodes and labels (bit-reversed order for DIT-FFT)
+%   \foreach \i/\lbl in {0/{a_0},1/{a_4},2/{a_2},3/{a_6},4/{a_1},5/{a_5},6/{a_3},7/{a_7}} {
+%     \node[left, font=\scriptsize] at (0, {-\i*\dy}) {$\lbl$};
+%     \filldraw (0, {-\i*\dy}) circle (1.5pt);
+%   }
+%   % Intermediate nodes after stages 1 and 2
+%   \foreach \col in {1,2} {
+%     \foreach \i in {0,...,7}
+%       \filldraw ({\col*\st}, {-\i*\dy}) circle (1.5pt);
+%   }
+%   % Output nodes and labels
+%   \foreach \i in {0,...,7} {
+%     \filldraw ({3*\st}, {-\i*\dy}) circle (1.5pt);
+%     \node[right, font=\scriptsize] at ({3*\st}, {-\i*\dy}) {$A(\omega^{\i})$};
+%   }
+
+%   % ---- Stage 1: butterflies (0,1),(2,3),(4,5),(6,7) ----
+%   \foreach \ra/\rb in {0/1, 2/3, 4/5, 6/7} {
+%     \draw[gray!40]   (0,{-\ra*\dy}) -- (\st,{-\ra*\dy});
+%     \draw[gray!40]   (0,{-\rb*\dy}) -- (\st,{-\rb*\dy});
+%     \draw[blue!65]   (0,{-\ra*\dy}) -- (\st,{-\rb*\dy});
+%     \draw[blue!65]   (0,{-\rb*\dy}) -- (\st,{-\ra*\dy});
+%   }
+
+%   % ---- Stage 2: butterflies (0,2),(1,3),(4,6),(5,7) ----
+%   \foreach \ra/\rb in {0/2, 1/3, 4/6, 5/7} {
+%     \draw[gray!40]   (\st,{-\ra*\dy}) -- ({2*\st},{-\ra*\dy});
+%     \draw[gray!40]   (\st,{-\rb*\dy}) -- ({2*\st},{-\rb*\dy});
+%     \draw[blue!65]   (\st,{-\ra*\dy}) -- ({2*\st},{-\rb*\dy});
+%     \draw[blue!65]   (\st,{-\rb*\dy}) -- ({2*\st},{-\ra*\dy});
+%   }
+
+%   % ---- Stage 3: butterflies (0,4),(1,5),(2,6),(3,7) ----
+%   \foreach \ra/\rb in {0/4, 1/5, 2/6, 3/7} {
+%     \draw[gray!40]   ({2*\st},{-\ra*\dy}) -- ({3*\st},{-\ra*\dy});
+%     \draw[gray!40]   ({2*\st},{-\rb*\dy}) -- ({3*\st},{-\rb*\dy});
+%     \draw[blue!65]   ({2*\st},{-\ra*\dy}) -- ({3*\st},{-\rb*\dy});
+%     \draw[blue!65]   ({2*\st},{-\rb*\dy}) -- ({3*\st},{-\ra*\dy});
+%   }
+
+%   % ---- Twiddle factor labels ----
+%   % Stage 1: all ω^0
+%   \node[above, font=\scriptsize, blue!80] at ({0.5*\st}, 0.15) {$\omega^0$ (all)};
+
+%   % Stage 2
+%   \node[font=\scriptsize, blue!80] at ({1.5*\st}, {-1*\dy})   {$\omega^0$};
+%   \node[font=\scriptsize, blue!80] at ({1.5*\st}, {-2*\dy})   {$\omega^2$};
+%   \node[font=\scriptsize, blue!80] at ({1.5*\st}, {-5*\dy})   {$\omega^0$};
+%   \node[font=\scriptsize, blue!80] at ({1.5*\st}, {-6*\dy})   {$\omega^2$};
+
+%   % Stage 3
+%   \node[font=\scriptsize, blue!80, right=2pt] at ({2.5*\st}, {-2*\dy}) {$\omega^0$};
+%   \node[font=\scriptsize, blue!80, right=2pt] at ({2.5*\st}, {-3*\dy}) {$\omega^1$};
+%   \node[font=\scriptsize, blue!80, right=2pt] at ({2.5*\st}, {-4*\dy}) {$\omega^2$};
+%   \node[font=\scriptsize, blue!80, right=2pt] at ({2.5*\st}, {-5*\dy}) {$\omega^3$};
+
+%   % ---- Stage labels ----
+%   \node[above, font=\small, anchor=south] at ({0.5*\st}, 0.45) {Stage 1};
+%   \node[above, font=\small, anchor=south] at ({1.5*\st}, 0.45) {Stage 2};
+%   \node[above, font=\small, anchor=south] at ({2.5*\st}, 0.45) {Stage 3};
+
+%   % Vertical dividers
+%   \foreach \col in {1,2,3}
+%     \draw[densely dashed, gray!40] ({\col*\st}, 0.4) -- ({\col*\st}, {-7.4*\dy});
+
+%   \node[above, font=\tiny, gray, anchor=south] at (0, 0.4) {bit-rev.};
+% \end{tikzpicture}
+% \caption{FFT butterfly diagram for $n=8$ (Cooley--Tukey, decimation-in-time).
+% Inputs are in bit-reversed order (left); three stages of butterfly operations produce
+% the DFT values $A(\omega^0),\dots,A(\omega^7)$ (right), where $\omega = e^{2\pi i/8}$.
+% Each pair of blue crossing lines is one butterfly: the twiddle factor $\omega^k$ labels
+% the crossing midpoint and multiplies the lower input before the $\pm$ combination.
+% The stride doubles at each stage: Stage~1 connects adjacent rows, Stage~2 skips one,
+% and Stage~3 spans four rows.}
+% \end{figure}
+
 \subsection{Inverse FFT}\label{ifft}
 
 The DFT matrix is invertible.

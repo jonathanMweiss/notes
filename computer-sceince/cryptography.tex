@@ -38,10 +38,22 @@ AES is a Block Cipher. They usually use 128-bit strings as keys. The data blocks
 
 a secure block cipher should be \emph{computationally indistinguishable} from a random permutation.
 
+\paragraph{High Level}
+AES is a substitution-permutation network. The 128-bit input block is arranged as a $4 \times 4$ matrix of bytes, called the \emph{state}. The key is expanded into a sequence of round keys via a key schedule; AES-128 produces 11 round keys. Before the first round, the state is XOR'd with round key 0 (\emph{AddRoundKey}). Then AES-128 performs 10 rounds, each consisting of four steps.
 
+The output is achieved via applying non-linear, yet reversible transformations to the block of bytes, then it mixes the bytes in a manner that ensures every output bit depends on every input bit after a few rounds, and finally it adds the round key to bind the transformation to the secret key.
+
+% TODO: learn AES in full.
+% \begin{enumerate}
+%   \item \textbf{SubBytes.} Each byte is replaced by its image under a fixed nonlinear S-box, defined by taking the multiplicative inverse of each byte in $\mathrm{GF}(2^8)$ (the field of 256 elements, where arithmetic is done modulo an irreducible degree-8 polynomial over $\mathrm{GF}(2)$), then applying a fixed affine map. This provides \emph{confusion}: the relationship between key and ciphertext is obscured.
+%   \item \textbf{ShiftRows.} Row $i$ of the state is cyclically shifted left by $i$ positions, spreading bytes across columns.
+%   \item \textbf{MixColumns.} Each column is treated as a degree-3 polynomial over $\mathrm{GF}(2^8)$ and multiplied by a fixed invertible matrix, diffusing bytes within the column. Together with ShiftRows, this ensures every output byte depends on every input byte after two rounds. The final round omits this step.
+%   \item \textbf{AddRoundKey.} The state is XOR'd with the current round key, binding the transformation to the secret key.
+% \end{enumerate}
+% After 10 rounds the output is the 128-bit ciphertext. The combination of SubBytes (nonlinearity) and ShiftRows+MixColumns (diffusion) produces the \emph{avalanche effect}: flipping a single input bit causes roughly half of the output bits to flip, unpredictably.
 
 \paragraph{Modes of operation}
-refers to different methods for applying cryptographic algorithms, like block ciphers, to encrypt or decrypt data in a way that handles multiple blocks of information.
+refers to different methods for applying block ciphers (like AES) to encrypt or decrypt data in a way that handles multiple blocks of information.
 Common examples include Electronic Codebook (ECB), Cipher Block Chaining (CBC), and Counter (CTR) mode, each with its own security properties and use cases.
 
 
